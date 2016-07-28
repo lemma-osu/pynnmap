@@ -779,8 +779,8 @@ def main():
     parser = OptionParser()
     parser.add_option('-r', dest='model_regions',
         help='List or range of GNN model regions for which to setup models')
-    #parser.add_option('-d',dest='root_directory',
-    #    help='Location of root directory for storing model results')
+    parser.add_option('-d',dest='root_directory',
+        help='Location of root directory for storing model results')
     parser.add_option('-y', dest='years',
         help='Range of model years to run, or comma-delimited list of ' + \
             'years to run')
