@@ -1,5 +1,5 @@
 import unittest
-from models.database import plot_database as pd
+from pynnmap.database import plot_database as pd
 
 
 class PlotDatabaseTest(unittest.TestCase):

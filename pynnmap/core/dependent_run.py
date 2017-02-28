@@ -1,4 +1,4 @@
-from models.core import prediction_run
+from pynnmap.core import prediction_run
 
 
 class DependentRun(prediction_run.PredictionOutput):

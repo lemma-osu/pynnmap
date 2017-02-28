@@ -3,11 +3,11 @@ import numpy as np
 from osgeo import gdal, gdalconst
 from matplotlib import mlab
 
-from models.diagnostics import diagnostic
-from models.misc import histogram
-from models.misc import utilities
-from models.parser import parameter_parser as pp
-from models.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.diagnostics import diagnostic
+from pynnmap.misc import histogram
+from pynnmap.misc import utilities
+from pynnmap.parser import parameter_parser as pp
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):

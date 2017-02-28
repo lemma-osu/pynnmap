@@ -1,6 +1,6 @@
 from os.path import normpath
 import unittest
-from models.parser import xml_parameter_parser as xpp
+from pynnmap.parser import xml_parameter_parser as xpp
 
 
 class SppszPrototypeParserTest(unittest.TestCase):

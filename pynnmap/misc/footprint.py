@@ -1,6 +1,6 @@
 import numpy as np
 import re
-from models.misc import parser
+from pynnmap.misc import parser
 
 
 class FootprintError(Exception):

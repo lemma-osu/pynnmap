@@ -1,6 +1,6 @@
 import numpy as np
-from models.diagnostics import diagnostic
-from models.misc import utilities
+from pynnmap.diagnostics import diagnostic
+from pynnmap.misc import utilities
 
 
 class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):

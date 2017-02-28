@@ -1,8 +1,8 @@
 import os
 import unittest
 import filecmp
-from models.misc import classification_accuracy as ca
-from models.misc import utilities
+from pynnmap.misc import classification_accuracy as ca
+from pynnmap.misc import utilities
 
 
 class ClassificationAccuracyTest(unittest.TestCase):

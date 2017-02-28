@@ -1,5 +1,5 @@
 import unittest
-from models.core import model_setup as ms
+from pynnmap.core import model_setup as ms
 
 
 class SppszSetupTest(unittest.TestCase):

@@ -1,8 +1,8 @@
 import sys
 import re
 import numpy as np
-from models.misc import parser
-from models.core import ordination_model
+from pynnmap.misc import parser
+from pynnmap.core import ordination_model
 
 
 class LemmaOrdinationParser(parser.Parser):

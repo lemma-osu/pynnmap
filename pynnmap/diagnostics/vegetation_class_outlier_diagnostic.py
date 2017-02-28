@@ -1,8 +1,8 @@
 import numpy as np
 
-from models.diagnostics import diagnostic
-from models.diagnostics import vegetation_class_diagnostic as vcd
-from models.misc import utilities
+from pynnmap.diagnostics import diagnostic
+from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
+from pynnmap.misc import utilities
 
 
 class VegetationClassOutlierDiagnostic(vcd.VegetationClassDiagnostic):

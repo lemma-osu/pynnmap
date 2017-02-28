@@ -1,10 +1,10 @@
 import numpy as np
 
-from models.diagnostics import diagnostic
-from models.misc import statistics
-from models.misc import utilities
-from models.parser import parameter_parser as pp
-from models.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.diagnostics import diagnostic
+from pynnmap.misc import statistics
+from pynnmap.misc import utilities
+from pynnmap.parser import parameter_parser as pp
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class LocalAccuracyDiagnostic(diagnostic.Diagnostic):

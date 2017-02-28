@@ -1,12 +1,12 @@
 import os
 import numpy as np
 
-from models.core import prediction_run
-from models.diagnostics import diagnostic
-from models.diagnostics import local_accuracy_diagnostic as lad
-from models.diagnostics import vegetation_class_diagnostic as vcd
-from models.misc import utilities
-from models.parser import parameter_parser as pp
+from pynnmap.core import prediction_run
+from pynnmap.diagnostics import diagnostic
+from pynnmap.diagnostics import local_accuracy_diagnostic as lad
+from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
+from pynnmap.misc import utilities
+from pynnmap.parser import parameter_parser as pp
 
 
 class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):

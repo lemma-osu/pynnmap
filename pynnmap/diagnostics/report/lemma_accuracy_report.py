@@ -1,16 +1,16 @@
 from reportlab.lib import units as u
 
-from models.diagnostics.report.report_formatter import MissingConstraintError
-from models.diagnostics.report import accuracy_report
-from models.diagnostics.report import introduction_formatter as intro
-from models.diagnostics.report import data_dictionary_formatter as ddf
-from models.diagnostics.report import local_accuracy_formatter as laf
-from models.diagnostics.report import references_formatter as rf
-from models.diagnostics.report import regional_accuracy_formatter as raf
-from models.diagnostics.report import riemann_accuracy_formatter as riemann
-from models.diagnostics.report import species_accuracy_formatter as saf
-from models.diagnostics.report import vegetation_class_formatter as vcf
-from models.diagnostics.report import report_styles
+from pynnmap.diagnostics.report.report_formatter import MissingConstraintError
+from pynnmap.diagnostics.report import accuracy_report
+from pynnmap.diagnostics.report import introduction_formatter as intro
+from pynnmap.diagnostics.report import data_dictionary_formatter as ddf
+from pynnmap.diagnostics.report import local_accuracy_formatter as laf
+from pynnmap.diagnostics.report import references_formatter as rf
+from pynnmap.diagnostics.report import regional_accuracy_formatter as raf
+from pynnmap.diagnostics.report import riemann_accuracy_formatter as riemann
+from pynnmap.diagnostics.report import species_accuracy_formatter as saf
+from pynnmap.diagnostics.report import vegetation_class_formatter as vcf
+from pynnmap.diagnostics.report import report_styles
 
 
 class LemmaAccuracyReport(accuracy_report.AccuracyReport):

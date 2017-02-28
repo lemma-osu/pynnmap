@@ -1,5 +1,5 @@
 from lxml import objectify
-from models.misc import utilities
+from pynnmap.misc import utilities
 
 
 class XMLParser(object):

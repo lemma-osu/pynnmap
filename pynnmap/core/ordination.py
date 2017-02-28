@@ -1,9 +1,9 @@
 import numpy as np
 from matplotlib import mlab
 
-from models.misc import numpy_ordination
-from models.misc import utilities
-from models.parser import parameter_parser as pp
+from pynnmap.misc import numpy_ordination
+from pynnmap.misc import utilities
+from pynnmap.parser import parameter_parser as pp
 
 
 class Ordination(object):

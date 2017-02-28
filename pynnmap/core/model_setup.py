@@ -8,11 +8,11 @@ from lxml import objectify
 from lxml import etree
 from optparse import OptionParser
 
-from models.core import ordination
-from models.database import plot_database
-from models.database import web_database
-from models.misc import utilities
-from models.parser import parameter_parser_factory as ppf
+from pynnmap.core import ordination
+from pynnmap.database import plot_database
+from pynnmap.database import web_database
+from pynnmap.misc import utilities
+from pynnmap.parser import parameter_parser_factory as ppf
 
 
 class ModelSetup(object):

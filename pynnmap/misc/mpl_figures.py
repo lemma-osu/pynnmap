@@ -1,7 +1,7 @@
 import numpy as np
 import pylab as pl
 
-from models.misc import statistics
+from pynnmap.misc import statistics
 
 # output_type enumeration
 (SCREEN, FILE) = range(2)

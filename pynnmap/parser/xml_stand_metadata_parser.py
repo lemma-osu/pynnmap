@@ -1,4 +1,4 @@
-from models.parser import xml_parser
+from pynnmap.parser import xml_parser
 
 
 class XMLStandMetadataParser(xml_parser.XMLParser):

@@ -1,8 +1,8 @@
 import numpy as np
-from models.diagnostics import diagnostic
-from models.misc import utilities
-from models.misc import classification_accuracy as ca
-from models.parser import parameter_parser as pp
+from pynnmap.diagnostics import diagnostic
+from pynnmap.misc import utilities
+from pynnmap.misc import classification_accuracy as ca
+from pynnmap.parser import parameter_parser as pp
 
 
 class VegetationClassDiagnostic(diagnostic.Diagnostic):

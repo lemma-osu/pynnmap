@@ -1,6 +1,6 @@
 import os
-from models.parser import parameter_parser
-from models.parser import xml_parameter_parser
+from pynnmap.parser import parameter_parser
+from pynnmap.parser import xml_parameter_parser
 
 
 def get_parameter_parser(parameter_file):

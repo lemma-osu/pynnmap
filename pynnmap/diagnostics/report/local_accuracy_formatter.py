@@ -4,11 +4,11 @@ from reportlab import platypus as p
 from reportlab.lib import colors
 from reportlab.lib import units as u
 
-from models.diagnostics.report import report_formatter
-from models.diagnostics.report import report_styles
-from models.misc import mpl_figures as mplf
-from models.misc import utilities
-from models.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.diagnostics.report import report_formatter
+from pynnmap.diagnostics.report import report_styles
+from pynnmap.misc import mpl_figures as mplf
+from pynnmap.misc import utilities
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class LocalAccuracyFormatter(report_formatter.ReportFormatter):

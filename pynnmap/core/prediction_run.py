@@ -2,11 +2,11 @@ import copy
 import numpy as np
 from osgeo import gdal, gdalconst
 
-from models.core import imputation_model as im
-from models.misc import footprint
-from models.misc import utilities
-from models.ordination_parser import lemma_ordination_parser
-from models.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.core import imputation_model as im
+from pynnmap.misc import footprint
+from pynnmap.misc import utilities
+from pynnmap.ordination_parser import lemma_ordination_parser
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class NNPixel(object):

@@ -1,6 +1,6 @@
 import unittest
-from models.diagnostics import diagnostic_wrapper as dw
-from models.parser import parameter_parser_factory as ppf
+from pynnmap.diagnostics import diagnostic_wrapper as dw
+from pynnmap.parser import parameter_parser_factory as ppf
 
 
 class SppszTest(unittest.TestCase):

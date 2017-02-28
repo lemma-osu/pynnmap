@@ -1,7 +1,7 @@
 import sys
 import os
-from models.misc import geoprocessor
-from models.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.misc import geoprocessor
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 def main(parser):

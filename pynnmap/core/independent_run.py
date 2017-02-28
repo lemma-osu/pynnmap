@@ -1,5 +1,5 @@
-from models.core import prediction_run
-from models.misc import utilities
+from pynnmap.core import prediction_run
+from pynnmap.misc import utilities
 
 
 class IndependentRun(prediction_run.PredictionOutput):

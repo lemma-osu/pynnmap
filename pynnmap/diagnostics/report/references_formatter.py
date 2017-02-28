@@ -2,9 +2,9 @@ from reportlab import platypus as p
 from reportlab.lib import colors
 from reportlab.lib import units as u
 
-from models.diagnostics.report import report_formatter
-from models.diagnostics.report import report_styles
-from models.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.diagnostics.report import report_formatter
+from pynnmap.diagnostics.report import report_styles
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class ReferencesFormatter(report_formatter.ReportFormatter):

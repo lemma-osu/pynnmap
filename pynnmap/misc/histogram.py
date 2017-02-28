@@ -1,6 +1,6 @@
 import numpy as np
 import re
-from models.misc import interval_classification as ic
+from pynnmap.misc import interval_classification as ic
 
 # Module level enumerations
 (EQUAL_INTERVAL, QUANTILE, CUSTOM) = range(3)

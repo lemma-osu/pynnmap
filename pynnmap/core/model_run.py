@@ -1,11 +1,11 @@
 import os
 import sys
 import subprocess
-from models.diagnostics import diagnostic_wrapper as dw
-from models.core import prediction_run as pr
-from models.core import independent_run as ir
-from models.core import dependent_run as dr
-from models.parser import parameter_parser_factory as ppf
+from pynnmap.diagnostics import diagnostic_wrapper as dw
+from pynnmap.core import prediction_run as pr
+from pynnmap.core import independent_run as ir
+from pynnmap.core import dependent_run as dr
+from pynnmap.parser import parameter_parser_factory as ppf
 
 
 class ModelRun(object):
@@ -20,7 +20,7 @@ class ModelRun(object):
         subprocess.call(cmd)
 
     def post_process(self):
-        from models.core import post_process_wrapper as ppw
+        from pynnmap.core import post_process_wrapper as ppw
         ppw.main(self.parser)
 
     def run_validation(self, run_accuracy_diagnostics=True,

@@ -1,21 +1,21 @@
 import os
 
-from models.diagnostics.diagnostic import MissingConstraintError
-from models.diagnostics import local_accuracy_diagnostic as lad
-from models.diagnostics import regional_accuracy_diagnostic as rad
-from models.diagnostics import riemann_accuracy_diagnostic as riemann
-from models.diagnostics import species_accuracy_diagnostic as sad
-from models.diagnostics import vegetation_class_diagnostic as vcd
-from models.diagnostics import validation_plots_accuracy_diagnostic as vpad
+from pynnmap.diagnostics.diagnostic import MissingConstraintError
+from pynnmap.diagnostics import local_accuracy_diagnostic as lad
+from pynnmap.diagnostics import regional_accuracy_diagnostic as rad
+from pynnmap.diagnostics import riemann_accuracy_diagnostic as riemann
+from pynnmap.diagnostics import species_accuracy_diagnostic as sad
+from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
+from pynnmap.diagnostics import validation_plots_accuracy_diagnostic as vpad
 
-from models.diagnostics import nn_index_outlier_diagnostic as niod
-from models.diagnostics import vegetation_class_outlier_diagnostic as vcod
-from models.diagnostics import vegetation_class_variety_diagnostic as vcvd
-from models.diagnostics import variable_deviation_outlier_diagnostic as vdod
+from pynnmap.diagnostics import nn_index_outlier_diagnostic as niod
+from pynnmap.diagnostics import vegetation_class_outlier_diagnostic as vcod
+from pynnmap.diagnostics import vegetation_class_variety_diagnostic as vcvd
+from pynnmap.diagnostics import variable_deviation_outlier_diagnostic as vdod
 
-from models.diagnostics.report import lemma_accuracy_report as lar
-from models.diagnostics import outlier_formatter as out
-from models.misc import utilities
+from pynnmap.diagnostics.report import lemma_accuracy_report as lar
+from pynnmap.diagnostics import outlier_formatter as out
+from pynnmap.misc import utilities
 
 
 class DiagnosticWrapper(object):

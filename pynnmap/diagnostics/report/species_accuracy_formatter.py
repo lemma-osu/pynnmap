@@ -2,11 +2,11 @@ from reportlab import platypus as p
 from reportlab.lib import colors
 from reportlab.lib import units as u
 
-from models.diagnostics.report import report_formatter
-from models.diagnostics.report import report_styles
-from models.misc import utilities
-from models.parser import xml_stand_metadata_parser as xsmp
-from models.parser import xml_report_metadata_parser as xrmp
+from pynnmap.diagnostics.report import report_formatter
+from pynnmap.diagnostics.report import report_styles
+from pynnmap.misc import utilities
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.parser import xml_report_metadata_parser as xrmp
 
 
 class SpeciesAccuracyFormatter(report_formatter.ReportFormatter):

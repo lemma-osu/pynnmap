@@ -1,4 +1,4 @@
-from models.diagnostics.report import report_formatter
+from pynnmap.diagnostics.report import report_formatter
 
 
 class RiemannAccuracyFormatter(report_formatter.ReportFormatter):

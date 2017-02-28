@@ -4,10 +4,10 @@ from lxml import etree
 from lxml import objectify
 from copy import deepcopy
 
-from models.parser import xml_parser
-from models.parser import parameter_parser
-from models.database import plot_database
-from models.misc import utilities
+from pynnmap.parser import xml_parser
+from pynnmap.parser import parameter_parser
+from pynnmap.database import plot_database
+from pynnmap.misc import utilities
 
 
 class XMLParameterParser(xml_parser.XMLParser,

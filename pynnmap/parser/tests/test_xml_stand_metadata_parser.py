@@ -1,5 +1,5 @@
 import unittest
-from models.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class XMLMetadataParserTest(unittest.TestCase):

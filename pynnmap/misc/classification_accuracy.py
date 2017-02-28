@@ -3,7 +3,7 @@ import numpy.ma as ma
 import itertools
 from lxml import objectify
 
-from models.misc import utilities
+from pynnmap.misc import utilities
 
 
 def create_error_matrix(obs_data, prd_data, compact=True, classes=None):

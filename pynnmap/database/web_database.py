@@ -1,5 +1,5 @@
-from models.database import database as db
-from models.misc import utilities
+from pynnmap.database import database as db
+from pynnmap.misc import utilities
 
 
 class WebDatabase(db.Database):
