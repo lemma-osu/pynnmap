@@ -61,7 +61,7 @@ class ModelSetup(object):
         if p.parameter_set == 'FULL':
             self.plot_db = \
                 plot_database.PlotDatabase(p.model_type, p.model_region,
-                    p.buffer, p.model_year, p.summary_level,
+                    p.buffer, p.model_year, 
                     p.image_source, p.image_version, dsn=p.plot_dsn)
 
     def create_species_plot_count_file(self):
@@ -545,7 +545,7 @@ class ModelSetup(object):
         # Create nonforest and nonsampled records to be concatenated with the
         # existing area_estimate_table recarray.  The nonforest record
         # has an ID of -10001 and the nonsampled record has an ID of -10002
-        id_field = p.summary_level + 'ID'
+        id_field = 'FCID'
         new_recs = np.recarray(2, dtype=area_estimate_table.dtype)
         for f in new_recs.dtype.names:
             for rec in new_recs:

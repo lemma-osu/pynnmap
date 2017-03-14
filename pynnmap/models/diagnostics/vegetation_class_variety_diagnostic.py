@@ -23,7 +23,7 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
     def __init__(self, parameters):
         p = parameters
         self.stand_attr_file = p.stand_attribute_file
-        self.id_field = p.summary_level + 'ID'
+        self.id_field = 'FCID'
         self.output_file = p.vegclass_variety_file
 
         # Create a list of zonal_pixel files - both independent and dependent

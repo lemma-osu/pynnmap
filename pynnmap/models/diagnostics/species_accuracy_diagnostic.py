@@ -15,7 +15,7 @@ class SpeciesAccuracyDiagnostic(diagnostic.Diagnostic):
                 self.predicted_file = p.independent_predicted_file
                 self.stand_metadata_file = p.stand_metadata_file
                 self.statistics_file = p.species_accuracy_file
-                self.id_field = p.summary_level + 'ID'
+                self.id_field = 'FCID'
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
                 raise ValueError(err_msg)

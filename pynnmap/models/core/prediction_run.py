@@ -56,7 +56,7 @@ class PredictionOutput(object):
     def __init__(self, prediction_run):
         self.prediction_run = prediction_run
         self.parameter_parser = prediction_run.parameter_parser
-        self.id_field = self.parameter_parser.summary_level + 'ID'
+        self.id_field = 'FCID'
 
     def open_prediction_files(self, zonal_pixel_file, predicted_file):
         """
@@ -455,7 +455,7 @@ class PredictionRun(object):
         p = self.parameter_parser
 
         # ID field
-        id_field = p.summary_level + 'ID'
+        id_field = 'FCID'
 
         # Get the environmental matrix file and read the plot IDs
         # and image years into a dictionary

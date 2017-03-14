@@ -8,7 +8,7 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
         self.vd_output_file = parameters.variable_deviation_file
-        self.id_field = parameters.summary_level + 'ID'
+        self.id_field = 'FCID'
         self.deviation_variables = parameters.deviation_variables
 
         # Create a list of prediction files - both independent and dependent

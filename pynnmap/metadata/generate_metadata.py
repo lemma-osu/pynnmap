@@ -13,13 +13,12 @@ class GenerateMetadata(object):
         model_region = 221
         buffer = 0
         model_year = 2000
-        summary_level = 'FC'
         image_source = 'N/A'
         image_version = 0.0
         dsn = 'rocky2lemma'
         
         plot_db = db.PlotDatabase(model_type, model_region, buffer,
-                                  model_year, summary_level, 
+                                  model_year,  
                                   image_source, image_version, dsn)
         
         metadata = plot_db.get_metadata_field_dictionary(table_name)

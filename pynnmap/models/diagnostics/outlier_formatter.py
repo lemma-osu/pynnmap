@@ -14,7 +14,7 @@ class OutlierFormatter(object):
 
         self.plot_db = \
             plot_database.PlotDatabase(p.model_type, p.model_region,
-                p.buffer, p.model_year, p.summary_level,
+                p.buffer, p.model_year, 
                 p.image_source, p.image_version, dsn=p.plot_dsn)
 
     def load_outliers(self, outlier_results):

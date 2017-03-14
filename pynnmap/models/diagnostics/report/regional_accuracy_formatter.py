@@ -17,7 +17,7 @@ class RegionalAccuracyFormatter(report_formatter.ReportFormatter):
         pp = parameter_parser
         self.regional_accuracy_file = pp.regional_accuracy_file
         self.stand_metadata_file = pp.stand_metadata_file
-        self.id_field = pp.summary_level + 'ID'
+        self.id_field = 'FCID'
 
         # Ensure all input files are present
         files = [self.regional_accuracy_file, self.stand_metadata_file]

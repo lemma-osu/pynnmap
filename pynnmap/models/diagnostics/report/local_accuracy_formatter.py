@@ -18,7 +18,7 @@ class LocalAccuracyFormatter(report_formatter.ReportFormatter):
         self.observed_file = pp.stand_attribute_file
         self.predicted_file = pp.independent_predicted_file
         self.stand_metadata_file = pp.stand_metadata_file
-        self.id_field = pp.summary_level + 'ID'
+        self.id_field = 'FCID'
 
         # Ensure all input files are present
         files = [self.observed_file, self.predicted_file,

@@ -4,7 +4,7 @@ import decimal
 from lxml import etree
 from lxml import objectify
 from matplotlib import mlab
-
+from urllib2 import urlopen
 
 # Exact replicate class of FormatFloat to keep four-decimal precision for
 # CSV output (mlab.rec2csv puts out full precision)
@@ -234,7 +234,7 @@ def validate_xml(xml_tree, xml_schema_file):
     None
     """
 
-    xml_schema_doc = etree.parse(xml_schema_file)
+    xml_schema_doc = etree.parse(urlopen(xml_schema_file))
     xml_schema = etree.XMLSchema(xml_schema_doc)
     xml_schema.assertValid(xml_tree)
 
