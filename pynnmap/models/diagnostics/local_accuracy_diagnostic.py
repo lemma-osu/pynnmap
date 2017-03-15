@@ -17,7 +17,7 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
                 self.predicted_file = p.independent_predicted_file
                 self.stand_metadata_file = p.stand_metadata_file
                 self.statistics_file = p.local_accuracy_file
-                self.id_field = 'FCID'
+                self.id_field = p.plot_id_field 
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
                 raise ValueError(err_msg)

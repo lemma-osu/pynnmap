@@ -313,7 +313,7 @@ class Geoprocessor(object):
 
         # Read the CSV file in to a recarray
         ra = mlab.csv2rec(attribute_file)
-        col_names = [x.upper() for x in ra.dtype.names]
+        col_names = [str(x).upper() for x in ra.dtype.names]
         ra.dtype.names = col_names
 
         # If there are fields to drop, do that now and get a new recarray

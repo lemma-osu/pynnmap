@@ -57,7 +57,7 @@ def main(parser):
     # build_vats(neighbors)
 
     # join attributes to original neighbor grids
-    attribute_join_field = 'FCID'
+    attribute_join_field = parser.plot_id_field 
     for neighbor in neighbors:
         join_attributes(neighbor, 'VALUE', parser.stand_attribute_file,
             attribute_join_field, parser.stand_metadata_file)

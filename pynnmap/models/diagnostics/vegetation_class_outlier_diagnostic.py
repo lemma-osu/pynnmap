@@ -10,7 +10,7 @@ class VegetationClassOutlierDiagnostic(vcd.VegetationClassDiagnostic):
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
         self.vegclass_outlier_file = parameters.vegclass_outlier_file
-        self.id_field = 'FCID'
+        self.id_field = parameters.plot_id_field 
 
         # Create a list of predicted files - both independent and dependent
         self.predicted_files = [

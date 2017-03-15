@@ -18,7 +18,7 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
                 self.observed_file = p.validation_attribute_file
                 self.stand_metadata_file = p.stand_metadata_file
                 self.parameter_parser = p
-                self.id_field = 'FCID'
+                self.id_field = p.plot_id_field 
 
                 # For the remainder of the files, get the values from the
                 # parameter parser, but strip off the directory information

@@ -27,7 +27,7 @@ class VeganOrdination(Ordination):
                 self.spp_file = p.species_matrix_file
                 self.env_file = p.environmental_matrix_file
                 self.variables = p.get_ordination_variable_names()
-                self.id_field = 'FCID'
+                self.id_field = p.plot_id_field
                 self.species_downweighting = p.species_downweighting
                 self.species_transform = p.species_transform
                 self.ord_file = p.get_ordination_file()
@@ -100,7 +100,7 @@ class NumpyOrdination(Ordination):
                 self.spp_file = p.species_matrix_file
                 self.env_file = p.environmental_matrix_file
                 self.variables = p.get_ordination_variable_names()
-                self.id_field = 'FCID'
+                self.id_field = p.plot_id_field
                 self.species_downweighting = p.species_downweighting
                 self.species_transform = p.species_transform
                 self.ord_file = p.get_ordination_file()

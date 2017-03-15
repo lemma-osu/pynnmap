@@ -332,6 +332,10 @@ class XMLParameterParser(xml_parser.XMLParser,
         return str(self.fl_elem.web_dsn)
 
     @property
+    def plot_id_field(self):
+        return str(self.fl_elem.plot_id_field)
+
+    @property
     def coordinate_file(self):
         return os.path.normpath(str(self.fl_elem.coordinate_file))
 

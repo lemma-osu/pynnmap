@@ -161,7 +161,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         p = self.parameter_parser
 
         # ID field
-        id_field = 'FCID'
+        id_field = p.plot_id_field 
 
         # Root directory for Riemann files
         root_dir = p.riemann_output_folder

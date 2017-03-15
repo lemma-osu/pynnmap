@@ -28,6 +28,7 @@ class VegclassVarietyFormatter(OutlierFormatter):
         #set values for constant fields
         rule_id = 'VC_VARIETY'
         variable_filter = p.get_spatial_filter()
+        id_field = p.plot_id_field
         observed_value = 0.0
         predicted_value = 0.0
         vc_outlier_type = ''
@@ -35,7 +36,7 @@ class VegclassVarietyFormatter(OutlierFormatter):
 
         #loop thru outlier rows and add to DB
         for row in outlier_results:
-            self.plot_db.load_outlier(row['FCID'], rule_id,
+            self.plot_db.load_outlier(row[id_field], rule_id,
                                       row['PREDICTION_TYPE'],
                                       variable_filter,
                                       observed_value, predicted_value,
@@ -49,11 +50,12 @@ class VegclassOutlierFormatter(OutlierFormatter):
         #set values for constant fields
         rule_id = 'VC_OUTLIER'
         variable_filter = p.get_spatial_filter()
+        id_field = p.plot_id_field
         average_position = 0.0
 
         #loop thru outlier rows and add to DB
         for row in outlier_results:
-            self.plot_db.load_outlier(row['FCID'], rule_id,
+            self.plot_db.load_outlier(row[id_field], rule_id,
                                       row['PREDICTION_TYPE'],
                                       variable_filter,
                                       row['OBSERVED_VEGCLASS'],
@@ -70,13 +72,14 @@ class NNIndexFormatter(OutlierFormatter):
         rule_id = 'NN_INDEX'
         prediction_type = 'DEPENDENT'
         variable_filter = p.get_spatial_filter()
+        id_field = p.plot_id_field
         observed_value = 0.0
         predicted_value = 0.0
         vc_outlier_type = ''
 
         #loop thru outlier rows and add to DB
         for row in outlier_results:
-            self.plot_db.load_outlier(row['FCID'], rule_id,
+            self.plot_db.load_outlier(row[id_field], rule_id,
                                       prediction_type,
                                       variable_filter,
                                       observed_value, predicted_value,

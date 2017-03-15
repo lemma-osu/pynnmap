@@ -23,7 +23,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 self.area_estimate_file = p.area_estimate_file
                 self.stand_attribute_file = p.stand_attribute_file
                 self.stand_metadata_file = p.stand_metadata_file
-                self.id_field = 'FCID'
+                self.id_field = p.plot_id_field 
                 self.statistics_file = p.regional_accuracy_file
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
