@@ -61,7 +61,7 @@ class ModelSetup(object):
         if p.parameter_set == 'FULL':
             self.plot_db = \
                 plot_database.PlotDatabase(p.model_type, p.model_region,
-                    p.buffer, p.model_year, p.summary_level,
+                    p.buffer, p.model_year, 
                     p.image_source, p.image_version, dsn=p.plot_dsn)
 
     def create_species_plot_count_file(self):
@@ -545,7 +545,7 @@ class ModelSetup(object):
         # Create nonforest and nonsampled records to be concatenated with the
         # existing area_estimate_table recarray.  The nonforest record
         # has an ID of -10001 and the nonsampled record has an ID of -10002
-        id_field = p.summary_level + 'ID'
+        id_field = p.plot_id_field
         new_recs = np.recarray(2, dtype=area_estimate_table.dtype)
         for f in new_recs.dtype.names:
             for rec in new_recs:
@@ -801,6 +801,18 @@ def main():
 
     options = (parser.parse_args())[0]
 
+    # If root directory is specified on command line, use it
+    # Otherwise, parse the model_xml file and construct the path from the
+    # project parameter
+    if options.root_directory:
+        project_dir = options.root_directory
+    else:
+        p = ppf.get_parameter_parser(model_xml)
+        project_dir = 'L:/orcawa/%s/models' % (p.model_project.lower())
+
+    iv = options.image_version
+    ms = options.model_specs
+
     # if optional arguments were supplied, loop through all years and
     # model regions specified
     if options.model_regions:
@@ -838,13 +850,8 @@ def main():
                     #convert to ints
                     year_list = map(int, year_list)
 
-                # We need to parse the model_xml file here because we need
-                # to know the project associated with this run
-                p = ppf.get_parameter_parser(model_xml)
-
-                root_dir = 'L:/orcawa/%s/models/mr%d/%s/%s' % (
-                    p.model_project.lower(), region, options.image_version,
-                        options.model_specs)
+                root_dir = 'mr%d/%s/%s' % (region, iv, ms)
+                root_dir = '/'.join((project_dir, root_dir))
 
                 # if run_mode option is not specified, default to spatial
                 # mode and do not modify root directory

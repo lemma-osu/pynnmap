@@ -1,7 +1,9 @@
+.idea
 build
 dist
 *.egg-info
 *.pyc
+*.swp
 
 # For now, ignore docs
 docs

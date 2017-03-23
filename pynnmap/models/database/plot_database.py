@@ -6,7 +6,7 @@ from models.misc import utilities
 class PlotDatabase(db.Database):
 
     def __init__(self, model_type, model_region, buffer,
-                 model_year, summary_level, image_source,
+                 model_year, image_source,
                  image_version, dsn='rocky2lemma'):
         """
         Initializes a ModelDatabase instance and sets up the metadata for
@@ -22,8 +22,6 @@ class PlotDatabase(db.Database):
             indicates whether model covers MR buffer
         model_year : int
             modeling year
-        summary_level : str
-            Summary level for scaling plot data (PNT, CC, FC, or PLT)
         image_source : str
             source of imagery (i.e. LARSE, RSAC)
         image_version : float
@@ -40,7 +38,6 @@ class PlotDatabase(db.Database):
         self.model_region = model_region
         self.buffer = buffer
         self.model_year = model_year
-        self.summary_level = summary_level
         self.image_source = image_source
         self.image_version = image_version
         self.dsn = dsn
@@ -115,14 +112,13 @@ class PlotDatabase(db.Database):
 
         sql = """
             EXEC lemma.GET_MODEL_ATTRIBUTES
-            @ids = '%s',
-            @summary_level = '%s',
+            @fcids = '%s',
             @model_region = %d,
             @model_type = '%s'
         """
 
         sql = sql % (
-            id_str, self.summary_level, self.model_region, self.model_type)
+            id_str, self.model_region, self.model_type)
         (records, descr) = self.get_data(sql)
         stand_attribute_data = utilities.pyodbc2rec(records, descr)
         return stand_attribute_data
@@ -147,14 +143,13 @@ class PlotDatabase(db.Database):
         Returns
         -------
         env_matrix: numpy.recarray
-            **ID: unique plot identifier as specified by summary_level
+            **ID: unique plot identifier 
             ordination variables (names correspond to spatial_vars list)
         """
 
         sql = """
             EXEC lemma.GET_ENVIRONMENTAL_MATRIX
-              @ids = '%s',
-              @summary_level = '%s',
+              @fcids = '%s',
               @model_region = %d,
               @model_type = '%s',
               @plot_years = '%s',
@@ -163,7 +158,7 @@ class PlotDatabase(db.Database):
               @image_version = %f,
               @spatial_vars = '%s'
         """
-        sql = sql % (id_str, self.summary_level, self.model_region,
+        sql = sql % (id_str, self.model_region,
                      self.model_type, plot_years, image_years,
                      self.image_source, self.image_version, spatial_vars)
         records, descr = self.get_data(sql)
@@ -220,14 +215,13 @@ class PlotDatabase(db.Database):
                 @model_region = %d,
                 @model_type = '%s',
                 @model_year = %d,
-                @summary_level = '%s',
                 @plot_years = '%s',
                 @image_years = '%s',
                 @image_source = '%s',
                 @image_version = %f
         """
         sql = sql % (self.model_region, self.model_type,
-                     comparison_year, self.summary_level,
+                     comparison_year, 
                      plot_years, image_years, self.image_source,
                      self.image_version)
         records, descr = self.get_data(sql)
@@ -474,9 +468,7 @@ class PlotDatabase(db.Database):
         Parameters
         ----------
         ids : str
-            comma-delimited list of IDs for plots to include
-            (should be PNTID, CCID, FCID or PLTID depending on
-            self.summary_level)
+            comma-delimited list of FCIDs for plots to include
 
         Returns
         -------
@@ -486,10 +478,9 @@ class PlotDatabase(db.Database):
 
         sql = """
             EXEC lemma.GET_PLOT_DATA_SOURCE_SUMMARY
-            @ids = '%s',
-            @summary_level = '%s'
+            @fcids = '%s'
         """
-        sql = sql % (ids, self.summary_level)
+        sql = sql % (ids)
         (records, descr) = self.get_data(sql)
         plot_data_sources = utilities.pyodbc2rec(records, descr)
         return plot_data_sources
@@ -554,8 +545,7 @@ class PlotDatabase(db.Database):
         Returns
         -------
         id_str: str
-            Comma-delimited string of integer IDs corresponding to PNTID,
-            CCID, FCID or PLTID as specified by summary_level param
+            Comma-delimited string of integer FCIDs
         """
 
         # lemma.GET_PLOT_LIST is the regular proc to call
@@ -564,7 +554,6 @@ class PlotDatabase(db.Database):
         # between 1000-2000 (1000 <= TC1 <= 2000)
         sql = """
             EXEC lemma.GET_PLOT_LIST
-              @summary_level = '%s',
               @model_region = %d,
               @model_year = %d,
               @model_type = '%s',
@@ -578,12 +567,12 @@ class PlotDatabase(db.Database):
               @image_source = '%s',
               @image_version = %f
         """
-        sql = sql % (self.summary_level, self.model_region, self.model_year,
+        sql = sql % (self.model_region, self.model_year,
             self.model_type, self.buffer, coincident_plots, lump_table,
             plot_types, exclusion_codes, plot_years, image_years,
             self.image_source, self.image_version)
         (id_table, descr) = self.get_data(sql)
-        id_str = ','.join([str(x.ID) for x in id_table])
+        id_str = ','.join([str(x.FCID) for x in id_table])
         return id_str
 
     def get_plot_years(self):
@@ -621,13 +610,12 @@ class PlotDatabase(db.Database):
 
         sql = """
         EXEC lemma.GET_SPECIES_NAMES
-            @ids = '%s',
-            @summary_level = '%s',
+            @fcids = '%s',
             @model_type = '%s',
             @lump_table = %d
         """
 
-        sql = sql % (id_str, self.summary_level, self.model_type, lump_table)
+        sql = sql % (id_str, self.model_type, lump_table)
         (records, descr) = self.get_data(sql)
         species_info = utilities.pyodbc2rec(records, descr)
         return species_info
@@ -654,21 +642,20 @@ class PlotDatabase(db.Database):
         Returns
         -------
         species_matrix: numpy.recarray
-            **ID: unique plot identifier as specified by summary_level
+            **ID: unique plot identifier (FCID)
             species abundance (names differ by which species occur in
                 model region)
         """
 
         sql = """
             EXEC lemma.GET_SPECIES_MATRIX
-              @ids = '%s',
-              @summary_level = '%s',
+              @fcids = '%s',
               @model_region = %d,
               @model_type = '%s',
               @purpose = '%s',
               @lump_table = %d
         """
-        sql = sql % (id_str, self.summary_level, self.model_region,
+        sql = sql % (id_str, self.model_region,
                      self.model_type, purpose, lump_table)
         (records, descr) = self.get_data(sql)
         species_matrix = utilities.pyodbc2rec(records, descr)
@@ -698,13 +685,12 @@ class PlotDatabase(db.Database):
     def get_species_plot_counts(self, id_str):
         sql = """
             EXEC lemma.GET_SPECIES_PLOT_COUNTS
-              @ids = '%s',
-              @summary_level = '%s',
+              @fcids = '%s',
               @model_region = %d,
               @model_type = '%s'
         """
 
-        sql = sql % (id_str, self.summary_level,
+        sql = sql % (id_str, 
                      self.model_region, self.model_type)
 
         records, descr = self.get_data(sql)
@@ -753,10 +739,9 @@ class PlotDatabase(db.Database):
 
         sql = """
             EXEC lemma.GET_STRUCTURE_TABLE_NAME
-                @model_type = '%s',
-                @summary_level = '%s'
+                @model_type = '%s'
         """
-        sql = sql % (self.model_type, self.summary_level)
+        sql = sql % (self.model_type)
         records, descr = self.get_data(sql)
         table_name = records[0][0]
         return table_name
@@ -780,11 +765,10 @@ class PlotDatabase(db.Database):
         sql = """
             EXEC lemma.GET_STRUCTURE_METADATA_FIELDS
                 @model_type = '%s',
-                @summary_level = '%s',
                 @model_region = %d,
                 @project_id = '%s'
         """
-        sql = sql % (self.model_type, self.summary_level, \
+        sql = sql % (self.model_type, \
                      self.model_region, project_id)
         records, descr = self.get_data(sql)
         metadata_fields = utilities.pyodbc2rec(records, descr)
@@ -804,11 +788,10 @@ class PlotDatabase(db.Database):
 
         sql = """
             EXEC lemma.GET_VALIDATION_ATTRIBUTES
-                @summary_level = '%s',
                 @model_region = %d,
                 @model_type = '%s'
         """
-        sql = sql % (self.summary_level, self.model_region, self.model_type)
+        sql = sql % (self.model_region, self.model_type)
         records, descr = self.get_data(sql)
         validation_attributes = utilities.pyodbc2rec(records, descr)
         return validation_attributes

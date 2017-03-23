@@ -22,7 +22,7 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
                 self.vegclass_file = p.vegclass_file
                 self.vegclass_kappa_file = p.vegclass_kappa_file
                 self.vegclass_errmatrix_file = p.vegclass_errmatrix_file
-                self.id_field = p.summary_level + 'ID'
+                self.id_field = p.plot_id_field 
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
                 raise ValueError(err_msg)

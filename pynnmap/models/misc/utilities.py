@@ -4,7 +4,7 @@ import decimal
 from lxml import etree
 from lxml import objectify
 from matplotlib import mlab
-
+from urllib2 import urlopen
 
 # Exact replicate class of FormatFloat to keep four-decimal precision for
 # CSV output (mlab.rec2csv puts out full precision)
@@ -62,7 +62,7 @@ def csv2rec(csv_file, upper_case_field_names=True, **kwargs):
         raise IOError(err_msg)
 
     if upper_case_field_names:
-        names = [x.upper() for x in records.dtype.names]
+        names = [str(x).upper() for x in records.dtype.names]
         records.dtype.names = names
     return records
 
@@ -152,7 +152,7 @@ def pyodbc2rec(records, description):
     # correct numpy data type based on the length of the pyodbc type
     dtype = []
     for x in description:
-        field_name = x[0]
+        field_name = str(x[0]).upper()
         type_code = x[1]
         size = x[3]
         try:
@@ -209,8 +209,6 @@ def pyodbc2rec(records, description):
     # Convert from pyodbc to numpy recarray and return
     try:
         recarray = numpy.rec.fromrecords(new_records, dtype=dtype)
-        names = [x.upper() for x in recarray.dtype.names]
-        recarray.dtype.names = names
     except:
         err_msg = 'Error converting pyodbc cursor to numpy recarray'
         raise Exception(err_msg)
@@ -234,7 +232,7 @@ def validate_xml(xml_tree, xml_schema_file):
     None
     """
 
-    xml_schema_doc = etree.parse(xml_schema_file)
+    xml_schema_doc = etree.parse(urlopen(xml_schema_file))
     xml_schema = etree.XMLSchema(xml_schema_doc)
     xml_schema.assertValid(xml_tree)
 

@@ -147,7 +147,7 @@ class XMLParameterParser(xml_parser.XMLParser,
         # can come from the prototype
         plot_db = \
             plot_database.PlotDatabase(self.model_type, obj.model_region,
-                self.buffer, obj.model_year, self.summary_level,
+                self.buffer, obj.model_year, 
                 self.image_source, self.image_version, dsn=self.plot_dsn)
 
         # Model boundary_raster and region extent
@@ -330,6 +330,10 @@ class XMLParameterParser(xml_parser.XMLParser,
     @property
     def web_dsn(self):
         return str(self.fl_elem.web_dsn)
+
+    @property
+    def plot_id_field(self):
+        return str(self.fl_elem.plot_id_field)
 
     @property
     def coordinate_file(self):
@@ -558,10 +562,6 @@ class XMLParameterParser(xml_parser.XMLParser,
     @property
     def coincident_plots(self):
         return int(self.mp_elem.coincident_plots)
-
-    @property
-    def summary_level(self):
-        return str(self.mp_elem.summary_level)
 
     @property
     def lump_table(self):
