@@ -25,14 +25,15 @@ class ClassificationAccuracyTest(unittest.TestCase):
     def test_errmat(self):
         obs_data = self.data.OBSERVED
         prd_data = self.data.PREDICTED
-        ca.print_error_matrix_file(obs_data, prd_data, self.classifier,
-            'e.csv')
+        ca.print_error_matrix_file(
+            obs_data, prd_data, self.classifier, 'e.csv')
         self.assertTrue(filecmp.cmp(self.e_ref, 'e.csv'))
         os.remove('e.csv')
 
     def test_full(self):
-        ca.classification_accuracy(self.data_fn, self.classifier_fn, 'k.csv',
-            'e.csv', 'OBSERVED', 'PREDICTED')
+        ca.classification_accuracy(
+            self.data_fn, self.classifier_fn, 'k.csv', 'e.csv', 'OBSERVED',
+            'PREDICTED')
         self.assertTrue(filecmp.cmp(self.k_ref, 'k.csv'))
         self.assertTrue(filecmp.cmp(self.e_ref, 'e.csv'))
         os.remove('k.csv')

@@ -1,5 +1,6 @@
-import numpy as np
 import math
+
+import numpy as np
 
 
 class NumpyCCA(object):
@@ -133,8 +134,8 @@ class NumpyCCA(object):
         """
         xi = self.site_lc_scores()
         uk = self.species_centroids()
-        xiuk = np.zeros((uk.shape[0], xi.shape[0], xi.shape[1]),
-            dtype=np.float64)
+        xiuk = np.zeros(
+            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64)
         for (i, s) in enumerate(uk):
             xiuk[i] = xi - s
         y = self.X.T
@@ -294,8 +295,8 @@ class NumpyRDA(object):
         """
         xi = self.site_lc_scores()
         uk = self.species_centroids()
-        xiuk = np.zeros((uk.shape[0], xi.shape[0], xi.shape[1]),
-            dtype=np.float64)
+        xiuk = np.zeros(
+            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64)
         for (i, s) in enumerate(uk):
             xiuk[i] = xi - s
         y = self.X.T

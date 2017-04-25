@@ -1,5 +1,7 @@
-import numpy as np
 import re
+
+import numpy as np
+
 from pynnmap.misc import interval_classification as ic
 
 # Module level enumerations
@@ -77,8 +79,8 @@ class ContinuousHistogramBC(HistogramBC):
     def __init__(self, bin_counts, bin_endpoints, name="SERIES"):
 
         # Call the HistogramBC constructor first
-        super(ContinuousHistogramBC, self).__init__(bin_counts,
-            bin_endpoints, name)
+        super(ContinuousHistogramBC, self).__init__(
+            bin_counts, bin_endpoints, name)
 
         # Create class labels from the endpoints of the bins
         self.bin_names = []
@@ -94,7 +96,6 @@ class ContinuousHistogramBC(HistogramBC):
             bn = '-'.join((first, second))
             bn = ''.join(re.split('\+0+', bn))
             self.bin_names.append(bn)
-                
 
 
 class CategoricalHistogramBC(HistogramBC):
@@ -107,8 +108,8 @@ class CategoricalHistogramBC(HistogramBC):
     def __init__(self, bin_counts, bin_endpoints, bin_names, name="SERIES"):
 
         # Call the HistogramBC constructor first
-        super(CategoricalHistogramBC, self).__init__(bin_counts,
-            bin_endpoints, name)
+        super(CategoricalHistogramBC, self).__init__(
+            bin_counts, bin_endpoints, name)
 
         # Create class labels from the passed argument
         self.bin_names = list(bin_names)
@@ -151,8 +152,8 @@ def bin_continuous(datasets, bin_type=EQUAL_INTERVAL, bins=10):
     for ds in datasets:
 
         # Create the histogram using the classified endpoints
-        counts, endpoints = np.histogram(ds.values, bins=classifier.edges,
-            weights=ds.weights)
+        counts, endpoints = np.histogram(
+            ds.values, bins=classifier.edges, weights=ds.weights)
 
         # Create a new ContinuousHistogramBC instance and append
         # to histogram_data
@@ -232,8 +233,8 @@ def bin_categorical(datasets, class_names=None):
         enum_data = np.array([class_mapped[x] for x in ds.values])
 
         # Bin the data using the unique enumeration values
-        counts, endpoints = np.histogramdd(enum_data, bins=[class_values],
-            weights=ds.weights)
+        counts, endpoints = np.histogramdd(
+            enum_data, bins=[class_values], weights=ds.weights)
 
         # Create a new CategoricalHistogramBC instance and append
         # to histogram_data

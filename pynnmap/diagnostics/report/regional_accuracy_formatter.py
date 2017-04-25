@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 from reportlab import platypus as p
 from reportlab.lib import colors
@@ -17,7 +18,7 @@ class RegionalAccuracyFormatter(report_formatter.ReportFormatter):
         pp = parameter_parser
         self.regional_accuracy_file = pp.regional_accuracy_file
         self.stand_metadata_file = pp.stand_metadata_file
-        self.id_field = pp.plot_id_field 
+        self.id_field = pp.plot_id_field
 
         # Ensure all input files are present
         files = [self.regional_accuracy_file, self.stand_metadata_file]
@@ -86,7 +87,8 @@ class RegionalAccuracyFormatter(report_formatter.ReportFormatter):
             output_file = attr.lower() + '_histogram.png'
 
             # Create the histogram
-            mplf.draw_histogram([obs_area, prd_area], bin_names, metadata,
+            mplf.draw_histogram(
+                [obs_area, prd_area], bin_names, metadata,
                 output_type=mplf.FILE, output_file=output_file)
 
             # Add this to the list of histogram files

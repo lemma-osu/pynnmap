@@ -1,5 +1,6 @@
 import locale
 from datetime import datetime
+
 from reportlab import platypus as p
 from reportlab.lib import colors
 from reportlab.lib import units as u
@@ -78,8 +79,8 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
         # Image and flowable to hold MR image and region description
         substory = []
         mr_image_path = rmp.image_path
-        image = p.Image(mr_image_path, 3.0 * u.inch, 3.86 * u.inch,
-             mask='auto')
+        image = p.Image(
+            mr_image_path, 3.0 * u.inch, 3.86 * u.inch, mask='auto')
 
         para = p.Paragraph('Overview', styles['heading_style'])
         substory.append(para)
@@ -87,8 +88,8 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
         para = p.Paragraph(overview, styles['body_style'])
         substory.append(para)
 
-        image_flowable = p.ImageAndFlowables(image, substory, imageSide='left',
-            imageRightPadding=6)
+        image_flowable = p.ImageAndFlowables(
+            image, substory, imageSide='left', imageRightPadding=6)
 
         story.append(image_flowable)
         story.append(p.Spacer(0.0, 0.2 * u.inch))
@@ -175,7 +176,7 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
 
         # Plot matching
         if self.model_type == 'sppsz':
-            plot_title = ''' 
+            plot_title = '''
                 <strong>Matching Plots to Imagery for Model Development:
                 </strong>
             '''
@@ -194,7 +195,7 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
                 imputation for a given map year to only one plot from each
                 location -- the plot nearest in date to the imagery (map)
                 year. See Ohmann et al. (in press) for more detailed
-                information about the GNN modeling process. 
+                information about the GNN modeling process.
             """
             para = p.Paragraph(imagery_str, styles['body_style'])
             story.append(para)
@@ -272,12 +273,12 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
         plot_table = []
 
         # Create the header row
-        p1 = p.Paragraph('<strong>Data Source</strong>',
-            styles['contact_style'])
-        p2 = p.Paragraph('<strong>Description</strong>',
-            styles['contact_style'])
-        p3 = p.Paragraph('<strong>Plot Count by Year</strong>',
-            styles['contact_style'])
+        p1 = p.Paragraph(
+            '<strong>Data Source</strong>', styles['contact_style'])
+        p2 = p.Paragraph(
+            '<strong>Description</strong>', styles['contact_style'])
+        p3 = p.Paragraph(
+            '<strong>Plot Count by Year</strong>', styles['contact_style'])
         plot_table.append([p1, p2, p3])
 
         # Iterate over all data sources
@@ -321,8 +322,8 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
                     pc_row = []
                     para = p.Paragraph(year, styles['contact_style_right'])
                     pc_row.append(para)
-                    para = p.Paragraph(plot_count,
-                        styles['contact_style_right'])
+                    para = p.Paragraph(
+                        plot_count, styles['contact_style_right'])
                     pc_row.append(para)
                     pc_table.append(pc_row)
 
@@ -353,8 +354,8 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
         plot_table.append(['', p1, p2])
 
         # Format the table into reportlab
-        t = p.Table(plot_table,
-            colWidths=[1.3 * u.inch, 4.2 * u.inch, 1.3 * u.inch])
+        t = p.Table(
+            plot_table, colWidths=[1.3 * u.inch, 4.2 * u.inch, 1.3 * u.inch])
         t.hAlign = 'LEFT'
         t.setStyle(
             p.TableStyle([
@@ -414,12 +415,12 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
         ordination_table = []
 
         # Create the header row
-        p1 = p.Paragraph('<strong>Variable</strong>',
-            styles['contact_style'])
-        p2 = p.Paragraph('<strong>Description</strong>',
-            styles['contact_style'])
-        p3 = p.Paragraph('<strong>Data Source</strong>',
-            styles['contact_style'])
+        p1 = p.Paragraph(
+            '<strong>Variable</strong>', styles['contact_style'])
+        p2 = p.Paragraph(
+            '<strong>Description</strong>', styles['contact_style'])
+        p3 = p.Paragraph(
+            '<strong>Data Source</strong>', styles['contact_style'])
         ordination_table.append([p1, p2, p3])
 
         # Read in the ordination variable list and, for each variable,
@@ -431,7 +432,8 @@ class IntroductionFormatter(report_formatter.ReportFormatter):
             ordination_table.append([name, desc, source])
 
         # Create a reportlab table from this list
-        t = p.Table(ordination_table,
+        t = p.Table(
+            ordination_table,
             colWidths=[1.0 * u.inch, 2.3 * u.inch, 3.5 * u.inch])
         t.hAlign = 'LEFT'
         t.setStyle(

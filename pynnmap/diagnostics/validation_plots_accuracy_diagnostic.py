@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 
 from pynnmap.core import prediction_run
@@ -18,7 +19,7 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
                 self.observed_file = p.validation_attribute_file
                 self.stand_metadata_file = p.stand_metadata_file
                 self.parameter_parser = p
-                self.id_field = p.plot_id_field 
+                self.id_field = p.plot_id_field
 
                 # For the remainder of the files, get the values from the
                 # parameter parser, but strip off the directory information
@@ -76,8 +77,8 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
         # Retrieve the predicted data for these plots.  In essence, we can
         # retrieve the dependent neighbors because these plot IDs are
         # guaranteed not to be in the model
-        prediction_generator = pr.calculate_predictions_at_k(k=p.k,
-            id_field=self.id_field, independent=False)
+        prediction_generator = pr.calculate_predictions_at_k(
+            k=p.k, id_field=self.id_field, independent=False)
 
         # Open the predicted file and write out the field names
         out_fh = open(self.predicted_file, 'w')

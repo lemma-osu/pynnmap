@@ -1,9 +1,9 @@
+from reportlab import platypus as p
 from reportlab import rl_config
 from reportlab.lib import styles, enums, fonts, pagesizes, colors
+from reportlab.lib import units as u
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib import units as u
-from reportlab import platypus as p
 from reportlab.pdfgen import canvas
 
 
@@ -218,8 +218,9 @@ def landscape(canvas, doc):
 
 class GnnDocTemplate(p.BaseDocTemplate):
 
-    def build(self, flowables, onTitle=_doNothing, onPortrait=_doNothing,
-        onLandscape=_doNothing, canvasmaker=canvas.Canvas):
+    def build(
+            self, flowables, onTitle=_doNothing, onPortrait=_doNothing,
+            onLandscape=_doNothing, canvasmaker=canvas.Canvas):
 
         # Force the pagesize to be a letter
         self.pagesize = [8.5 * u.inch, 11.0 * u.inch]
@@ -229,12 +230,14 @@ class GnnDocTemplate(p.BaseDocTemplate):
 
         # Portrait frame
         framePortrait = \
-            p.Frame(self.leftMargin, self.bottomMargin,
-                self.width, self.height, id='portraitFrame')
+            p.Frame(
+                self.leftMargin, self.bottomMargin, self.width, self.height,
+                id='portraitFrame')
 
         # Landscape frame
         frameLandscape = \
-            p.Frame(0.75 * u.inch, 0.5 * u.inch, 9.5 * u.inch, 7.4 * u.inch,
+            p.Frame(
+                0.75 * u.inch, 0.5 * u.inch, 9.5 * u.inch, 7.4 * u.inch,
                 id='landscapeFrame')
 
         # Add page templates to this document template

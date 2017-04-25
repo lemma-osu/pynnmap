@@ -1,4 +1,5 @@
 import numpy as np
+
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import utilities
 
@@ -9,7 +10,7 @@ class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
         self.nn_index_file = parameters.dependent_nn_index_file
         self.nn_index_outlier_file = parameters.nn_index_outlier_file
         self.index_threshold = parameters.index_threshold
-        self.id_field = parameters.plot_id_field 
+        self.id_field = parameters.plot_id_field
 
         # Ensure all input files are present
         files = [

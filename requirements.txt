@@ -1,0 +1,8 @@
+impute==0.0.1
+lxml==3.7.3
+matplotlib==2.0.0
+numpy==1.12.1+mkl
+pyodbc==4.0.16
+reportlab==3.4.0
+rpy2==2.7.8
+scipy==0.19.0

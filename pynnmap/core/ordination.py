@@ -5,6 +5,8 @@ from pynnmap.misc import numpy_ordination
 from pynnmap.misc import utilities
 from pynnmap.parser import parameter_parser as pp
 
+VEGAN_SCRIPT = 'L:/resources/code/models/pre_process/gnn_vegan.r'
+
 
 class Ordination(object):
     def __init__(self):
@@ -49,7 +51,6 @@ class VeganOrdination(Ordination):
 
     def run(self):
         from rpy2 import robjects
-        VEGAN_SCRIPT = 'L:/resources/code/models/pre_process/gnn_vegan.r'
 
         # Source the gnn_vegan R file
         robjects.r.source(VEGAN_SCRIPT)
@@ -58,9 +59,10 @@ class VeganOrdination(Ordination):
         var_vector = robjects.StrVector(self.variables)
 
         # Create the vegan file
-        robjects.r.write_vegan(self.method, self.spp_file, self.env_file,
-            var_vector, self.id_field, self.species_transform,
-            self.species_downweighting, self.ord_file)
+        robjects.r.write_vegan(
+            self.method, self.spp_file, self.env_file, var_vector,
+            self.id_field, self.species_transform, self.species_downweighting,
+            self.ord_file)
 
 
 class VeganCCAOrdination(VeganOrdination):
@@ -219,8 +221,8 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('SPECIES,WEIGHT,N2\n')
         species_weights, species_n2 = cca.species_information()
         for i in xrange(len(species_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (spp_ra.dtype.names[i],
-                species_weights[i], species_n2[i]))
+            numpy_fh.write('%s,%.10f,%.10f\n' % (
+                spp_ra.dtype.names[i], species_weights[i], species_n2[i]))
         numpy_fh.write('\n')
 
         # Print out site LC scores
@@ -246,8 +248,8 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('ID,WEIGHT,N2\n')
         site_weights, site_n2 = cca.site_information()
         for i in xrange(len(site_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (spp_plot_ids[i],
-                site_weights[i], site_n2[i]))
+            numpy_fh.write('%s,%.10f,%.10f\n' % (
+                spp_plot_ids[i], site_weights[i], site_n2[i]))
 
         # Close the file
         numpy_fh.close()
@@ -347,8 +349,8 @@ class NumpyRDAOrdination(NumpyOrdination):
         numpy_fh.write('SPECIES,WEIGHT,N2\n')
         species_weights, species_n2 = cca.species_information()
         for i in xrange(len(species_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (spp_ra.dtype.names[i],
-                species_weights[i], species_n2[i]))
+            numpy_fh.write('%s,%.10f,%.10f\n' % (
+                spp_ra.dtype.names[i], species_weights[i], species_n2[i]))
         numpy_fh.write('\n')
 
         # Print out site LC scores
@@ -374,8 +376,8 @@ class NumpyRDAOrdination(NumpyOrdination):
         numpy_fh.write('ID,WEIGHT,N2\n')
         site_weights, site_n2 = cca.site_information()
         for i in xrange(len(site_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (spp_plot_ids[i],
-                site_weights[i], site_n2[i]))
+            numpy_fh.write('%s,%.10f,%.10f\n' % (
+                spp_plot_ids[i], site_weights[i], site_n2[i]))
 
         # Close the file
         numpy_fh.close()

@@ -1,4 +1,5 @@
 import copy
+
 import numpy as np
 from osgeo import gdal, gdalconst
 
@@ -7,6 +8,9 @@ from pynnmap.misc import footprint
 from pynnmap.misc import utilities
 from pynnmap.ordination_parser import lemma_ordination_parser
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
+
+# Minimum distance constant
+MIN_DIST = 0.000000000001
 
 
 class NNPixel(object):
@@ -18,8 +22,8 @@ class NNPixel(object):
 
 class NNFootprint(object):
 
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, id_val):
+        self.id = id_val
         self.pixels = []
 
     def append(self, pixel):
@@ -31,12 +35,13 @@ class PixelPrediction(object):
     Class to hold a given pixel's prediction including neighbor IDs, distances
     and predicted values for each continuous attribute.
     """
-
-    def __init__(self, id, pixel_number, k):
-        self.id = id
+    def __init__(self, id_val, pixel_number, k):
+        self.id = id_val
         self.pixel_number = pixel_number
         self.k = k
         self._predicted_attr = {}
+        self.neighbors = None
+        self.distances = None
 
     def neighbors(self, neighbors):
         self.neighbors = neighbors
@@ -56,7 +61,7 @@ class PredictionOutput(object):
     def __init__(self, prediction_run):
         self.prediction_run = prediction_run
         self.parameter_parser = prediction_run.parameter_parser
-        self.id_field = self.parameter_parser.plot_id_field 
+        self.id_field = self.parameter_parser.plot_id_field
 
     def open_prediction_files(self, zonal_pixel_file, predicted_file):
         """
@@ -96,7 +101,7 @@ class PredictionOutput(object):
         predicted_fh = open(predicted_file, 'w')
         predicted_fh.write(self.id_field + ',' + ','.join(pr.attrs) + '\n')
 
-        return (zonal_pixel_fh, predicted_fh)
+        return zonal_pixel_fh, predicted_fh
 
 
 class PredictionRun(object):
@@ -117,15 +122,10 @@ class PredictionRun(object):
         should be called one time, after which it is stored in an instance-
         level variable along with the attribute names (self.attrs)
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         stand_attr_data : numpy recarray
             Recarray with all stand attributes
-
         attrs : list of strs
             List of all continuous variables in stand_attr_data
         """
@@ -139,10 +139,13 @@ class PredictionRun(object):
         # continuous accuracy attributes
         stand_metadata_file = p.stand_metadata_file
         mp = xsmp.XMLStandMetadataParser(stand_metadata_file)
-        attrs = [x.field_name for x in mp.attributes
-            if x.field_type == 'CONTINUOUS' and x.accuracy_attr == 1]
+        attrs = [
+            x.field_name
+            for x in mp.attributes
+            if x.field_type == 'CONTINUOUS' and x.accuracy_attr == 1
+        ]
 
-        return (stand_attr_data, attrs)
+        return stand_attr_data, attrs
 
     def get_footprint_values(self, ds, windows, band=1):
         """
@@ -153,10 +156,8 @@ class PredictionRun(object):
         ----------
         ds : gdal.Dataset
             Ordination variable from which to extract footprint windows
-
         windows : dict
             Dict of footprint IDs (keys) to window specifications (values)
-
         band : int
             Band number of ds to extract (defaults to 1)
 
@@ -182,10 +183,8 @@ class PredictionRun(object):
         window : tuple
             Window specification of upper left corner and footprint
             window size
-
         band : gdal.Band
             Band from which to extract data
-
         gt : tuple
             Geo-transform of band to go from (x, y) -> (row, col)
 
@@ -330,9 +329,9 @@ class PredictionRun(object):
         fp_dict = fp_parser.parse(fp_file)
         fp_offsets = {}
         fp_windows = {}
-        for (id, data_source, x, y) in coord_list:
-            fp_offsets[id] = fp_dict[data_source].offsets
-            fp_windows[id] = fp_dict[data_source].window((x, y))
+        for (id_val, data_source, x, y) in coord_list:
+            fp_offsets[id_val] = fp_dict[data_source].offsets
+            fp_windows[id_val] = fp_dict[data_source].window((x, y))
 
         # Extract footprint information for every ordination variable that is
         # common to all years and store in a dict keyed by ID and raster
@@ -351,12 +350,12 @@ class PredictionRun(object):
 
                 # Store these footprint values in a dictionary keyed by
                 # id and variable file name
-                for (id, fp) in fp_values.iteritems():
+                for (id_val, fp) in fp_values.iteritems():
                     try:
-                        fp_value_dict[id][fn] = fp
+                        fp_value_dict[id_val][fn] = fp
                     except KeyError:
-                        fp_value_dict[id] = {}
-                        fp_value_dict[id][fn] = fp
+                        fp_value_dict[id_val] = {}
+                        fp_value_dict[id_val][fn] = fp
 
                 # Close this dataset - no longer needed
                 raster_dict[fn][0] = None
@@ -368,8 +367,10 @@ class PredictionRun(object):
 
         # Create the imputation model based on the ordination model and the
         # imputation parameters
-        imp_model = im.ImputationModel(ord_model, n_axes=p.number_axes,
-            use_weightings=p.use_axis_weighting, max_neighbors=p.max_neighbors)
+        imp_model = im.ImputationModel(
+            ord_model, n_axes=p.number_axes,
+            use_weightings=p.use_axis_weighting, max_neighbors=p.max_neighbors
+        )
 
         # Main loop to iterate over all years
         for year in years:
@@ -393,12 +394,12 @@ class PredictionRun(object):
                     raster_dict[fn][1] = True
 
                     # Store these values
-                    for (id, fp) in fp_values.iteritems():
+                    for (id_val, fp) in fp_values.iteritems():
                         try:
-                            fp_value_dict[id][fn] = fp
-                        except:
-                            fp_value_dict[id] = {}
-                            fp_value_dict[id][fn] = fp
+                            fp_value_dict[id_val][fn] = fp
+                        except KeyError:
+                            fp_value_dict[id_val] = {}
+                            fp_value_dict[id_val][fn] = fp
 
                     # Close the dataset - no longer needed
                     raster_dict[fn][0] = None
@@ -408,7 +409,7 @@ class PredictionRun(object):
             # in this year and run the imputation for each pixel.  Output is
             # captured at the pixel scale (within zonal_pixel_dict) and
             # for each attribute at the plot scale (within predicted_dict).
-            for id in sorted(windows.keys()):
+            for id_val in sorted(windows.keys()):
 
                 # Get the footprint values for this plot
                 fp_values = []
@@ -429,7 +430,7 @@ class PredictionRun(object):
                     v = v[np.newaxis, :]
 
                     # Run the imputation
-                    nn_ids, nn_dists = imp_model.get_neighbors(v, id=id)
+                    nn_ids, nn_dists = imp_model.get_neighbors(v, id=id_val)
 
                     # Append this pixel to the NNFootprint object
                     obj.append(NNPixel(nn_ids, nn_dists))
@@ -442,10 +443,6 @@ class PredictionRun(object):
         Wrapper around get_predicted_neighbors_at_ids optimized for cross-
         validation (ie. using plots that went into model development).
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         None
@@ -455,7 +452,7 @@ class PredictionRun(object):
         p = self.parameter_parser
 
         # ID field
-        id_field = p.plot_id_field 
+        id_field = p.plot_id_field
 
         # Get the environmental matrix file and read the plot IDs
         # and image years into a dictionary
@@ -484,8 +481,8 @@ class PredictionRun(object):
         # Call the main function
         self.calculate_neighbors_at_ids(id_x_year, id_field=id_field)
 
-    def _calculate_prediction_at_id(self, id, k, nsa_id_dict, id_x_index,
-            independent):
+    def _calculate_prediction_at_id(
+            self, id_val, k, nsa_id_dict, id_x_index, independent):
         """
         Calculate model prediction for the given ID.  This method is called
         from the wrapper calculate_predictions_at_k.  See this method for
@@ -493,7 +490,7 @@ class PredictionRun(object):
 
         Parameters
         ----------
-        id : int
+        id_val : int
             The ID for which to calculate model predictions
 
         k : int
@@ -516,12 +513,13 @@ class PredictionRun(object):
         """
 
         # Get the neighbor data for this plot
-        footprint = self.neighbor_data[id]
+        fp = self.neighbor_data[id_val]
 
         # If this is an independent run, get the 'no self-assign'
         # value for this plot ID
+        plot_nsa = None
         if independent:
-            plot_nsa = nsa_id_dict[id]
+            plot_nsa = nsa_id_dict[id_val]
 
         # Alias for stand attribute data
         sad = self.stand_attr_data
@@ -530,20 +528,19 @@ class PredictionRun(object):
         # instances
         plot_prediction = []
 
-        # Minimum distance constant
-        MIN_DIST = 0.000000000001
-
         # Iterate over pixels in the footprint
-        for (pixel_number, pixel) in enumerate(footprint.pixels):
+        for (pixel_number, pixel) in enumerate(fp.pixels):
 
             # For independent neighbors, create a 'independence mask' for
             # this pixel
             if independent:
-                index_mask = np.array([False if nsa_id_dict[x] == plot_nsa
-                    else True for x in pixel.neighbors])
+                index_mask = np.array([
+                    False if nsa_id_dict[x] == plot_nsa
+                    else True for x in pixel.neighbors
+                ])
 
             # Create a PixelPrediction instance
-            pp = PixelPrediction(id, pixel_number, k)
+            pp = PixelPrediction(id_val, pixel_number, k)
 
             # Push the k neighbors and distances to the
             # PixelPrediction instance
@@ -581,8 +578,8 @@ class PredictionRun(object):
         # Return the plot_predictions dict
         return plot_prediction
 
-    def calculate_predictions_at_k(self, k=1, id_field='FCID',
-            independent=True, **kwargs):
+    def calculate_predictions_at_k(
+            self, k=1, id_field='FCID', independent=True, **kwargs):
         """
         Calculates model predictions for the given value of k at the given ID
         and yields the plot prediction back to the caller.
@@ -592,11 +589,9 @@ class PredictionRun(object):
         k : int
             The number of neighbors over which to average predicted values.
             Defaults to 1
-
         id_field : str
             Name of the ID field - should be either 'FCID' or 'PLTID'.
             Defaults to 'FCID'
-
         independent : bool
             Flag to determine whether to capture dependent or independent
             neighbors for each ID.  If independent=True, an nsa_id_dict should
@@ -621,10 +616,6 @@ class PredictionRun(object):
         plot_prediction : array of PixelPrediction objects
             The predictions for all pixels in a plot footprint
         """
-
-        # Aliases for short variable names
-        p = self.parameter_parser
-
         # If nsa_id_dict is None or the keyword is missing, create the
         # dictionary as a mapping of ID to itself for independent runs
         if independent:
@@ -649,11 +640,11 @@ class PredictionRun(object):
 
         # For every ID in pr.neighbor_data, calculate its predicted values
         # and neighbors at each pixel
-        for id in sorted(self.neighbor_data.keys()):
+        for id_val in sorted(self.neighbor_data.keys()):
 
             # Retrieve the independent predicted values
-            plot_prediction = self._calculate_prediction_at_id(id, k,
-                nsa_id_dict, id_x_index, independent)
+            plot_prediction = self._calculate_prediction_at_id(
+                id_val, k, nsa_id_dict, id_x_index, independent)
 
             # Yield this back to the caller
             yield plot_prediction
@@ -683,12 +674,12 @@ class PredictionRun(object):
         nn_index_fh.write(','.join(header_fields) + '\n')
 
         # For each ID, find how far a plot had to go for self assignment
-        for id in sorted(self.neighbor_data.keys()):
-            nn_footprint = self.neighbor_data[id]
+        for id_val in sorted(self.neighbor_data.keys()):
+            nn_footprint = self.neighbor_data[id_val]
             self_assign_indexes = []
             for nn_pixel in nn_footprint.pixels:
 
-                # Find the occurence of this ID in the neighbor list
+                # Find the occurrence of this ID in the neighbor list
                 # Because we restrict the neighbors to only the first 100,
                 # we may not find the self-assignment within those neighbors.
                 # Set it to the max value in this case
@@ -700,7 +691,7 @@ class PredictionRun(object):
 
             # Get the average index position across pixels
             average_position = np.mean(self_assign_indexes)
-            nn_index_fh.write('%d,%.4f\n' % (id, average_position))
+            nn_index_fh.write('%d,%.4f\n' % (id_val, average_position))
 
         # Clean up
         nn_index_fh.close()
@@ -734,8 +725,8 @@ class PredictionRun(object):
                     pp.distances[i],
                 ))
 
-    def write_predicted_record(self, plot_prediction, predicted_fh,
-            attrs=None):
+    def write_predicted_record(
+            self, plot_prediction, predicted_fh, attrs=None):
         """
         Write out a record to the predicted file which calculates predicted
         stand attributes for the passed plot
@@ -744,7 +735,6 @@ class PredictionRun(object):
         ----------
         plot_prediction: array of PixelPrediction objects
             Prediction information for each pixel in the passed plot
-
         predicted_fh: file
             File handle to the predicted file
 
@@ -765,8 +755,9 @@ class PredictionRun(object):
         # Print out the predicted means calculated across pixels
         means = []
         for attr in attrs:
-            values = np.array([x.get_predicted_attr(attr) for x
-                in plot_prediction])
+            values = np.array(
+                [x.get_predicted_attr(attr) for x in plot_prediction]
+            )
             means.append(values.mean())
 
         output_data = ['%d' % plot_prediction[0].id]

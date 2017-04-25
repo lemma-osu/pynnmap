@@ -1,4 +1,5 @@
 import numpy as np
+
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import utilities
 from pynnmap.misc import classification_accuracy as ca
@@ -22,7 +23,7 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
                 self.vegclass_file = p.vegclass_file
                 self.vegclass_kappa_file = p.vegclass_kappa_file
                 self.vegclass_errmatrix_file = p.vegclass_errmatrix_file
-                self.id_field = p.plot_id_field 
+                self.id_field = p.plot_id_field
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
                 raise ValueError(err_msg)
@@ -93,7 +94,8 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
                     vc = 11
         return vc
 
-    def vegclass_aa(self, obs, prd, id_field='FCID', qmd_field='QMD_DOM',
+    def vegclass_aa(
+            self, obs, prd, id_field='FCID', qmd_field='QMD_DOM',
             bah_field='BAH_PROP', cancov_field='CANCOV'):
         """
         Given observed and predicted recarrays from GNN output, this
@@ -160,6 +162,6 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
 
         # Create the vegetation class kappa and error matrix files
         vc_xml = 'L:/resources/code/xml/vegclass.xml'
-        ca.classification_accuracy(self.vegclass_file, vc_xml,
-            kappa_file=self.vegclass_kappa_file,
+        ca.classification_accuracy(
+            self.vegclass_file, vc_xml, kappa_file=self.vegclass_kappa_file,
             err_matrix_file=self.vegclass_errmatrix_file)

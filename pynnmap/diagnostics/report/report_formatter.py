@@ -1,5 +1,6 @@
-import re
 import os
+import re
+
 from reportlab import platypus as p
 
 

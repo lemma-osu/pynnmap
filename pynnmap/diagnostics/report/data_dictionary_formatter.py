@@ -101,7 +101,8 @@ class DataDictionaryFormatter(report_formatter.ReportFormatter):
                     code_table.append([code_para, code_desc_para])
 
                 # Convert this to a reportlab table
-                t = p.Table(code_table, colWidths=[0.75 * u.inch, 4.5 * u.inch])
+                t = p.Table(
+                    code_table, colWidths=[0.75 * u.inch, 4.5 * u.inch])
                 t.setStyle(
                     p.TableStyle([
                         ('TOPPADDING', (0, 0), (-1, -1), 3),

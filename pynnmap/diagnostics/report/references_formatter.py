@@ -58,7 +58,7 @@ class ReferencesFormatter(report_formatter.ReportFormatter):
             Kennedy, RE, Z Yang and WB Cohen. 2010. "Detecting trends
             in forest disturbance and recovery using yearly Landsat
             time series: 1. Landtrendr -- Temporal segmentation
-            algorithms." Remote Sensing of Environment 114(2010): 
+            algorithms." Remote Sensing of Environment 114(2010):
             2897-2910.
             ''',
             '''

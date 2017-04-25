@@ -1,4 +1,5 @@
 import numpy
+
 from pynnmap.database import database as db
 from pynnmap.misc import utilities
 
@@ -73,21 +74,21 @@ class PlotDatabase(db.Database):
         """
 
         # Forested area
-        sql = sql_base % (self.model_region, self.model_type, 'F',
-            comparison_year)
-        (records, descr) = self.get_data(sql)
+        sql = sql_base % (
+            self.model_region, self.model_type, 'F', comparison_year)
+        records, descr = self.get_data(sql)
         observed_data = utilities.pyodbc2rec(records, descr)
 
         # Nonforest area
-        sql = sql_base % (self.model_region, self.model_type, 'NF',
-            comparison_year)
-        (records, descr) = self.get_data(sql)
+        sql = sql_base % (
+            self.model_region, self.model_type, 'NF', comparison_year)
+        records, descr = self.get_data(sql)
         nf_hectares = records[0][0]
 
         # Non-sampled area
-        sql = sql_base % (self.model_region, self.model_type, 'NS',
-            comparison_year)
-        (records, descr) = self.get_data(sql)
+        sql = sql_base % (
+            self.model_region, self.model_type, 'NS', comparison_year)
+        records, descr = self.get_data(sql)
         ns_hectares = records[0][0]
 
         return observed_data, nf_hectares, ns_hectares
@@ -143,7 +144,7 @@ class PlotDatabase(db.Database):
         Returns
         -------
         env_matrix: numpy.recarray
-            **ID: unique plot identifier 
+            **ID: unique plot identifier
             ordination variables (names correspond to spatial_vars list)
         """
 
@@ -220,10 +221,9 @@ class PlotDatabase(db.Database):
                 @image_source = '%s',
                 @image_version = %f
         """
-        sql = sql % (self.model_region, self.model_type,
-                     comparison_year, 
-                     plot_years, image_years, self.image_source,
-                     self.image_version)
+        sql = sql % (
+            self.model_region, self.model_type, comparison_year, plot_years,
+            image_years, self.image_source, self.image_version)
         records, descr = self.get_data(sql)
         hex_attributes = utilities.pyodbc2rec(records, descr)
         return hex_attributes
@@ -519,8 +519,9 @@ class PlotDatabase(db.Database):
         plot_image_years = utilities.pyodbc2rec(records, descr)
         return plot_image_years
 
-    def get_plot_list(self, coincident_plots, lump_table, plot_years,
-            image_years, plot_types, exclusion_codes):
+    def get_plot_list(
+            self, coincident_plots, lump_table, plot_years, image_years,
+            plot_types, exclusion_codes):
         """
         Get a list of plot IDs that match the criteria of the parameters
 
@@ -567,11 +568,11 @@ class PlotDatabase(db.Database):
               @image_source = '%s',
               @image_version = %f
         """
-        sql = sql % (self.model_region, self.model_year,
-            self.model_type, self.buffer, coincident_plots, lump_table,
-            plot_types, exclusion_codes, plot_years, image_years,
-            self.image_source, self.image_version)
-        (id_table, descr) = self.get_data(sql)
+        sql = sql % (
+            self.model_region, self.model_year, self.model_type, self.buffer,
+            coincident_plots, lump_table, plot_types, exclusion_codes,
+            plot_years, image_years, self.image_source, self.image_version)
+        id_table, descr = self.get_data(sql)
         id_str = ','.join([str(x.FCID) for x in id_table])
         return id_str
 
@@ -690,8 +691,8 @@ class PlotDatabase(db.Database):
               @model_type = '%s'
         """
 
-        sql = sql % (id_str, 
-                     self.model_region, self.model_type)
+        sql = sql % (
+            id_str, self.model_region, self.model_type)
 
         records, descr = self.get_data(sql)
         species_plot_counts = utilities.pyodbc2rec(records, descr)
@@ -717,16 +718,12 @@ class PlotDatabase(db.Database):
             EXEC lemma.GET_SPECIES_TABLE_NAME
                 @model_type = '%s'
         """
-        sql = sql % (self.model_type)
+        sql = sql % self.model_type
         records, descr = self.get_data(sql)
-        #recarray = utilities.pyodbc2rec(records, descr)
-        #return recarray
         table_names = ''
         for x in records:
             table_names += str(x[0]) + ','
         return table_names
-        #table_names = [str(x[0]) for x in records]
-        #return numpy.array(table_names)
 
     def get_structure_table_name(self):
         """
@@ -749,11 +746,7 @@ class PlotDatabase(db.Database):
     def get_structure_metadata(self, project_id):
         """
         Get metadata for all of the structure attributes
-        
-        Parameters
-        ----------
-        None
-            
+
         Returns
         -------
             fields: numpy.recarray
@@ -768,8 +761,8 @@ class PlotDatabase(db.Database):
                 @model_region = %d,
                 @project_id = '%s'
         """
-        sql = sql % (self.model_type, \
-                     self.model_region, project_id)
+        sql = sql % (
+            self.model_type, self.model_region, project_id)
         records, descr = self.get_data(sql)
         metadata_fields = utilities.pyodbc2rec(records, descr)
 
@@ -815,8 +808,8 @@ class PlotDatabase(db.Database):
                 @model_year = %d
          """
 
-        sql = sql % (id_str, self.image_source, self.image_version,
-            self.model_year)
+        sql = sql % (
+            id_str, self.image_source, self.image_version, self.model_year)
         records, descr = self.get_data(sql)
         id_list = []
         for r in records:

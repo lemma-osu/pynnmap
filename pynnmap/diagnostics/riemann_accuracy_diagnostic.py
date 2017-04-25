@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 from matplotlib import mlab
 
@@ -143,8 +144,8 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             e.message += '\nSkipping RiemannAccuracyDiagnostic\n'
             raise e
 
-    def write_hex_stats(self, data, id_field, stat_fields, min_plots_per_hex,
-            out_file):
+    def write_hex_stats(
+            self, data, id_field, stat_fields, min_plots_per_hex, out_file):
 
         # Summarize the observed output
         stats = mlab.rec_groupby(data, (id_field,), stat_fields)
@@ -161,7 +162,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         p = self.parameter_parser
 
         # ID field
-        id_field = p.plot_id_field 
+        id_field = p.plot_id_field
 
         # Root directory for Riemann files
         root_dir = p.riemann_output_folder
@@ -210,19 +211,20 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         # for the model plots
         env_file = p.environmental_matrix_file
         env_data = utilities.csv2rec(env_file)
-        model_nsa_id_dict = dict((getattr(x, id_field), x.LOC_ID)
-            for x in env_data)
+        model_nsa_id_dict = dict(
+            (getattr(x, id_field), x.LOC_ID) for x in env_data)
 
         # Stitch the two dictionaries together
-        for id in sorted(model_nsa_id_dict.keys()):
-            if id not in nsa_id_dict:
-                nsa_id_dict[id] = model_nsa_id_dict[id]
+        for id_val in sorted(model_nsa_id_dict.keys()):
+            if id_val not in nsa_id_dict:
+                nsa_id_dict[id_val] = model_nsa_id_dict[id_val]
 
         # Get the stand attribute metadata and retrieve only the
         # continuous accuracy attributes
         stand_metadata_file = p.stand_metadata_file
         mp = xsmp.XMLStandMetadataParser(stand_metadata_file)
-        attrs = [x.field_name for x in mp.attributes
+        attrs = [
+            x.field_name for x in mp.attributes
             if x.field_type == 'CONTINUOUS' and x.accuracy_attr == 1]
 
         # Subset the attributes for fields that are in the
@@ -300,8 +302,9 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 obs_out_file = os.path.join(root_dir, prefix, obs_out_file)
 
                 # Write out the observed file
-                self.write_hex_stats(obs_data, hex_id_field, stat_fields,
-                    min_plots_per_hex, obs_out_file)
+                self.write_hex_stats(
+                    obs_data, hex_id_field, stat_fields, min_plots_per_hex,
+                    obs_out_file)
 
             # Iterate over values of k for the predicted values
             for k in k_values:
@@ -323,8 +326,9 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                     prd_out_file = os.path.join(root_dir, prefix, prd_out_file)
 
                     # Write out the predicted file
-                    self.write_hex_stats(prd_data, hex_id_field, stat_fields,
-                        min_plots_per_hex, prd_out_file)
+                    self.write_hex_stats(
+                        prd_data, hex_id_field, stat_fields, min_plots_per_hex,
+                        prd_out_file)
 
         # Calculate the ECDF and AC statistics
         # For ECDF and AC, it is a paired comparison between the observed
@@ -389,12 +393,14 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
                 gmfr_stats = rv.gmfr_statistics()
                 for stat in ('gmfr_a', 'gmfr_b', 'ac', 'ac_sys', 'ac_uns'):
-                    stat_line = '%s,%d,%s,%s,%.4f\n' % (c.prefix.upper(), c.k,
-                        attr, stat.upper(), gmfr_stats[stat])
+                    stat_line = '%s,%d,%s,%s,%.4f\n' % (
+                        c.prefix.upper(), c.k, attr, stat.upper(),
+                        gmfr_stats[stat])
                     stats_fh.write(stat_line)
 
                 ks_stats = rv.ks_statistics()
                 for stat in ('ks_max', 'ks_mean'):
-                    stat_line = '%s,%d,%s,%s,%.4f\n' % (c.prefix.upper(), c.k,
-                        attr, stat.upper(), ks_stats[stat])
+                    stat_line = '%s,%d,%s,%s,%.4f\n' % (
+                        c.prefix.upper(), c.k, attr, stat.upper(),
+                        ks_stats[stat])
                     stats_fh.write(stat_line)

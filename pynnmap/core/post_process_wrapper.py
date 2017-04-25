@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 from pynnmap.misc import geoprocessor
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
@@ -10,70 +11,67 @@ def main(parser):
     the arcgis geoprocessor
     """
 
-    # load grids into lists corresponding to type
+    # Load grids into lists corresponding to type
     axes = []
     distances = []
     neighbors = []
-    
-    format_dict = {
+
+    frmt_dict = {
         'GIO': '',
         'GTiff': '.tif',
         'ENVI': '.bsq',
         'HFA': '.img',
     }
-    def build_name(model_dir, prefix, number, format):
-        base_name = ''.join((prefix, str(number), format_dict[format]))
+
+    def build_name(model_dir, prefix, number, frmt):
+        base_name = ''.join((prefix, str(number), frmt_dict[frmt]))
         return os.path.join(model_dir, base_name)
 
     md = parser.model_directory
     of = parser.output_format
     for n in range(1, int(parser.write_axes) + 1):
-        axis_grid = build_name(md, parser.axes_file, n, of) 
+        axis_grid = build_name(md, parser.axes_file, n, of)
         axes.append(axis_grid)
 
     for n in range(1, int(parser.write_neighbors) + 1):
-        neighbor_grid = build_name(md, parser.neighbor_file, n, of) 
+        neighbor_grid = build_name(md, parser.neighbor_file, n, of)
         neighbors.append(neighbor_grid)
 
     for n in range(1, int(parser.write_distances) + 1):
         distance_grid = build_name(md, parser.distance_file, n, of)
         distances.append(distance_grid)
 
-    # define projections on all grids
+    # Define projections on all grids
     define_projections(axes, parser.projection_file)
     define_projections(neighbors, parser.projection_file)
     define_projections(distances, parser.projection_file)
 
-    # convert axis and distance grids to integers (scaled by 100.0)
+    # Convert axis and distance grids to integers (scaled by 100.0)
     integerize_rasters(axes)
     integerize_rasters(distances)
 
-    # copy the neighbor rasters to force recalculation of statistics
+    # Copy the neighbor rasters to force recalculation of statistics
     copy_rasters(neighbors)
 
-    # build vats
-    # build_vats(axes)
-    # build_vats(distances)
-    # build_vats(neighbors)
-
-    # join attributes to original neighbor grids
-    attribute_join_field = parser.plot_id_field 
+    # Join attributes to original neighbor grids
+    attribute_join_field = parser.plot_id_field
     for neighbor in neighbors:
-        join_attributes(neighbor, 'VALUE', parser.stand_attribute_file,
-            attribute_join_field, parser.stand_metadata_file)
+        join_attributes(
+            neighbor, 'VALUE', parser.stand_attribute_file,
+            attribute_join_field, parser.stand_metadata_file
+        )
 
-    # copy, clip and mask neighbor grids & join attributes
+    # Copy, clip and mask neighbor grids & join attributes
     if parser.mask_raster != '':
-        for (i, neighbor) in enumerate(neighbors):
-            masked_neighbor = \
-                'mr' + str(parser.model_region) + '_nnmsk' + str(i + 1)
-            masked_neighbor = \
-                '/'.join((parser.model_directory, masked_neighbor))
-            create_masked_raster(neighbor, parser.boundary_raster,
-                parser.mask_raster, masked_neighbor)
-            join_attributes(masked_neighbor, 'VALUE',
-                parser.stand_attribute_file, attribute_join_field,
-                parser.stand_metadata_file)
+        for i, neighbor in enumerate(neighbors):
+            masked_neighbor = '%s/mr%d_nnmsk%d' % (
+                parser.model_directory, parser.model_region, i + 1)
+            create_masked_raster(
+                neighbor, parser.boundary_raster, parser.mask_raster,
+                masked_neighbor)
+            join_attributes(
+                masked_neighbor, 'VALUE', parser.stand_attribute_file,
+                attribute_join_field, parser.stand_metadata_file)
 
 
 def get_path(file_name):
@@ -140,11 +138,10 @@ def create_masked_raster(in_raster, boundary_raster, mask_raster, out_raster):
     --------
     None
     """
-    (path, file) = os.path.split(in_raster)
     model_dir = get_path(in_raster)
     gp = geoprocessor.Geoprocessor(model_dir)
-    gp.create_clipped_masked_raster(in_raster, boundary_raster, mask_raster,
-        out_raster)
+    gp.create_clipped_masked_raster(
+        in_raster, boundary_raster, mask_raster, out_raster)
 
 
 def define_projections(rasters, projection_file):
@@ -174,7 +171,7 @@ def define_projections(rasters, projection_file):
 
 def integerize_rasters(rasters):
     """
-    Convert floating point rasters to integer rasters.  The rasters are 
+    Convert floating point rasters to integer rasters.  The rasters are
     overwritten to the same input names
 
     Parameters:
@@ -220,8 +217,9 @@ def copy_rasters(rasters):
             continue
 
 
-def join_attributes(raster, raster_join_field, attribute_file,
-        attribute_join_field, attribute_metadata_file):
+def join_attributes(
+        raster, raster_join_field, attribute_file, attribute_join_field,
+        attribute_metadata_file):
     """
     Join attributes to a raster
 
@@ -254,10 +252,12 @@ def join_attributes(raster, raster_join_field, attribute_file,
     drop_fields = [x.field_name for x in mp.attributes if x.project_attr == 0]
 
     try:
-        gp.join_attributes(raster, raster_join_field, attribute_file,
-            attribute_join_field, drop_fields=drop_fields)
+        gp.join_attributes(
+            raster, raster_join_field, attribute_file, attribute_join_field,
+            drop_fields=drop_fields)
     except:
         print sys.exc_info()
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])

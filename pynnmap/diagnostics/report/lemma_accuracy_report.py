@@ -1,16 +1,16 @@
 from reportlab.lib import units as u
 
-from pynnmap.diagnostics.report.report_formatter import MissingConstraintError
 from pynnmap.diagnostics.report import accuracy_report
-from pynnmap.diagnostics.report import introduction_formatter as intro
 from pynnmap.diagnostics.report import data_dictionary_formatter as ddf
+from pynnmap.diagnostics.report import introduction_formatter as intro
 from pynnmap.diagnostics.report import local_accuracy_formatter as laf
 from pynnmap.diagnostics.report import references_formatter as rf
 from pynnmap.diagnostics.report import regional_accuracy_formatter as raf
+from pynnmap.diagnostics.report import report_styles
 from pynnmap.diagnostics.report import riemann_accuracy_formatter as riemann
 from pynnmap.diagnostics.report import species_accuracy_formatter as saf
 from pynnmap.diagnostics.report import vegetation_class_formatter as vcf
-from pynnmap.diagnostics.report import report_styles
+from pynnmap.diagnostics.report.report_formatter import MissingConstraintError
 
 
 class LemmaAccuracyReport(accuracy_report.AccuracyReport):
@@ -34,7 +34,8 @@ class LemmaAccuracyReport(accuracy_report.AccuracyReport):
         out_report = p.accuracy_assessment_report
 
         # Set up the document template
-        pdf = report_styles.GnnDocTemplate(out_report,
+        pdf = report_styles.GnnDocTemplate(
+            out_report,
             leftMargin=0.75 * u.inch, rightMargin=0.75 * u.inch,
             topMargin=0.6 * u.inch, bottomMargin=0.6 * u.inch)
 
@@ -88,7 +89,8 @@ class LemmaAccuracyReport(accuracy_report.AccuracyReport):
 
         # Write out the story
         if len(self.story) > 0:
-            pdf.build(self.story,
+            pdf.build(
+                self.story,
                 onTitle=report_styles.title,
                 onPortrait=report_styles.portrait,
                 onLandscape=report_styles.landscape)

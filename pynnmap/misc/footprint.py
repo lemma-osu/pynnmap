@@ -1,5 +1,7 @@
-import numpy as np
 import re
+
+import numpy as np
+
 from pynnmap.misc import parser
 
 
@@ -156,8 +158,8 @@ class FootprintParser(parser.Parser):
         # Get all footprints from and write them to individual Footprint
         # instances.  Push each of these to a footprint dictionary (fp_dict)
         fp_dict = {}
-        chunks = self.read_chunks(all_lines, fp_start, self.blank_re,
-            skip_lines=0, flush=True)
+        chunks = self.read_chunks(
+            all_lines, fp_start, self.blank_re, skip_lines=0, flush=True)
         for chunk in chunks:
             pixels = []
             for (i, line) in enumerate(chunk):

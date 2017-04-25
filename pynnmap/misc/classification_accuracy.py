@@ -1,6 +1,7 @@
+import itertools
+
 import numpy as np
 import numpy.ma as ma
-import itertools
 from lxml import objectify
 
 from pynnmap.misc import utilities
@@ -38,11 +39,11 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
         Dictionary of class value to row or column number
     """
 
-    if compact == True:
+    if compact is True:
         # Find all classes present in either the observed or predicted data
         classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
     else:
-        if classes == None:
+        if classes is None:
             # No classes given - default to those present as above
             classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
         else:
@@ -54,7 +55,8 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
     # One liner for calculating error matrix
     # http://stackoverflow.com/questions/10958702/
     # python-one-liner-for-a-confusion-contingency-matrix-needed
-    err_mat = np.array([zip(obs_data, prd_data).count(x) for x in
+    err_mat = np.array([
+        zip(obs_data, prd_data).count(x) for x in
         itertools.product(classes, repeat=2)]).reshape(n, n)
 
     # Create the dictionary of class value to row/column number
@@ -255,8 +257,8 @@ class KappaCalculator(object):
 
         # Create an error matrix from the observed and predicted data
         classes = self.classifier.values()
-        err_mat, class_xwalk = create_error_matrix(obs_data,
-            prd_data, compact=False, classes=classes)
+        err_mat, class_xwalk = create_error_matrix(
+            obs_data, prd_data, compact=False, classes=classes)
 
         # Get the number of classes
         n_classes = len(class_xwalk)
@@ -360,7 +362,7 @@ class KappaCalculator(object):
             # fuzzy classes.
             for i in xrange(err_mat.shape[0]):
                 for j in xrange(err_mat.shape[0]):
-                    if i != j and mask[i, j] == True:
+                    if i != j and mask[i, j]:
                         err_mat[i, i] += err_mat[i, j]
                         err_mat[i, j] = 0
             return kappa(err_mat)
@@ -491,8 +493,8 @@ class ErrorMatrix(object):
 
         # Create an error matrix from the observed and predicted data
         classes = self.classifier.values()
-        self.err_mat, self.class_xwalk = create_error_matrix(obs_data,
-            prd_data, compact=False, classes=classes)
+        self.err_mat, self.class_xwalk = create_error_matrix(
+            obs_data, prd_data, compact=False, classes=classes)
 
         # Number of classes
         num_classes = len(self.class_xwalk)
@@ -631,9 +633,9 @@ def print_error_matrix_file(obs_data, prd_data, classifier, err_matrix_file):
     e.to_csv(err_matrix_file)
 
 
-def classification_accuracy(input_file, classifier_file, kappa_file=None,
-        err_matrix_file=None, observed_column='OBSERVED',
-        predicted_column='PREDICTED'):
+def classification_accuracy(
+        input_file, classifier_file, kappa_file=None, err_matrix_file=None,
+        observed_column='OBSERVED', predicted_column='PREDICTED'):
     """
     Wrapper function to read in a plot-by-classification file
     of observed and predicted values and a classifier XML file

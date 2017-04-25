@@ -14,9 +14,11 @@ class XMLMetadataParserTest(unittest.TestCase):
         self.assertEqual(elem.field_name, field)
         self.assertEqual(elem.field_type, 'ID')
         self.assertEqual(elem.units, 'none')
-        self.assertEqual(elem.description,
+        self.assertEqual(
+            elem.description,
             'Forest class identification number assigned by LEMMA')
-        self.assertEqual(elem.short_description,
+        self.assertEqual(
+            elem.short_description,
             'Forest class identification number assigned by LEMMA')
         self.assertEqual(elem.codes, [])
 
@@ -26,9 +28,11 @@ class XMLMetadataParserTest(unittest.TestCase):
         self.assertEqual(elem.field_name, field)
         self.assertEqual(elem.field_type, 'CATEGORICAL')
         self.assertEqual(elem.units, 'none')
-        self.assertEqual(elem.description,
+        self.assertEqual(
+            elem.description,
             'Vegetation class based on CANCOV, BAH_PROP, QMDA_DOM')
-        self.assertEqual(elem.short_description,
+        self.assertEqual(
+            elem.short_description,
             'Vegetation class based on CANCOV, BAH_PROP, QMDA_DOM')
 
         check_codes = [

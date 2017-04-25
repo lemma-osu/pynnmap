@@ -1,16 +1,18 @@
-import numpy
 import datetime
 import decimal
+from urllib2 import urlopen
+
+import numpy
 from lxml import etree
 from lxml import objectify
 from matplotlib import mlab
-from urllib2 import urlopen
+
 
 # Exact replicate class of FormatFloat to keep four-decimal precision for
 # CSV output (mlab.rec2csv puts out full precision)
 class FormatDecimal(mlab.FormatFormatStr):
     def __init__(self, precision=4, scale=1.):
-        mlab.FormatFormatStr.__init__(self, '%%1.%df'%precision)
+        mlab.FormatFormatStr.__init__(self, '%%1.%df' % precision)
         self.precision = precision
         self.scale = scale
 
@@ -195,7 +197,7 @@ def pyodbc2rec(records, description):
     new_records = []
     for r in records:
         for i in xrange(len(r)):
-            if r[i] == None:
+            if r[i] is None:
                 try:
                     r[i] = pyodbc_null[type_codes[i]]
                 except KeyError:
@@ -259,8 +261,8 @@ def pretty_print(node):
     return etree.tostring(node, pretty_print=True)
 
 
-def subset_lines_from_regex(all_lines, start_re, end_re,
-        skip_lines=0, flush=False):
+def subset_lines_from_regex(
+        all_lines, start_re, end_re, skip_lines=0, flush=False):
         """
         Read a subset of a list (usually a file held in memory) based on a
         start and end regular expression.  The function returns all chunks

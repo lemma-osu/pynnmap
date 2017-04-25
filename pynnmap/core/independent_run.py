@@ -32,8 +32,8 @@ class IndependentRun(prediction_run.PredictionOutput):
         env_file = p.environmental_matrix_file
         env_data = utilities.csv2rec(env_file)
         nsaf = no_self_assign_field
-        nsa_id_dict = dict((getattr(x, self.id_field), getattr(x, nsaf))
-            for x in env_data)
+        nsa_id_dict = dict(
+            (getattr(x, self.id_field), getattr(x, nsaf)) for x in env_data)
 
         # Open the prediction files
         zonal_pixel_file = p.independent_zonal_pixel_file

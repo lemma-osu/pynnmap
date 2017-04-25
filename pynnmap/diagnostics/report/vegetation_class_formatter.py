@@ -1,4 +1,5 @@
 import re
+
 from matplotlib import mlab
 from reportlab import platypus as p
 from reportlab.lib import colors
@@ -48,9 +49,8 @@ class VegetationClassFormatter(report_formatter.ReportFormatter):
         class RotatedParagraph(p.Paragraph):
 
             def wrap(self, availHeight, availWidth):
-                h, w = \
-                    p.Paragraph.wrap(self, self.canv.stringWidth(self.text),
-                        self.canv._leading)
+                h, w = p.Paragraph.wrap(
+                    self, self.canv.stringWidth(self.text), self.canv._leading)
                 return w, h
 
             def draw(self):
@@ -81,8 +81,8 @@ class VegetationClassFormatter(report_formatter.ReportFormatter):
         names = ['P_' + str(x) for x in range(1, 12)]
         names.insert(0, 'OBSERVED')
         names.extend(['TOTAL', 'CORRECT', 'FUZZY_CORRECT'])
-        vc_data = mlab.csv2rec(self.vc_errmatrix_file, skiprows=1,
-            names=names)
+        vc_data = mlab.csv2rec(
+            self.vc_errmatrix_file, skiprows=1, names=names)
         vc_data = mlab.rec_drop_fields(vc_data, ['OBSERVED'])
 
         # Read in the stand attribute metadata

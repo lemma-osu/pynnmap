@@ -129,10 +129,5 @@ class Database(object):
         finally:
             db.close()
 
-        # this section commented out since we discovered there are scenarios
-        # where we want to return no records, and it is not an error
-        #if len(records) < 1:
-        #    err_msg = 'The sql statement "' + sql + '" returned no records'
-        #    raise IndexError(err_msg)
         return records, cursor.description
         cursor.close()

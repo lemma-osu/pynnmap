@@ -5,8 +5,8 @@ from reportlab.lib import units as u
 from pynnmap.diagnostics.report import report_formatter
 from pynnmap.diagnostics.report import report_styles
 from pynnmap.misc import utilities
-from pynnmap.parser import xml_stand_metadata_parser as xsmp
 from pynnmap.parser import xml_report_metadata_parser as xrmp
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class SpeciesAccuracyFormatter(report_formatter.ReportFormatter):
@@ -66,11 +66,11 @@ class SpeciesAccuracyFormatter(report_formatter.ReportFormatter):
         story.append(p.Spacer(0, 0.2 * u.inch))
 
         # Kappa explanation
-        kappa_str = '''
-            Cohen's kappa coefficient (Cohen, 1960) is a statistical measure
-            of reliability, accounting for agreement occurring by chance.  
-            The equation for kappa is: 
-        '''
+        kappa_str = (
+            'Cohen\'s kappa coefficient (Cohen, 1960) is a statistical '
+            'measure of reliability, accounting for agreement occurring by '
+            'chance. The equation for kappa is:'
+        )
         para = p.Paragraph(kappa_str, styles['body_style'])
         story.append(para)
         story.append(p.Spacer(0, 0.05 * u.inch))
@@ -114,14 +114,14 @@ class SpeciesAccuracyFormatter(report_formatter.ReportFormatter):
         para = p.Paragraph(spp_str, styles['body_style_10'])
         header_row.append(para)
 
-        p1 = p.Paragraph('<strong>OP/PP</strong>',
-            styles['body_style_10_right'])
-        p2 = p.Paragraph('<strong>OP/PA</strong>',
-            styles['body_style_10_right'])
-        p3 = p.Paragraph('<strong>OA/PP</strong>',
-            styles['body_style_10_right'])
-        p4 = p.Paragraph('<strong>OA/PA</strong>',
-            styles['body_style_10_right'])
+        p1 = p.Paragraph(
+            '<strong>OP/PP</strong>', styles['body_style_10_right'])
+        p2 = p.Paragraph(
+            '<strong>OP/PA</strong>', styles['body_style_10_right'])
+        p3 = p.Paragraph(
+            '<strong>OA/PP</strong>', styles['body_style_10_right'])
+        p4 = p.Paragraph(
+            '<strong>OA/PA</strong>', styles['body_style_10_right'])
         header_cells = [[p1, p2], [p3, p4]]
         t = p.Table(header_cells, colWidths=[0.75 * u.inch, 0.75 * u.inch])
         t.setStyle(

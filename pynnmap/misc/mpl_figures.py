@@ -7,8 +7,8 @@ from pynnmap.misc import statistics
 (SCREEN, FILE) = range(2)
 
 
-def draw_scatterplot(x, y, metadata, output_type=SCREEN, output_file=None,
-    **kwargs):
+def draw_scatterplot(
+        x, y, metadata, output_type=SCREEN, output_file=None, **kwargs):
 
     # Unpack the metadata information
     variable = metadata.field_name
@@ -47,17 +47,17 @@ def draw_scatterplot(x, y, metadata, output_type=SCREEN, output_file=None,
     this_r2 = statistics.r2(x, y)
 
     # Draw the annotation text on the figure
-    pl.text(0.89, 0.93,
-        '1:1', transform=pl.gca().transAxes, size=4.5, rotation=45)
-    pl.text(0.05, 0.93,
-        'Correlation coefficient:  %.4f' % (this_corr),
+    pl.text(
+        0.89, 0.93, '1:1', transform=pl.gca().transAxes, size=4.5, rotation=45)
+    pl.text(
+        0.05, 0.93, 'Correlation coefficient:  %.4f' % this_corr,
         transform=pl.gca().transAxes, size=4.5)
-    pl.text(0.05, 0.89,
-        'Normalized RMSE: %.4f' % (this_rmse),
+    pl.text(
+        0.05, 0.89, 'Normalized RMSE: %.4f' % this_rmse,
         transform=pl.gca().transAxes, size=4.5)
-    pl.text(0.05, 0.85,
-        'R-square: %.4f' % (this_r2),
-        transform=pl.gca().transAxes, size=4.5)
+    pl.text(
+        0.05, 0.85, 'R-square: %.4f' % this_r2, transform=pl.gca().transAxes,
+        size=4.5)
 
     # Draw the 1:1 line and format the x and y axes
     pl.plot([abs_min, abs_max], [abs_min, abs_max], 'k-', linewidth=0.5)
@@ -195,7 +195,8 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
 
     # Draw the legend
     from matplotlib.font_manager import FontProperties
-    pl.legend((plots[0][0], plots[1][0]), ('Plots', 'GNN'),
+    pl.legend(
+        (plots[0][0], plots[1][0]), ('Plots', 'GNN'),
         prop=FontProperties(size=4.5), borderpad=0.6, loc=(0.75, 0.87))
     pl.gca().get_legend().get_frame().set_linewidth(0.2)
 

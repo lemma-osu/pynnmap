@@ -1,6 +1,7 @@
 .idea
 build
 dist
+.idea
 *.egg-info
 *.pyc
 *.swp

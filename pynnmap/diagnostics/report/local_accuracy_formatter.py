@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 from reportlab import platypus as p
 from reportlab.lib import colors
@@ -18,11 +19,11 @@ class LocalAccuracyFormatter(report_formatter.ReportFormatter):
         self.observed_file = pp.stand_attribute_file
         self.predicted_file = pp.independent_predicted_file
         self.stand_metadata_file = pp.stand_metadata_file
-        self.id_field = pp.plot_id_field 
+        self.id_field = pp.plot_id_field
 
         # Ensure all input files are present
-        files = [self.observed_file, self.predicted_file,
-            self.stand_metadata_file]
+        files = [
+            self.observed_file, self.predicted_file, self.stand_metadata_file]
         try:
             self.check_missing_files(files)
         except report_formatter.MissingConstraintError as e:
@@ -86,8 +87,9 @@ class LocalAccuracyFormatter(report_formatter.ReportFormatter):
             output_file = attr.lower() + '_scatter.png'
 
             # Create the scatterplot
-            mplf.draw_scatterplot(obs_vals, prd_vals, metadata,
-                output_type=mplf.FILE, output_file=output_file)
+            mplf.draw_scatterplot(
+                obs_vals, prd_vals, metadata, output_type=mplf.FILE,
+                output_file=output_file)
 
             # Add this to the list of scatterplot files
             scatter_files.append(output_file)

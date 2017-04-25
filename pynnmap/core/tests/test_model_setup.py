@@ -23,19 +23,19 @@ class SppszSetupTest(unittest.TestCase):
             create_validation_attribute_file=True,
         )
 
-#class TrecovSetupTest(unittest.TestCase):
+# class TrecovSetupTest(unittest.TestCase):
 #
-#    def setUp(self):
-#        trecov_proto_name = 'L:/resources/code/xml/trecov_parameters.xml'
-#        self.model = ms.ModelSetup(trecov_proto_name)
+#     def setUp(self):
+#         trecov_proto_name = 'L:/resources/code/xml/trecov_parameters.xml'
+#         self.model = ms.ModelSetup(trecov_proto_name)
 #
-#    def test_normal_init(self):
-#        self.model.create_modeling_files(
-#            model_directory = 'D:/model_root/mr224/trecov_1996',
-#            model_region = 224,
-#            model_year = 1996,
-#            create_ordination_input=True,
-#        )
+#     def test_normal_init(self):
+#         self.model.create_modeling_files(
+#             model_directory = 'D:/model_root/mr224/trecov_1996',
+#             model_region = 224,
+#             model_year = 1996,
+#             create_ordination_input=True,
+#         )
 
 if __name__ == '__main__':
     unittest.main()

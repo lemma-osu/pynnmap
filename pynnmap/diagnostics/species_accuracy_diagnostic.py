@@ -1,4 +1,5 @@
 import numpy as np
+
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import statistics
 from pynnmap.misc import utilities
@@ -15,7 +16,7 @@ class SpeciesAccuracyDiagnostic(diagnostic.Diagnostic):
                 self.predicted_file = p.independent_predicted_file
                 self.stand_metadata_file = p.stand_metadata_file
                 self.statistics_file = p.species_accuracy_file
-                self.id_field = p.plot_id_field 
+                self.id_field = p.plot_id_field
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
                 raise ValueError(err_msg)
@@ -24,8 +25,8 @@ class SpeciesAccuracyDiagnostic(diagnostic.Diagnostic):
             raise NotImplementedError(err_msg)
 
         # Ensure all input files are present
-        files = [self.observed_file, self.predicted_file,
-            self.stand_metadata_file]
+        files = [
+            self.observed_file, self.predicted_file, self.stand_metadata_file]
         try:
             self.check_missing_files(files)
         except diagnostic.MissingConstraintError as e:

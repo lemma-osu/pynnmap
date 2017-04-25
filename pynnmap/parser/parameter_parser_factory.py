@@ -1,4 +1,5 @@
 import os
+
 from pynnmap.parser import parameter_parser
 from pynnmap.parser import xml_parameter_parser
 

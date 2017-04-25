@@ -1,7 +1,8 @@
 import os
+
 import numpy as np
-from osgeo import gdal, gdalconst
 from matplotlib import mlab
+from osgeo import gdal, gdalconst
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import histogram
@@ -23,7 +24,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 self.area_estimate_file = p.area_estimate_file
                 self.stand_attribute_file = p.stand_attribute_file
                 self.stand_metadata_file = p.stand_metadata_file
-                self.id_field = p.plot_id_field 
+                self.id_field = p.plot_id_field
                 self.statistics_file = p.regional_accuracy_file
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
@@ -33,7 +34,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             raise NotImplementedError(err_msg)
 
         # Ensure all input files are present
-        files = [self.predicted_raster, self.area_estimate_file,
+        files = [
+            self.predicted_raster, self.area_estimate_file,
             self.stand_attribute_file, self.stand_metadata_file]
         try:
             self.check_missing_files(files)
@@ -170,8 +172,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                         class_names[code.code_value] = code.label
                 else:
                     class_names = None
-                bins = histogram.bin_categorical([obs_vw, prd_vw],
-                    class_names=class_names)
+                bins = histogram.bin_categorical(
+                    [obs_vw, prd_vw], class_names=class_names)
 
             bins[0].name = 'OBSERVED'
             bins[1].name = 'PREDICTED'

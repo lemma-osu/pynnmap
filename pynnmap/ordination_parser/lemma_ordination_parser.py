@@ -1,8 +1,10 @@
-import sys
 import re
+import sys
+
 import numpy as np
-from pynnmap.misc import parser
+
 from pynnmap.core import ordination_model
+from pynnmap.misc import parser
 
 
 class LemmaOrdinationParser(parser.Parser):
@@ -130,8 +132,8 @@ class LemmaOrdinationParser(parser.Parser):
 
         # Get the lines associated with the model eigenvalues
         eig_re = re.compile('^###\s+Eigenvalues\s+###.*')
-        chunks = self.read_chunks(all_lines, eig_re, self.blank_re,
-            skip_lines=1, flush=True)
+        chunks = self.read_chunks(
+            all_lines, eig_re, self.blank_re, skip_lines=1, flush=True)
 
         # Extract the axis weights
         axis_weights = []
@@ -164,8 +166,8 @@ class LemmaOrdinationParser(parser.Parser):
 
         # Get the lines associated with the model coefficients
         coeff_re = re.compile('^###\s+Coefficient\s+Loadings\s+###')
-        chunks = self.read_chunks(all_lines, coeff_re, self.blank_re,
-            skip_lines=2, flush=True)
+        chunks = self.read_chunks(
+            all_lines, coeff_re, self.blank_re, skip_lines=2, flush=True)
 
         # Extract the variable names and coefficients
         var_names = []
@@ -199,8 +201,8 @@ class LemmaOrdinationParser(parser.Parser):
 
         # Get the lines associated with the ordination variable means
         mean_re = re.compile('^###\s+Variable\s+Means\\s+###.*')
-        chunks = self.read_chunks(all_lines, mean_re, self.blank_re,
-            skip_lines=1, flush=True)
+        chunks = self.read_chunks(
+            all_lines, mean_re, self.blank_re, skip_lines=1, flush=True)
 
         # Extract the variable names and means
         var_names = []
@@ -234,8 +236,8 @@ class LemmaOrdinationParser(parser.Parser):
 
         # Get the lines associated with the species scores
         species_re = re.compile('^###\s+Species\s+Centroids\s+###.*')
-        chunks = self.read_chunks(all_lines, species_re, self.blank_re,
-            skip_lines=2, flush=True)
+        chunks = self.read_chunks(
+            all_lines, species_re, self.blank_re, skip_lines=2, flush=True)
 
         # Extract the species names and species scores
         species_names = []
@@ -269,8 +271,8 @@ class LemmaOrdinationParser(parser.Parser):
 
         # Get the lines associated with the ordination variable means
         plot_re = re.compile('^###\s+Site\s+LC\s+Scores\s+###.*')
-        chunks = self.read_chunks(all_lines, plot_re, self.blank_re,
-            skip_lines=2, flush=True)
+        chunks = self.read_chunks(
+            all_lines, plot_re, self.blank_re, skip_lines=2, flush=True)
 
         # Extract the plot IDs and scores
         plot_ids = []
@@ -311,8 +313,8 @@ class LemmaOrdinationParser(parser.Parser):
 
         # Get the lines associated with the biplot section
         biplot_re = re.compile('^###\s+Biplot\s+Scores\s+###.*')
-        chunks = self.read_chunks(all_lines, biplot_re, self.blank_re,
-            skip_lines=2, flush=True)
+        chunks = self.read_chunks(
+            all_lines, biplot_re, self.blank_re, skip_lines=2, flush=True)
 
         # Extract the variable names and biplot scores
         var_names = []

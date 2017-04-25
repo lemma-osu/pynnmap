@@ -2,9 +2,9 @@
 This module defines a number of useful statistical routines for accuracy
 assessment between observed and predicted data sets.
 """
+import math
 
 import numpy as np
-import math
 from scipy import stats as scipy_stats
 
 

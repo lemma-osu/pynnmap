@@ -23,7 +23,7 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
     def __init__(self, parameters):
         p = parameters
         self.stand_attr_file = p.stand_attribute_file
-        self.id_field = p.plot_id_field 
+        self.id_field = p.plot_id_field
         self.output_file = p.vegclass_variety_file
 
         # Create a list of zonal_pixel files - both independent and dependent
@@ -53,7 +53,8 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
 
         # Create a simple dictionary of ID to vegetation class from the
         # attr_data
-        vc_dict = dict((getattr(x, self.id_field), getattr(x, 'VEGCLASS'))
+        vc_dict = dict(
+            (getattr(x, self.id_field), getattr(x, 'VEGCLASS'))
             for x in attr_data)
 
         # Open the output file and write the header

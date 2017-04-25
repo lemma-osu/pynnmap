@@ -1,20 +1,18 @@
 import os
 
-from pynnmap.diagnostics.diagnostic import MissingConstraintError
 from pynnmap.diagnostics import local_accuracy_diagnostic as lad
+from pynnmap.diagnostics import nn_index_outlier_diagnostic as niod
+from pynnmap.diagnostics import outlier_formatter as out
 from pynnmap.diagnostics import regional_accuracy_diagnostic as rad
 from pynnmap.diagnostics import riemann_accuracy_diagnostic as riemann
 from pynnmap.diagnostics import species_accuracy_diagnostic as sad
-from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
 from pynnmap.diagnostics import validation_plots_accuracy_diagnostic as vpad
-
-from pynnmap.diagnostics import nn_index_outlier_diagnostic as niod
+from pynnmap.diagnostics import variable_deviation_outlier_diagnostic as vdod
+from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
 from pynnmap.diagnostics import vegetation_class_outlier_diagnostic as vcod
 from pynnmap.diagnostics import vegetation_class_variety_diagnostic as vcvd
-from pynnmap.diagnostics import variable_deviation_outlier_diagnostic as vdod
-
 from pynnmap.diagnostics.report import lemma_accuracy_report as lar
-from pynnmap.diagnostics import outlier_formatter as out
+from pynnmap.diagnostics.diagnostic import MissingConstraintError
 from pynnmap.misc import utilities
 
 
@@ -83,7 +81,7 @@ class DiagnosticWrapper(object):
     def load_outliers(self):
         p = self.parameter_parser
 
-        #read in outlier files and push results to DB
+        # Read in outlier files and push results to DB
         for d in p.outlier_diagnostics:
             outlier_diag = (self.diagnostic_type[d])(p)
             outlier_file = outlier_diag.get_outlier_filename()

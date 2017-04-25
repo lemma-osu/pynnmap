@@ -1,4 +1,5 @@
 import numpy as np
+
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import utilities
 
@@ -8,7 +9,7 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
         self.vd_output_file = parameters.variable_deviation_file
-        self.id_field = parameters.plot_id_field 
+        self.id_field = parameters.plot_id_field
         self.deviation_variables = parameters.deviation_variables
 
         # Create a list of prediction files - both independent and dependent
@@ -33,8 +34,8 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
         # Open the output file and write the header
         out_fh = open(self.vd_output_file, 'w')
         out_fh.write(
-            '%s,PREDICTION_TYPE,VARIABLE,OBSERVED_VALUE,PREDICTED_VALUE\n' % \
-            self.id_field)
+            '%s,PREDICTION_TYPE,VARIABLE,OBSERVED_VALUE,PREDICTED_VALUE\n' % (
+                self.id_field))
 
         # Run this for both independent and dependent predictions
         for (prd_type, prd_file) in self.predicted_files:
@@ -45,7 +46,8 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
 
             # Subset the observed data just to the IDs that are in the
             # predicted file
-            obs_keep = np.in1d(getattr(obs_data, self.id_field),
+            obs_keep = np.in1d(
+                getattr(obs_data, self.id_field),
                 getattr(prd_data, self.id_field))
             obs_data = obs_data[obs_keep]
 

@@ -1,12 +1,13 @@
 import os
 import re
-import sys
 import shutil
-import numpy as np
-from matplotlib import mlab
-from lxml import objectify
-from lxml import etree
+import sys
 from optparse import OptionParser
+
+import numpy as np
+from lxml import etree
+from lxml import objectify
+from matplotlib import mlab
 
 from pynnmap.core import ordination
 from pynnmap.database import plot_database
@@ -59,10 +60,10 @@ class ModelSetup(object):
 
         # Create a ModelDatabase instance
         if p.parameter_set == 'FULL':
-            self.plot_db = \
-                plot_database.PlotDatabase(p.model_type, p.model_region,
-                    p.buffer, p.model_year, 
-                    p.image_source, p.image_version, dsn=p.plot_dsn)
+            self.plot_db = plot_database.PlotDatabase(
+                p.model_type, p.model_region, p.buffer, p.model_year,
+                p.image_source, p.image_version, dsn=p.plot_dsn
+            )
 
     def create_species_plot_count_file(self):
         p = self.parameter_parser
@@ -73,8 +74,8 @@ class ModelSetup(object):
             self.id_str = self._get_id_string()
 
         spp_plot_table = self.plot_db.get_species_plot_counts(self.id_str)
-        spp_plot_file = p.model_directory + '/' + p.model_type + \
-                            '_spp_plot_counts.csv'
+        spp_plot_file = '%s/%s_spp_plot_counts.csv' % (
+            p.model_directory, p.model_type)
         if p.model_type in p.imagery_model_types:
             utilities.rec2csv(spp_plot_table, spp_plot_file)
         else:
@@ -110,8 +111,8 @@ class ModelSetup(object):
                     'SPP_LAYER', spp_plot_table2, spp_plot_table, 'leftouter')
             utilities.rec2csv(joined_spp_plot_table, spp_plot_file)
 
-    def create_modeling_files(self,
-            create_ordination_matrices=False, run_ordination=False,
+    def create_modeling_files(
+            self, create_ordination_matrices=False, run_ordination=False,
             create_attribute_data=False, create_area_estimates=False,
             create_report_metadata=False, create_hex_attribute_file=False,
             create_validation_attribute_file=False,
@@ -256,14 +257,14 @@ class ModelSetup(object):
             self.id_str = self._get_id_string()
 
         # Get the species matrix and write it out
-        spp_table = self.plot_db.get_species_matrix(self.id_str,
-            'ORDINATION', p.lump_table)
+        spp_table = self.plot_db.get_species_matrix(
+            self.id_str, 'ORDINATION', p.lump_table)
         spp_file = p.species_matrix_file
         utilities.rec2csv(spp_table, spp_file)
 
         # Get the environmental matrix and write it out
-        env_table = self.plot_db.get_environmental_matrix(self.id_str,
-            plot_years, image_years, ordination_variables)
+        env_table = self.plot_db.get_environmental_matrix(
+            self.id_str, plot_years, image_years, ordination_variables)
         env_file = p.environmental_matrix_file
         utilities.rec2csv(env_table, env_file)
 
@@ -468,7 +469,8 @@ class ModelSetup(object):
             attribute_elem = etree.SubElement(root_elem, 'attribute')
 
             # Add all metadata common to both structure and species recarrays
-            fields = ('FIELD_NAME', 'FIELD_TYPE', 'UNITS', 'DESCRIPTION',
+            fields = (
+                'FIELD_NAME', 'FIELD_TYPE', 'UNITS', 'DESCRIPTION',
                 'SHORT_DESCRIPTION')
             for f in fields:
                 child = etree.SubElement(attribute_elem, f.lower())
@@ -481,16 +483,16 @@ class ModelSetup(object):
                 attribute_elem[child.tag] = other_fields[f]
 
             # Print out codes if they exist
-            if r.CODED == True:
+            if r.CODED is True:
                 codes_elem = etree.SubElement(attribute_elem, 'codes')
                 try:
                     c_records = \
                         structure_codes[structure_codes.FIELD_NAME == n]
                 except IndexError:
-                    #try:
-                    #    c_records = \
-                    #        species_codes[species_codes.FIELD_NAME == n]
-                    #except IndexError:
+                    # try:
+                    #     c_records = \
+                    #         species_codes[species_codes.FIELD_NAME == n]
+                    # except IndexError:
                     err_msg = 'Codes were not found for ' + n
                     print err_msg
                     continue
@@ -597,7 +599,6 @@ class ModelSetup(object):
             xml_schema_file
         )
 
-        #root_str = "<report_metadata/>"
         root_elem = objectify.fromstring(root_str)
 
         # Get the model region overview
@@ -770,34 +771,38 @@ class ModelSetup(object):
 
 
 def main():
-    #sppsz_proto_name = 'L:/orcawa/cmonster/models/v_1_0_tc_only_k1.xml'
-    #model_region = 221
-
-    # first argument is the parameter file and is required
+    # First argument is the parameter file and is required
     model_xml = sys.argv[1]
 
     parser = OptionParser()
-    parser.add_option('-r', dest='model_regions',
+    parser.add_option(
+        '-r',
+        dest='model_regions',
         help='List or range of GNN model regions for which to setup models')
-    parser.add_option('-d',dest='root_directory',
+    parser.add_option(
+        '-d',
+        dest='root_directory',
         help='Location of root directory for storing model results')
-    parser.add_option('-y', dest='years',
-        help='Range of model years to run, or comma-delimited list of ' + \
-            'years to run')
-    parser.add_option('-i', dest='image_version',
+    parser.add_option(
+        '-y',
+        dest='years',
+        help=(
+            'Range of model years to run, or comma-delimited list of '
+            'years to run'))
+    parser.add_option(
+        '-i',
+        dest='image_version',
         help='Imagery version')
-    parser.add_option('-s', dest='model_specs',
+    parser.add_option(
+        '-s',
+        dest='model_specs',
         help='Model specifications used for directory naming; eg. tc_only_k1')
-    parser.add_option('-m', dest='run_mode',
-        help='Run model: spatial (full spatial run) or point (plot' + \
-            'locations only)')
-
-#    mode_message = 'program mode: '
-#    mode_message += '1 = create species & env matrices and run vegan CCA,'
-#    mode_message += '2 = create species & env matrices only,'
-#    mode_message += '3 = create species plot counts files only'
-#    parser.add_option('-m',dest='run mode', default=1,
-#        help=mode_message)
+    parser.add_option(
+        '-m',
+        dest='run_mode',
+        help=(
+            'Run model: spatial (full spatial run) or point (plot '
+            'locations only)'))
 
     options = (parser.parse_args())[0]
 
@@ -813,10 +818,10 @@ def main():
     iv = options.image_version
     ms = options.model_specs
 
-    # if optional arguments were supplied, loop through all years and
+    # If optional arguments were supplied, loop through all years and
     # model regions specified
     if options.model_regions:
-        #if regions are specified as a range, unpack into a list
+        # If regions are specified as a range, unpack into a list
         if options.model_regions.find('-') > 0:
             region_list = []
             regions_split = options.model_regions.split('-')
@@ -825,16 +830,16 @@ def main():
             for r in range(start_region, end_region + 1):
                 region_list.append(r)
         else:
-            #if regions are specified in a comma-delimited string,
-            #add each region to a list
+            # If regions are specified in a comma-delimited string,
+            # add each region to a list
             region_list = options.model_regions.split(',')
-            #convert to ints
+            # Convert to ints
             region_list = map(int, region_list)
 
-        #loop through all model regions
+        # Loop through all model regions
         for region in region_list:
             if options.years:
-                #if regions are specified as a range, unpack into a list
+                # If regions are specified as a range, unpack into a list
                 if options.years.find('-') > 0:
                     year_list = []
                     years_split = options.years.split('-')
@@ -844,50 +849,50 @@ def main():
                         year_list.append(y)
 
                 else:
-                    #if years are specified in a comma-delimited string,
-                    #add each year to a list
+                    # If years are specified in a comma-delimited string,
+                    # add each year to a list
                     year_list = options.years.split(',')
-                    #convert to ints
+                    # Convert to ints
                     year_list = map(int, year_list)
 
                 root_dir = 'mr%d/%s/%s' % (region, iv, ms)
                 root_dir = '/'.join((project_dir, root_dir))
 
-                # if run_mode option is not specified, default to spatial
+                # If run_mode option is not specified, default to spatial
                 # mode and do not modify root directory
                 if options.run_mode:
                     if options.run_mode == 'point':
-                        # if run_mode is specified as 'point', add another
+                        # If run_mode is specified as 'point', add another
                         # subdirectory named point
                         root_dir = '/'.join([root_dir, 'point'])
 
-                #loop through all model
+                # Loop through all model
                 for year in year_list:
 
-                    #create new folders, rename existing folder to _old
-                    #and delete existing _old folders if necessary
+                    # Create new folders, rename existing folder to _old
+                    # and delete existing _old folders if necessary
                     model_dir = '/'.join([root_dir, str(year)])
 
                     if os.path.exists(model_dir):
-                        #if the directory already exists see if there
-                        #is already an _old directory
+                        # If the directory already exists see if there
+                        # is already an _old directory
                         old_dir = model_dir + '_old'
                         if os.path.exists(old_dir):
-                            #delete the existing old directory
+                            # Delete the existing old directory
                             shutil.rmtree(old_dir)
-                        #rename existing model_dir to old_dir
+                        # Rename existing model_dir to old_dir
                         os.rename(model_dir, old_dir)
-                    #create new empty model directory
+
+                    # Create new empty model directory
                     os.makedirs(model_dir)
 
-                    #create modeling files
+                    # Create modeling files
                     model = ModelSetup(
                         model_xml,
                         model_directory=model_dir,
                         model_region=region,
                         model_year=year
                     )
-                    #model.create_species_plot_count_file()
 
                     model.create_modeling_files(
                         model_directory=model_dir,
@@ -900,7 +905,7 @@ def main():
                         create_report_metadata=True,
                         create_hex_attribute_file=True,
                         create_validation_attribute_file=False
-                        )
+                    )
 
 if __name__ == '__main__':
     main()

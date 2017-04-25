@@ -1,17 +1,18 @@
 import os
+from copy import deepcopy
+
 import numpy as np
 from lxml import etree
 from lxml import objectify
-from copy import deepcopy
 
-from pynnmap.parser import xml_parser
-from pynnmap.parser import parameter_parser
 from pynnmap.database import plot_database
 from pynnmap.misc import utilities
+from pynnmap.parser import xml_parser
+from pynnmap.parser import parameter_parser
 
 
-class XMLParameterParser(xml_parser.XMLParser,
-        parameter_parser.ParameterParser):
+class XMLParameterParser(
+        xml_parser.XMLParser, parameter_parser.ParameterParser):
     """
     Class for either parsing prototype XML parameter files or the
     model XML parameter files themselves.  Both the prototype files and
@@ -90,8 +91,9 @@ class XMLParameterParser(xml_parser.XMLParser,
                 raise parameter_parser.MissingParameterException(err_str)
 
             # Create the model XML from these parameters
-            return self.create_model_xml(kwargs['model_directory'],
-                kwargs['model_region'], kwargs['model_year'])
+            return self.create_model_xml(
+                kwargs['model_directory'], kwargs['model_region'],
+                kwargs['model_year'])
         else:
             try:
                 if 'model_directory' in kwargs:
@@ -146,8 +148,8 @@ class XMLParameterParser(xml_parser.XMLParser,
         # specified rather than the prototype's values; everything else
         # can come from the prototype
         plot_db = \
-            plot_database.PlotDatabase(self.model_type, obj.model_region,
-                self.buffer, obj.model_year, 
+            plot_database.PlotDatabase(
+                self.model_type, obj.model_region, self.buffer, obj.model_year,
                 self.image_source, self.image_version, dsn=self.plot_dsn)
 
         # Model boundary_raster and region extent
@@ -486,8 +488,9 @@ class XMLParameterParser(xml_parser.XMLParser,
             if pi_crosswalk_elem.xpath('keyword'):
                 return str(pi_crosswalk_elem.keyword)
             else:
-                return [(int(p.plot_year), int(p.image_year)) for p
-                    in pi_crosswalk_elem.getchildren()]
+                return [
+                    (int(p.plot_year), int(p.image_year))
+                    for p in pi_crosswalk_elem.getchildren()]
         else:
             return []
 
@@ -995,8 +998,9 @@ class XMLParameterParser(xml_parser.XMLParser,
                 intercell_spacing = int(elem.intercell_spacing)
                 area = float(elem.area)
                 minimum_plots_per_hex = int(elem.minimum_plots_per_hex)
-                hex_resolutions.append((field_name, intercell_spacing, area,
-                    minimum_plots_per_hex))
+                hex_resolutions.append((
+                    field_name, intercell_spacing, area, minimum_plots_per_hex)
+                )
             return hex_resolutions
         else:
             return []

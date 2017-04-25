@@ -1,9 +1,10 @@
-import arcpy
-from arcpy import env
-from arcpy import sa
 import os
 import time
+
+import arcpy
 import numpy as np
+from arcpy import env
+from arcpy import sa
 from matplotlib import mlab
 
 
@@ -11,7 +12,7 @@ class Geoprocessor(object):
 
     def __init__(self, workspace_location):
         env.workspace = workspace_location
-        if env.workspace == None:
+        if env.workspace is None:
             env.workspace = '.'
         env.scratchWorkspace = 'C:/temp'
         arcpy.CheckOutExtension("Spatial")
@@ -27,13 +28,13 @@ class Geoprocessor(object):
             names of other objects in the workspace
         """
         try:
-            scratch_table_path = arcpy.CreateScratchName('', '',
-                'ArcInfoTable')
+            scratch_table_path = arcpy.CreateScratchName(
+                '', '', 'ArcInfoTable')
         except:
             raise Exception(arcpy.GetMessages())
 
-        # Return basename of scratch table 
-        return os.path.basename(scratch_table_path) 
+        # Return basename of scratch table
+        return os.path.basename(scratch_table_path)
 
     def clip_raster(self, in_raster, boundary_raster, out_raster):
         """
@@ -71,7 +72,7 @@ class Geoprocessor(object):
             arcpy.CopyRaster_management(in_raster, out_raster)
         except Exception:
             raise Exception(arcpy.GetMessages())
-        
+
     def copy_raster_no_attributes(self, in_raster, out_raster):
         """
         Copy raster
@@ -84,7 +85,7 @@ class Geoprocessor(object):
             name of copied raster
         """
         print 'Copying (w/o attributes) ' + in_raster
-        try: 
+        try:
             scratch = sa.Raster(in_raster)
             scratch.save(out_raster)
             arcpy.BuildRasterAttributeTable_management(out_raster)
@@ -115,8 +116,8 @@ class Geoprocessor(object):
         except:
             raise Exception(arcpy.GetMessages())
 
-    def create_clipped_masked_raster(self, in_raster, clip_raster, mask_raster,
-            out_raster):
+    def create_clipped_masked_raster(
+            self, in_raster, clip_raster, mask_raster, out_raster):
         """
         Create a clipped and masked raster
 
@@ -171,7 +172,7 @@ class Geoprocessor(object):
 
     def convert_to_integer(self, in_raster, out_raster):
         """
-        Converts a floating point raster to an integer raster 
+        Converts a floating point raster to an integer raster
 
         Parameters
         ----------
@@ -190,7 +191,7 @@ class Geoprocessor(object):
             scratch = sa.Int(sa.RoundDown((sa.Raster(in_raster) * 100) + 0.5))
             scratch.save(out_raster)
         except:
-           raise Exception(arcpy.GetMessages()) 
+            raise Exception(arcpy.GetMessages())
 
     def overwrite(self, func, in_raster):
         """
@@ -200,7 +201,7 @@ class Geoprocessor(object):
         Parameters
         ----------
         func : str
-            Function to call.  A temporary raster is created before the 
+            Function to call.  A temporary raster is created before the
             call which gets renamed to in_raster
         in_raster : str
             name of input (and output) raster
@@ -241,10 +242,10 @@ class Geoprocessor(object):
             arcpy.DefineProjection_management(raster, projection_file)
         except:
             raise Exception(arcpy.GetMessages())
-    
-    def join_attributes(self, raster, raster_join_field, attribute_file,
+
+    def join_attributes(
+            self, raster, raster_join_field, attribute_file,
             attribute_join_field, drop_fields=None):
-        
         """
         Join attributes to a raster
 
@@ -267,17 +268,20 @@ class Geoprocessor(object):
 
         """
         # First create the ArcInfo table from attribute file (csv)
-        info_table, join_fields = self.create_info_table(raster_join_field, attribute_file, 
-                                            attribute_join_field, drop_fields)
+        info_table, join_fields = self.create_info_table(
+            raster_join_field, attribute_file, attribute_join_field,
+            drop_fields)
         # Then join attributes from the ArcInfo table to the grid
-        self.join_attributes_from_info(raster, raster_join_field, attribute_join_field, 
-                                       info_table, join_fields)
-        
+        self.join_attributes_from_info(
+            raster, raster_join_field, attribute_join_field, info_table,
+            join_fields)
+
         # Clean up
         arcpy.Delete_management(info_table)
 
-    def create_info_table(self, raster_join_field, attribute_file,
-            attribute_join_field, drop_fields=None):
+    def create_info_table(
+            self, raster_join_field, attribute_file, attribute_join_field,
+            drop_fields=None):
         """
         Create ArcInfo table from attribute csv file
 
@@ -346,14 +350,15 @@ class Geoprocessor(object):
         ra.dtype.names = col_names
 
         # Sanitize the data
-        #   Change True/False to 1/0 to be read into short type
-        bit_fields = [(i, n) for (i, (n, t)) in
-            enumerate(zip(col_names, col_types)) if t[0] == 'b']
+        # Change True/False to 1/0 to be read into short type
+        bit_fields = [
+            (i, n) for (i, (n, t)) in enumerate(zip(col_names, col_types))
+            if t[0] == 'b']
         if bit_fields:
             for rec in ra:
                 for (col_num, field) in bit_fields:
                     value = getattr(rec, field)
-                    if value == True:
+                    if value:
                         setattr(rec, field, 1)
                     else:
                         setattr(rec, field, 0)
@@ -367,7 +372,7 @@ class Geoprocessor(object):
         ra2 = np.rec.fromrecords(ra, names=col_names, formats=formats)
         mlab.rec2csv(ra2, temp_csv)
 
-        # Create a scratch name for the temporary ArcInfo table 
+        # Create a scratch name for the temporary ArcInfo table
         temp_table = arcpy.CreateScratchName('', '', 'ArcInfoTable')
 
         # Create the ArcInfo table and add the fields
@@ -379,8 +384,8 @@ class Geoprocessor(object):
                 arcpy.AddField_management(temp_table, n, esri_type)
             except KeyError:
                 if t[0] == 'S':
-                    arcpy.AddField_management(temp_table, n, 'TEXT', '#', '#',
-                        t[1])
+                    arcpy.AddField_management(
+                        temp_table, n, 'TEXT', '#', '#', t[1])
                 else:
                     err_msg = 'Type not found for ' + str(t)
                     print err_msg
@@ -397,31 +402,30 @@ class Geoprocessor(object):
 
         # Create a semi-colon delimited string of the fields we want to join
         field_list = ';'.join(col_names)
-        
+
         # Clean up
         os.remove(temp_csv)
 
         return temp_table, field_list
-    
-    def join_attributes_from_info(self, raster, raster_join_field, 
-                                  attribute_join_field, info_table, field_list): 
 
+    def join_attributes_from_info(
+            self, raster, raster_join_field, attribute_join_field, info_table,
+            field_list):
         # Join the attributes to the raster
         print 'Joining attributes to ' + raster
         arcpy.BuildRasterAttributeTable_management(raster)
-        arcpy.JoinField_management(raster, raster_join_field, info_table,
-            attribute_join_field, field_list)
-        
-    def delete_info_table(self, info_table):
+        arcpy.JoinField_management(
+            raster, raster_join_field, info_table, attribute_join_field,
+            field_list)
 
+    def delete_info_table(self, info_table):
         """
         Deletes info table
         """
         # Clean up
         arcpy.Delete_management(info_table)
-        
+
     def delete_raster(self, raster):
-        
         """
         Checks for existence of the raster and deletes it if it's found
         """
@@ -430,4 +434,3 @@ class Geoprocessor(object):
                 arcpy.Delete_management(raster)
             except:
                 Exception(arcpy.GetMessages())
-        

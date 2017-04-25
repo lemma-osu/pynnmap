@@ -32,8 +32,9 @@ class SppszPrototypeParserTest(unittest.TestCase):
             ('mask_raster',
                 normpath('L:/orcawa/spatial/masks/gap_nfmask30')),
             ('projection_file',
-                normpath('L:/orcawa/spatial/_other/' + \
-                'projection_files/esri_national_albers.prj')),
+                normpath((
+                    'L:/orcawa/spatial/_other/'
+                    'projection_files/esri_national_albers.prj'))),
             ('species_matrix_file',
                 normpath('L:/model_dir/sppsz.csv')),
             ('environmental_matrix_file',
@@ -43,8 +44,9 @@ class SppszPrototypeParserTest(unittest.TestCase):
             ('stand_metadata_file',
                 normpath('L:/model_dir/stand_attr.xml')),
             ('footprint_file',
-                normpath('L:/resources/code/bin/footprint/' + \
-                    'fp_multi_pixel.txt')),
+                normpath((
+                    'L:/resources/code/bin/footprint/'
+                    'fp_multi_pixel.txt'))),
             ('independent_predicted_file',
                 normpath('L:/model_dir/predicted_independent.csv')),
             ('independent_zonal_pixel_file',
@@ -70,7 +72,8 @@ class SppszPrototypeParserTest(unittest.TestCase):
             ('lump_table', 1),
             ('buffer', 1),
             ('plot_types', ['periodic', 'annual', 'fia_special']),
-            ('exclusion_codes', ['clouds', 'coords', 'snow', 'inexact_coords',
+            ('exclusion_codes', [
+                'clouds', 'coords', 'snow', 'inexact_coords',
                 'questionable_coords', 'duplicate_coords', 'mismatch',
                 'disturb', 'strucedge', 'validation', 'pvt_glc_mismatch',
                 'unusual_plcom_spp', 'for_minority', 'eslf_only']),
@@ -106,8 +109,9 @@ class SppszPrototypeParserTest(unittest.TestCase):
                 normpath('L:/model_dir/aa/accuracy_report.pdf')),
             ('report_metadata_file',
                 normpath('L:/model_dir/aa/report_metadata.xml')),
-            ('accuracy_diagnostics', ['local_accuracy', 'species_accuracy',
-                'vegclass_accuracy', 'regional_accuracy', 'riemann_accuracy',
+            ('accuracy_diagnostics', [
+                'local_accuracy', 'species_accuracy', 'vegclass_accuracy',
+                'regional_accuracy', 'riemann_accuracy',
                 'validation_accuracy']),
             ('local_accuracy_file',
                 normpath('L:/model_dir/aa/local_accuracy.csv')),
@@ -126,11 +130,13 @@ class SppszPrototypeParserTest(unittest.TestCase):
             ('riemann_output_folder',
                 normpath('L:/model_dir/aa/riemann_accuracy')),
             ('hex_attribute_file',
-                normpath('L:/model_dir/aa/riemann_accuracy/' + \
-                    'hex_attributes.csv')),
+                normpath((
+                    'L:/model_dir/aa/riemann_accuracy/'
+                    'hex_attributes.csv'))),
             ('hex_statistics_file',
-                normpath('L:/model_dir/aa/riemann_accuracy/' + \
-                    'riemann_accuracy.csv')),
+                normpath((
+                    'L:/model_dir/aa/riemann_accuracy/'
+                    'riemann_accuracy.csv'))),
             ('riemann_hex_resolutions', [
                 ('HEX_10_ID', 10.0, 8660.0, 2),
                 ('HEX_30_ID', 30.0, 78100.0, 4),
@@ -181,7 +187,7 @@ class SppszPrototypeParserTest(unittest.TestCase):
             ('model_region', 1, 1),
             ('model_year', 2000, 2000),
             ('plot_image_crosswalk', [(1990, 1990), (1991, 1991)],
-                 [(1990, 1990), (1991, 1991)]),
+                [(1990, 1990), (1991, 1991)]),
 
             # Domain parameters
             ('envelope', [0.0, 0.0, 10.0, 10.0], [0.0, 0.0, 10.0, 10.0]),
@@ -207,8 +213,8 @@ class SppszPrototypeParserTest(unittest.TestCase):
 
     def test_get_ordination_file(self):
         obj = self.sppsz_prototype
-        self.assertEqual(obj.get_ordination_file(),
-            normpath('L:/model_dir/vegan_cca.txt'))
+        self.assertEqual(
+            obj.get_ordination_file(), normpath('L:/model_dir/vegan_cca.txt'))
 
     def test_ordination_variables(self):
         obj = self.sppsz_prototype
@@ -293,8 +299,9 @@ class TrecovPrototypeParserTest(unittest.TestCase):
             ('mask_raster',
                 normpath('L:/orcawa/spatial/masks/gap_nfmask30')),
             ('projection_file',
-                normpath('L:/orcawa/spatial/_other/' + \
-                    'projection_files/esri_national_albers.prj')),
+                normpath((
+                    'L:/orcawa/spatial/_other/'
+                    'projection_files/esri_national_albers.prj'))),
             ('species_matrix_file',
                 normpath('L:/model_dir/trecov.csv')),
             ('environmental_matrix_file',
@@ -304,8 +311,9 @@ class TrecovPrototypeParserTest(unittest.TestCase):
             ('stand_metadata_file',
                 normpath('L:/model_dir/stand_attr.xml')),
             ('footprint_file',
-                normpath('L:/resources/code/bin/footprint/' +
-                    'fp_single_pixel.txt')),
+                normpath((
+                    'L:/resources/code/bin/footprint/'
+                    'fp_single_pixel.txt'))),
             ('independent_predicted_file',
                 normpath('L:/model_dir/predicted_independent.csv')),
             ('independent_zonal_pixel_file',
@@ -330,11 +338,12 @@ class TrecovPrototypeParserTest(unittest.TestCase):
             ('coincident_plots', 0),
             ('lump_table', 1),
             ('buffer', 0),
-            ('plot_types', ['periodic', 'annual', 'ecoplot', 'firemon',
-                'fia_special']),
-            ('exclusion_codes', ['coords', 'inexact_coords',
-                'questionable_coords', 'duplicate_coords', 'pvt_glc_mismatch',
-                'unusual_plcom_spp', 'for_minority', 'eslf_only']),
+            ('plot_types', [
+                'periodic', 'annual', 'ecoplot', 'firemon', 'fia_special']),
+            ('exclusion_codes', [
+                'coords', 'inexact_coords', 'questionable_coords',
+                'duplicate_coords', 'pvt_glc_mismatch', 'unusual_plcom_spp',
+                'for_minority', 'eslf_only']),
 
             # Ordination parameters
             ('ordination_program', 'numpy'),
@@ -367,7 +376,8 @@ class TrecovPrototypeParserTest(unittest.TestCase):
                 normpath('L:/model_dir/aa/accuracy_report.pdf')),
             ('report_metadata_file',
                 normpath('L:/model_dir/aa/report_metadata.xml')),
-            ('accuracy_diagnostics', ['local_accuracy', 'species_accuracy',
+            ('accuracy_diagnostics', [
+                'local_accuracy', 'species_accuracy',
                 'regional_accuracy', 'riemann_accuracy']),
             ('local_accuracy_file',
                 normpath('L:/model_dir/aa/local_accuracy.csv')),
@@ -380,11 +390,11 @@ class TrecovPrototypeParserTest(unittest.TestCase):
             ('riemann_output_folder',
                 normpath('L:/model_dir/aa/riemann_accuracy')),
             ('hex_attribute_file',
-                normpath('L:/model_dir/aa/riemann_accuracy/' +
-                    'hex_attributes.csv')),
+                normpath(
+                    'L:/model_dir/aa/riemann_accuracy/hex_attributes.csv')),
             ('hex_statistics_file',
-                normpath('L:/model_dir/aa/riemann_accuracy/' +
-                    'riemann_accuracy.csv')),
+                normpath(
+                    'L:/model_dir/aa/riemann_accuracy/riemann_accuracy.csv')),
             ('riemann_hex_resolutions', [
                 ('HEX_10_ID', 10.0, 8660.0, 2),
                 ('HEX_30_ID', 30.0, 78100.0, 4),
@@ -445,8 +455,8 @@ class TrecovPrototypeParserTest(unittest.TestCase):
 
     def test_get_ordination_file(self):
         obj = self.trecov_prototype
-        self.assertEqual(obj.get_ordination_file(),
-            normpath('L:/model_dir/numpy_cca.txt'))
+        self.assertEqual(
+            obj.get_ordination_file(), normpath('L:/model_dir/numpy_cca.txt'))
 
     def test_ordination_variables(self):
         obj = self.trecov_prototype
@@ -524,8 +534,9 @@ class SppszFullParserTest(unittest.TestCase):
             ('mask_raster',
                 normpath('L:/orcawa/spatial/masks/gap_nfmask30')),
             ('projection_file',
-                normpath('L:/orcawa/spatial/_other/' + \
-                    'projection_files/esri_national_albers.prj')),
+                normpath((
+                    'L:/orcawa/spatial/_other/projection_files/'
+                    'esri_national_albers.prj'))),
             ('species_matrix_file',
                 normpath('D:/test/sppsz.csv')),
             ('environmental_matrix_file',
@@ -535,8 +546,8 @@ class SppszFullParserTest(unittest.TestCase):
             ('stand_metadata_file',
                 normpath('D:/test/stand_attr.xml')),
             ('footprint_file',
-                normpath('L:/resources/code/bin/footprint/' +
-                    'fp_multi_pixel.txt')),
+                normpath(
+                    'L:/resources/code/bin/footprint/fp_multi_pixel.txt')),
             ('independent_predicted_file',
                 normpath('D:/test/predicted_independent.csv')),
             ('independent_zonal_pixel_file',
@@ -577,7 +588,8 @@ class SppszFullParserTest(unittest.TestCase):
             ('lump_table', 1),
             ('buffer', 1),
             ('plot_types', ['periodic', 'annual', 'fia_special']),
-            ('exclusion_codes', ['clouds', 'coords', 'snow', 'inexact_coords',
+            ('exclusion_codes', [
+                'clouds', 'coords', 'snow', 'inexact_coords',
                 'questionable_coords', 'duplicate_coords', 'mismatch',
                 'disturb', 'strucedge', 'validation', 'pvt_glc_mismatch',
                 'unusual_plcom_spp', 'for_minority', 'eslf_only']),
@@ -613,8 +625,9 @@ class SppszFullParserTest(unittest.TestCase):
                 normpath('D:/test/aa/mr224_sppsz_1996_aa.pdf')),
             ('report_metadata_file',
                 normpath('D:/test/aa/report_metadata.xml')),
-            ('accuracy_diagnostics', ['local_accuracy', 'species_accuracy',
-                'vegclass_accuracy', 'regional_accuracy', 'riemann_accuracy',
+            ('accuracy_diagnostics', [
+                'local_accuracy', 'species_accuracy', 'vegclass_accuracy',
+                'regional_accuracy', 'riemann_accuracy',
                 'validation_accuracy']),
             ('local_accuracy_file',
                 normpath('D:/test/aa/local_accuracy.csv')),
@@ -668,8 +681,8 @@ class SppszFullParserTest(unittest.TestCase):
 
     def test_get_ordination_file(self):
         obj = self.sppsz_full
-        self.assertEqual(obj.get_ordination_file(),
-            normpath('D:/test/vegan_cca.txt'))
+        self.assertEqual(
+            obj.get_ordination_file(), normpath('D:/test/vegan_cca.txt'))
 
     def test_ordination_variables(self):
         obj = self.sppsz_full
@@ -722,8 +735,9 @@ class TrecovFullParserTest(unittest.TestCase):
             ('mask_raster',
                 normpath('L:/orcawa/spatial/masks/gap_nfmask30')),
             ('projection_file',
-                normpath('L:/orcawa/spatial/_other/' + \
-                    'projection_files/esri_national_albers.prj')),
+                normpath((
+                    'L:/orcawa/spatial/_other/projection_files/'
+                    'esri_national_albers.prj'))),
             ('species_matrix_file',
                 normpath('D:/test/trecov.csv')),
             ('environmental_matrix_file',
@@ -733,8 +747,8 @@ class TrecovFullParserTest(unittest.TestCase):
             ('stand_metadata_file',
                 normpath('D:/test/stand_attr.xml')),
             ('footprint_file',
-                normpath('L:/resources/code/bin/footprint/' + \
-                    'fp_single_pixel.txt')),
+                normpath(
+                    'L:/resources/code/bin/footprint/fp_single_pixel.txt')),
             ('independent_predicted_file',
                 normpath('D:/test/predicted_independent.csv')),
             ('independent_zonal_pixel_file',
@@ -765,11 +779,12 @@ class TrecovFullParserTest(unittest.TestCase):
             ('coincident_plots', 0),
             ('lump_table', 1),
             ('buffer', 0),
-            ('plot_types', ['periodic', 'annual', 'ecoplot', 'firemon',
-                'fia_special']),
-            ('exclusion_codes', ['coords', 'inexact_coords',
-                'questionable_coords', 'duplicate_coords', 'pvt_glc_mismatch',
-                'unusual_plcom_spp', 'for_minority', 'eslf_only']),
+            ('plot_types', [
+                'periodic', 'annual', 'ecoplot', 'firemon', 'fia_special']),
+            ('exclusion_codes', [
+                'coords', 'inexact_coords', 'questionable_coords',
+                'duplicate_coords', 'pvt_glc_mismatch', 'unusual_plcom_spp',
+                'for_minority', 'eslf_only']),
 
             # Ordination parameters
             ('ordination_program', 'numpy'),
@@ -801,8 +816,9 @@ class TrecovFullParserTest(unittest.TestCase):
                 normpath('D:/test/aa/mr118_trecov_2012_aa.pdf')),
             ('report_metadata_file',
                 normpath('D:/test/aa/report_metadata.xml')),
-            ('accuracy_diagnostics', ['local_accuracy', 'species_accuracy',
-                'regional_accuracy', 'riemann_accuracy']),
+            ('accuracy_diagnostics', [
+                'local_accuracy', 'species_accuracy', 'regional_accuracy',
+                'riemann_accuracy']),
             ('local_accuracy_file',
                 normpath('D:/test/aa/local_accuracy.csv')),
             ('species_accuracy_file',
@@ -814,11 +830,11 @@ class TrecovFullParserTest(unittest.TestCase):
             ('riemann_output_folder',
                 normpath('D:/test/aa/riemann_accuracy')),
             ('hex_attribute_file',
-                normpath('D:/test/aa/riemann_accuracy/' +
-                    'hex_attributes.csv')),
+                normpath(
+                    'D:/test/aa/riemann_accuracy/hex_attributes.csv')),
             ('hex_statistics_file',
-                normpath('D:/test/aa/riemann_accuracy/' +
-                    'riemann_accuracy.csv')),
+                normpath(
+                    'D:/test/aa/riemann_accuracy/riemann_accuracy.csv')),
             ('riemann_hex_resolutions', [
                 ('HEX_10_ID', 10.0, 8660.0, 2),
                 ('HEX_30_ID', 30.0, 78100.0, 4),
@@ -834,8 +850,8 @@ class TrecovFullParserTest(unittest.TestCase):
 
     def test_get_ordination_file(self):
         obj = self.trecov_full
-        self.assertEqual(obj.get_ordination_file(),
-            normpath('D:/test/numpy_cca.txt'))
+        self.assertEqual(
+            obj.get_ordination_file(), normpath('D:/test/numpy_cca.txt'))
 
     def test_ordination_variables(self):
         obj = self.trecov_full
