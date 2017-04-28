@@ -1,10 +1,25 @@
 import itertools
+import re
 
 import numpy as np
 import numpy.ma as ma
 from lxml import objectify
+from six.moves import range
+from six import iteritems
 
 from pynnmap.misc import utilities
+
+
+def natural_sort(l):
+    """
+    Sorts a list based on natural sorting
+    """
+    def convert(text):
+        return int(text) if text.isdigit() else text.lower()
+
+    def alphanum_key(key):
+        return [convert(c) for c in re.split('([0-9]+)', str(key))]
+    return sorted(l, key=alphanum_key)
 
 
 def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
@@ -55,12 +70,13 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
     # One liner for calculating error matrix
     # http://stackoverflow.com/questions/10958702/
     # python-one-liner-for-a-confusion-contingency-matrix-needed
+    paired = list(zip(obs_data, prd_data))
     err_mat = np.array([
-        zip(obs_data, prd_data).count(x) for x in
-        itertools.product(classes, repeat=2)]).reshape(n, n)
+        paired.count(x) for x
+        in itertools.product(classes, repeat=2)]).reshape(n, n)
 
     # Create the dictionary of class value to row/column number
-    class_xwalk = dict((c, i) for (c, i) in zip(classes, xrange(n)))
+    class_xwalk = dict((c, i) for (c, i) in zip(classes, range(n)))
 
     return err_mat, class_xwalk
 
@@ -174,7 +190,7 @@ class Classifier:
         return self.d[i].fuzzy_values
 
     def values(self):
-        return sorted(self.d.keys())
+        return natural_sort(self.d.keys())
 
 
 class KappaCalculator(object):
@@ -207,7 +223,7 @@ class KappaCalculator(object):
         # predicted data
         if classifier is None:
             classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
-            self.classifier = Classifier.as_default(classes)
+            self.classifier = Classifier.as_default(list(classes))
         else:
             self.classifier = classifier
 
@@ -223,7 +239,7 @@ class KappaCalculator(object):
         out_str += 'CLASS,KAPPA,FUZZY_KAPPA\n'
 
         # Iterate over classes printing out kappa and fuzzy kappa
-        for key in sorted(self.kappa_values.keys()):
+        for key in natural_sort(self.kappa_values.keys()):
             if key == 'all':
                 continue
             v = self.kappa_values[key]
@@ -264,14 +280,14 @@ class KappaCalculator(object):
         n_classes = len(class_xwalk)
 
         # Create a reverse crosswalk as well
-        rev_class_xwalk = dict((i, c) for (c, i) in class_xwalk.iteritems())
+        rev_class_xwalk = dict((i, c) for (c, i) in iteritems(class_xwalk))
 
         # Create a non-fuzzy mask to apply to the error matrix
         mask = np.diag(np.ones(n_classes))
 
         # Create a fuzzy classification mask
         f_mask = np.diag(np.ones(n_classes))
-        for i in xrange(n_classes):
+        for i in range(n_classes):
             c = rev_class_xwalk[i]
             fcs = self.classifier.fuzzy_classification(c)
             for fc in fcs:
@@ -282,7 +298,7 @@ class KappaCalculator(object):
         self.kappa_values = {}
 
         # For each class, calculate the kappa coefficient
-        for i in xrange(n_classes):
+        for i in range(n_classes):
             j = rev_class_xwalk[i]
             self.kappa_values[j] = {}
             self.kappa_values[j]['kappa'] = \
@@ -293,9 +309,9 @@ class KappaCalculator(object):
         # Calculate kappa for the entire matrix
         self.kappa_values['all'] = {}
         self.kappa_values['all']['kappa'] = \
-            self._get_masked_kappa(err_mat, mask, c=None)
+            self._get_masked_kappa(err_mat, mask)
         self.kappa_values['all']['fuzzy'] = \
-            self._get_masked_kappa(err_mat, f_mask, c=None)
+            self._get_masked_kappa(err_mat, f_mask)
 
     def _get_masked_kappa(self, err_mat, mask, c=None):
         """
@@ -360,8 +376,8 @@ class KappaCalculator(object):
             # is True, the counts in those off-diagonal bins get reclassified
             # into the diagonal bin.  Do this row-wise as we have symmetry in
             # fuzzy classes.
-            for i in xrange(err_mat.shape[0]):
-                for j in xrange(err_mat.shape[0]):
+            for i in range(err_mat.shape[0]):
+                for j in range(err_mat.shape[0]):
                     if i != j and mask[i, j]:
                         err_mat[i, i] += err_mat[i, j]
                         err_mat[i, j] = 0
@@ -373,7 +389,7 @@ class KappaCalculator(object):
 
         Parameters
         ----------
-        kappa_file : file
+        kappa_file : str
             Output file to hold the classification kappa statistics.
             This is output as a comma-separated-value file.
 
@@ -416,7 +432,7 @@ class ErrorMatrix(object):
         # predicted data
         if classifier is None:
             classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
-            self.classifier = Classifier.as_default(classes)
+            self.classifier = Classifier.as_default(list(classes))
         else:
             self.classifier = classifier
 
@@ -434,7 +450,7 @@ class ErrorMatrix(object):
             return ''
 
         # Labels for x and y axes
-        class_labels = [repr(x) for x in sorted(self.class_xwalk.keys())]
+        class_labels = [repr(x) for x in natural_sort(self.class_xwalk.keys())]
         class_labels.extend(['Total', '% Correct', '% FCorrect'])
 
         # Print out these stats
@@ -444,7 +460,7 @@ class ErrorMatrix(object):
         num_classes = len(self.class_xwalk)
 
         # Row labels, values, totals, percent correct and percent fuzzy correct
-        for i in xrange(num_classes):
+        for i in range(num_classes):
             out_list = [class_labels[i]]
             out_list.extend(['%d' % x for x in self.err_mat[i, :]])
             out_list.append('%d' % self.r_totals[i])
@@ -513,7 +529,7 @@ class ErrorMatrix(object):
         self.c_f_correct = np.zeros(num_classes)
         self.m_f_incorrect = 0
 
-        for (c, i) in sorted(self.class_xwalk.iteritems()):
+        for (c, i) in sorted(iteritems(self.class_xwalk)):
 
             # Get the fuzzy classes and indexes associated with this class
             f_classes = self.classifier.fuzzy_classification(c)
@@ -547,13 +563,13 @@ class ErrorMatrix(object):
         self.m_percent_f_correct = calc_percent(m_f_correct, self.m_total)
         np.seterr(**old_settings)
 
-    def to_csv(self, err_matrix_file):
+    def to_csv(self, err_matrix_fn):
         """
         Prints the error matrix to a CSV file
 
         Parameters
         ----------
-        err_matrix_file : file
+        err_matrix_fn : str
             Output file to hold the classification error matrix.
             This is output as a comma-separated-value file.
 
@@ -561,12 +577,12 @@ class ErrorMatrix(object):
         -------
         None
         """
-        err_matrix_fh = open(err_matrix_file, 'w')
+        err_matrix_fh = open(err_matrix_fn, 'w')
         err_matrix_fh.write(self.__repr__())
         err_matrix_fh.close()
 
 
-def print_kappa_file(obs_data, prd_data, classifier, kappa_file):
+def print_kappa_file(obs_data, prd_data, classifier, kappa_fn):
     """
     Calculate kappa and fuzzy kappa statistics and print to an output file
 
@@ -583,7 +599,7 @@ def print_kappa_file(obs_data, prd_data, classifier, kappa_file):
         Instance of a Classifier object corresponding to
         the classes present in obs_data and prd_data
 
-    kappa_file : file
+    kappa_fn : str
         Output file to hold the kappa and fuzzy kappa statistics.
         This is output as a comma-separated-value file.
 
@@ -596,10 +612,10 @@ def print_kappa_file(obs_data, prd_data, classifier, kappa_file):
     k = KappaCalculator(obs_data, prd_data, classifier=classifier)
 
     # Write out the error matrix as an object
-    k.to_csv(kappa_file)
+    k.to_csv(kappa_fn)
 
 
-def print_error_matrix_file(obs_data, prd_data, classifier, err_matrix_file):
+def print_error_matrix_file(obs_data, prd_data, classifier, err_matrix_fn):
     """
     Calculate an classification error matrix and print to an output file
 
@@ -617,7 +633,7 @@ def print_error_matrix_file(obs_data, prd_data, classifier, err_matrix_file):
         Instance of a Classifier object corresponding to the classes present
         in obs_data and prd_data
 
-    err_matrix_file : file
+    err_matrix_fn : str
         Output file to hold the classification error matrix.
         This is output as a comma-separated-value file.
 
@@ -630,11 +646,11 @@ def print_error_matrix_file(obs_data, prd_data, classifier, err_matrix_file):
     e = ErrorMatrix(obs_data, prd_data, classifier=classifier)
 
     # Write out the error matrix as an object
-    e.to_csv(err_matrix_file)
+    e.to_csv(err_matrix_fn)
 
 
 def classification_accuracy(
-        input_file, classifier_file, kappa_file=None, err_matrix_file=None,
+        input_fn, classifier_fn, kappa_fn=None, err_matrix_fn=None,
         observed_column='OBSERVED', predicted_column='PREDICTED'):
     """
     Wrapper function to read in a plot-by-classification file
@@ -644,32 +660,32 @@ def classification_accuracy(
 
     Parameters
     ----------
-    input_file : file
-        The input file (comma-separated-value format) with the
+    input_fn : str
+        The input filename (comma-separated-value format) with the
         observed and predicted classified values for all plots.
         The file must have a header line with column names.
         Specify the names for the observed and predicted
         columns using the 'observed_column' and 'predicted_column'
         keyword parameters.
 
-    classifier_file : file
-        An XML file that describes the variable classification
+    classifier_fn : str
+        An XML filename that describes the variable classification
         including information on fuzzy sets.  This file must
         validate against 'classifier.xsd'.
 
-    kappa_file : file
-        Output file to hold kappa and fuzzy kappa statistics.
+    kappa_fn : str
+        Output filename to hold kappa and fuzzy kappa statistics.
         Defaults to None (ie. not output).
 
-    err_matrix_file : file
-        Output file to hold error matrix statistics.
+    err_matrix_fn : str
+        Output filename to hold error matrix statistics.
         Default to None (ie. not output).
 
-    observed_column : string
+    observed_column : str
         The name of the observed column in the input_file.
         Defaults to 'OBSERVED'
 
-    predicted_column : string
+    predicted_column : str
         The name of the predicted column in the input_file.
         Defaults to 'PREDICTED'
 
@@ -679,17 +695,17 @@ def classification_accuracy(
     """
 
     # Read in the raw input file
-    csv = utilities.csv2rec(input_file)
+    csv = utilities.csv2rec(input_fn)
     obs_data = csv[observed_column]
     prd_data = csv[predicted_column]
 
     # Read in the classification
-    c = Classifier.from_xml(classifier_file)
+    c = Classifier.from_xml(classifier_fn)
 
     # Print classification kappas
-    if kappa_file is not None:
-        print_kappa_file(obs_data, prd_data, c, kappa_file)
+    if kappa_fn is not None:
+        print_kappa_file(obs_data, prd_data, c, kappa_fn)
 
     # Print classification error matrix
-    if err_matrix_file is not None:
-        print_error_matrix_file(obs_data, prd_data, c, err_matrix_file)
+    if err_matrix_fn is not None:
+        print_error_matrix_file(obs_data, prd_data, c, err_matrix_fn)

@@ -163,5 +163,5 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
         # Create the vegetation class kappa and error matrix files
         vc_xml = 'L:/resources/code/xml/vegclass.xml'
         ca.classification_accuracy(
-            self.vegclass_file, vc_xml, kappa_file=self.vegclass_kappa_file,
-            err_matrix_file=self.vegclass_errmatrix_file)
+            self.vegclass_file, vc_xml, kappa_fn=self.vegclass_kappa_file,
+            err_matrix_fn=self.vegclass_errmatrix_file)

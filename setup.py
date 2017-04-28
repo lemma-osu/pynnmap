@@ -10,4 +10,11 @@ setup(
     author_email = 'matt.gregory@oregonstate.edu',
     packages = find_packages(),
     description = 'Python based nearest neighbor mapping',
+    install_requires=[
+        'lxml',
+        'matplotlib',
+        'numpy',
+        'pyodbc',
+        'six'
+    ],
 )

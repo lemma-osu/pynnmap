@@ -105,7 +105,7 @@ class Footprint(object):
 
     def window(self, point):
         """
-        Given a 2D coordinate, return the uppper left corner coordinate and
+        Given a 2D coordinate, return the upper left corner coordinate and
         footprint window size.  This is used for more efficient extraction of
         the footprint from a raster
 
@@ -125,7 +125,7 @@ class Footprint(object):
         index_row, index_col = self.index
         x_min = ref_x - (index_col * self.cell_size)
         y_max = ref_y + (index_row * self.cell_size)
-        return (x_min, y_max, self.n_cols, self.n_rows)
+        return x_min, y_max, self.n_cols, self.n_rows
 
 
 class FootprintParser(parser.Parser):

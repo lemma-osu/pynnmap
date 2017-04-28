@@ -1,6 +1,9 @@
 import datetime
 import decimal
-from urllib2 import urlopen
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 import numpy
 from lxml import etree

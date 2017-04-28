@@ -415,14 +415,14 @@ class PredictionRun(object):
                 fp_values = []
                 for var in ord_model.var_names:
                     fn = ord_year_var_dict[year][var]
-                    fp_values.append(fp_value_dict[id][fn])
+                    fp_values.append(fp_value_dict[id_val][fn])
 
                 # Set up an output instance to capture each pixel's neighbors
                 # and distances
-                obj = NNFootprint(id)
+                obj = NNFootprint(id_val)
 
                 # Run the imputation for each pixel in the footprint
-                for o in offsets[id]:
+                for o in offsets[id_val]:
 
                     # Get the ordination variable values for this offset
                     # Store in (1xv) array
@@ -436,7 +436,7 @@ class PredictionRun(object):
                     obj.append(NNPixel(nn_ids, nn_dists))
 
                 # Store the neighbor information
-                self.neighbor_data[id] = copy.deepcopy(obj)
+                self.neighbor_data[id_val] = copy.deepcopy(obj)
 
     def calculate_neighbors_cross_validation(self):
         """
@@ -684,7 +684,7 @@ class PredictionRun(object):
                 # we may not find the self-assignment within those neighbors.
                 # Set it to the max value in this case
                 try:
-                    index = np.where(nn_pixel.neighbors == id)[0][0] + 1
+                    index = np.where(nn_pixel.neighbors == id_val)[0][0] + 1
                 except IndexError:
                     index = nn_pixel.neighbors.size
                 self_assign_indexes.append(index)
