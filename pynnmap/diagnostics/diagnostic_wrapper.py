@@ -2,7 +2,6 @@ import os
 
 from pynnmap.diagnostics import local_accuracy_diagnostic as lad
 from pynnmap.diagnostics import nn_index_outlier_diagnostic as niod
-from pynnmap.diagnostics import outlier_formatter as out
 from pynnmap.diagnostics import regional_accuracy_diagnostic as rad
 from pynnmap.diagnostics import riemann_accuracy_diagnostic as riemann
 from pynnmap.diagnostics import species_accuracy_diagnostic as sad
@@ -11,33 +10,24 @@ from pynnmap.diagnostics import variable_deviation_outlier_diagnostic as vdod
 from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
 from pynnmap.diagnostics import vegetation_class_outlier_diagnostic as vcod
 from pynnmap.diagnostics import vegetation_class_variety_diagnostic as vcvd
-from pynnmap.diagnostics.report import lemma_accuracy_report as lar
 from pynnmap.diagnostics.diagnostic import MissingConstraintError
-from pynnmap.misc import utilities
+
+# Dictionary of diagnostic name to diagnostic class
+DIAGNOSTIC_TYPE = {
+    'local_accuracy': lad.LocalAccuracyDiagnostic,
+    'regional_accuracy': rad.RegionalAccuracyDiagnostic,
+    'riemann_accuracy': riemann.RiemannAccuracyDiagnostic,
+    'species_accuracy': sad.SpeciesAccuracyDiagnostic,
+    'vegclass_accuracy': vcd.VegetationClassDiagnostic,
+    'validation_accuracy': vpad.ValidationPlotsAccuracyDiagnostic,
+    'nn_index_outlier': niod.NNIndexOutlierDiagnostic,
+    'vegclass_outlier': vcod.VegetationClassOutlierDiagnostic,
+    'vegclass_variety': vcvd.VegetationClassVarietyDiagnostic,
+    'variable_deviation_outlier': vdod.VariableDeviationOutlierDiagnostic,
+}
 
 
 class DiagnosticWrapper(object):
-
-    # Dictionary of diagnostic name to diagnostic class
-    diagnostic_type = {
-        'local_accuracy': lad.LocalAccuracyDiagnostic,
-        'regional_accuracy': rad.RegionalAccuracyDiagnostic,
-        'riemann_accuracy': riemann.RiemannAccuracyDiagnostic,
-        'species_accuracy': sad.SpeciesAccuracyDiagnostic,
-        'vegclass_accuracy': vcd.VegetationClassDiagnostic,
-        'validation_accuracy': vpad.ValidationPlotsAccuracyDiagnostic,
-        'nn_index_outlier': niod.NNIndexOutlierDiagnostic,
-        'vegclass_outlier': vcod.VegetationClassOutlierDiagnostic,
-        'vegclass_variety': vcvd.VegetationClassVarietyDiagnostic,
-        'variable_deviation_outlier': vdod.VariableDeviationOutlierDiagnostic,
-    }
-
-    # Dictionary of outlier name to outlier formatter class
-    outlier_formatter = {
-        'vegclass_variety': out.VegclassVarietyFormatter,
-        'vegclass_outlier': out.VegclassOutlierFormatter,
-        'nn_index_outlier': out.NNIndexFormatter
-    }
 
     def __init__(self, parameter_parser):
         self.parameter_parser = parameter_parser
@@ -53,15 +43,10 @@ class DiagnosticWrapper(object):
         # Run each accuracy diagnostic
         for d in p.accuracy_diagnostics:
             try:
-                diagnostic = (self.diagnostic_type[d])(parameters=p)
+                diagnostic = (DIAGNOSTIC_TYPE[d])(parameters=p)
                 diagnostic.run_diagnostic()
             except MissingConstraintError as e:
-                print e.message
-
-        # Create the AA report if desired
-        if p.accuracy_assessment_report:
-            report = lar.LemmaAccuracyReport(p)
-            report.create_accuracy_report()
+                print(e.message)
 
     def run_outlier_diagnostics(self):
         p = self.parameter_parser
@@ -73,19 +58,7 @@ class DiagnosticWrapper(object):
 
         for d in p.outlier_diagnostics:
             try:
-                diagnostic = (self.diagnostic_type[d])(p)
+                diagnostic = (DIAGNOSTIC_TYPE[d])(p)
                 diagnostic.run_diagnostic()
             except MissingConstraintError as e:
-                print e.message
-
-    def load_outliers(self):
-        p = self.parameter_parser
-
-        # Read in outlier files and push results to DB
-        for d in p.outlier_diagnostics:
-            outlier_diag = (self.diagnostic_type[d])(p)
-            outlier_file = outlier_diag.get_outlier_filename()
-            outlier_formatter = (self.outlier_formatter[d])(p)
-            out_rec = utilities.csv2rec(outlier_file)
-            if out_rec is not None:
-                outlier_formatter.load_outliers(out_rec)
+                print(e.message)

@@ -1,11 +1,9 @@
 import os
-from copy import deepcopy
 
 import numpy as np
 from lxml import etree
 from lxml import objectify
 
-from pynnmap.database import plot_database
 from pynnmap.misc import utilities
 from pynnmap.parser import xml_parser
 from pynnmap.parser import parameter_parser
@@ -14,10 +12,9 @@ from pynnmap.parser import parameter_parser
 class XMLParameterParser(
         xml_parser.XMLParser, parameter_parser.ParameterParser):
     """
-    Class for either parsing prototype XML parameter files or the
-    model XML parameter files themselves.  Both the prototype files and
-    model files must validate against the XML schema file, so we use
-    this class to verify compliance.
+    Class for parsing full XML parameter files.  The model XML file must
+    validate against the XML schema file, so we use this class to verify
+    compliance.
     """
 
     def __init__(self, xml_file_name):
@@ -45,164 +42,6 @@ class XMLParameterParser(
         Need to figure out how to do this...
         """
         return utilities.pretty_print(self.root)
-
-    def get_parameters(self, **kwargs):
-        """
-        Based on the type of XML file referenced by this instance (either
-        'PROTOTYPE' or 'FULL'), return a fully fleshed out parameter set
-        to the caller.  In the case of 'prototype', specialize the model
-        based on model_directory, model_region and model_year and return a
-        new instance.  In the case of 'full', verify that the passed
-        parameters match the current parameters and return this instance.
-
-        Possible Keyword Parameters
-        ---------------------------
-        model_directory : str
-            Directory where modeling files will be created
-
-        model_region : int
-            LEMMA model region
-
-        model_year : int
-            Modeling year
-
-        Returns
-        -------
-        parser : XMLParameterParser
-            A fully fleshed out version of the parameter set
-        """
-
-        # Determine whether this is a full or prototype parameter set
-        # If a prototype set, we first need to generate the full XML tree from
-        # it.  If a full set, we verify the model_directory, model_region
-        # and model_year against the passed parameters to ensure they match
-        # before continuing
-        if self.parameter_set == 'PROTOTYPE':
-
-            # Ensure all kwargs have been specified
-            if 'model_directory' not in kwargs:
-                err_str = 'model_directory was not specified'
-                raise parameter_parser.MissingParameterException(err_str)
-            if 'model_region' not in kwargs:
-                err_str = 'model_region was not specified'
-                raise parameter_parser.MissingParameterException(err_str)
-            if 'model_year' not in kwargs:
-                err_str = 'model_year was not specified'
-                raise parameter_parser.MissingParameterException(err_str)
-
-            # Create the model XML from these parameters
-            return self.create_model_xml(
-                kwargs['model_directory'], kwargs['model_region'],
-                kwargs['model_year'])
-        else:
-            try:
-                if 'model_directory' in kwargs:
-                    md = os.path.normpath(kwargs['model_directory'])
-                    assert(md == self.model_directory)
-                if 'model_region' in kwargs:
-                    assert(kwargs['model_region'] == self.model_region)
-                if 'model_year' in kwargs:
-                    assert(kwargs['model_year'] == self.model_year)
-            except AssertionError:
-                err_str = 'Passed parameters do not match existing '
-                err_str += 'parameters in the model XML file.'
-                raise AssertionError(err_str)
-            return self
-
-    def create_model_xml(self, model_directory, model_region, model_year):
-        """
-        Create an XML string from prototype XML specialized for the
-        model directory, model region, and model year
-
-        Parameters
-        ----------
-        model_directory : str
-            Model directory for this model
-
-        model_region : int
-            Modeling region with which to specialize this XML
-
-        model_year : int
-            Year (4-digit) with which to specialize this XML
-
-        Returns
-        -------
-        out_xml : StringIO
-            XML string to be serialized
-        """
-
-        # Make a deep copy of this instance
-        obj = deepcopy(self)
-
-        # Switch the parameter_set tag to now be 'FULL'
-        obj.parameter_set = 'FULL'
-
-        # Replace the necessary elements with the model directory,
-        # model region and year
-        obj.model_directory = model_directory
-        obj.model_region = model_region
-        obj.model_year = model_year
-
-        # Create a PlotDatabase instance for filling in many elements
-        # Note that we pass obj.model_region and obj.model_year as
-        # specified rather than the prototype's values; everything else
-        # can come from the prototype
-        plot_db = \
-            plot_database.PlotDatabase(
-                self.model_type, obj.model_region, self.buffer, obj.model_year,
-                self.image_source, self.image_version, dsn=self.plot_dsn)
-
-        # Model boundary_raster and region extent
-        rec = (plot_db.get_model_region_window())[0]
-        obj.boundary_raster = rec.BOUNDARY_RASTER
-        obj.envelope = [rec.X_MIN, rec.Y_MIN, rec.X_MAX, rec.Y_MAX]
-
-        # Plot image crosswalk
-        #
-        # For model types that use imagery, we need to match plot assessment
-        # years to available image years.  First look for the presence of a
-        # keyword tag in the <plot_image_crosswalk> block and if it exists,
-        # query the database for the plot assessment years and available
-        # image years and return the formatted XML.  Otherwise, skip this
-        # section as the crosswalk has already been defined.
-        value = self.plot_image_crosswalk
-        if value and isinstance(value, str):
-            pi_data = plot_db.get_plot_image_pairs(value)
-            obj.plot_image_crosswalk = pi_data
-
-        # If the plot_image_crosswalk tag is missing, we need to populate
-        # the plot_years tag in non-imagery models
-        else:
-            obj.plot_years = plot_db.get_plot_years()
-
-        # Ordination variables
-        #
-        # First look for the presence of the keyword tag in the
-        # 'ordination_variables' block and if it exists, query the database
-        # for the allowed spatial variables.  Otherwise, skip over this section
-        # as the spatial variables have already been specified
-        value = self.get_ordination_variables()
-        if value and isinstance(value, str):
-            ord_vars = plot_db.get_ordination_variable_list(
-                value, self.variable_filter)
-            obj.set_ordination_variables(ord_vars)
-
-        # Accuracy assessment report name
-        if self.accuracy_assessment_report:
-            mr_str = 'mr' + str(obj.model_region)
-            prefix = '_'.join(
-                (mr_str, self.model_type, str(obj.model_year), 'aa'))
-            obj.accuracy_assessment_report = prefix + '.pdf'
-
-        # Deannotate the tree
-        objectify.deannotate(obj.tree)
-        etree.cleanup_namespaces(obj.tree)
-
-        # Ensure the newly created XML validates against the schema
-        utilities.validate_xml(obj.tree, self.xml_schema_file)
-
-        # Return the tree for serializing
-        return obj
 
     def write_tree(self, file_name):
         # Deannotate the tree
@@ -292,10 +131,10 @@ class XMLParameterParser(
     def get_spatial_filter(self):
         index = str(self.fl_elem.footprint_file).find('single')
         if index > -1:
-            filter = 'SINGLE'
+            fltr = 'SINGLE'
         else:
-            filter = 'MULTI'
-        return filter
+            fltr = 'MULTI'
+        return fltr
 
     # -------------------------------------------------------------------------
     # Parameter set
@@ -590,7 +429,7 @@ class XMLParameterParser(
 
     @property
     def op_elem(self):
-        return (self.root.ordination_parameters)
+        return self.root.ordination_parameters
 
     @property
     def ordination_program(self):
@@ -701,7 +540,7 @@ class XMLParameterParser(
 
     @property
     def ip_elem(self):
-        return (self.root.imputation_parameters)
+        return self.root.imputation_parameters
 
     @property
     def number_axes(self):
@@ -725,7 +564,7 @@ class XMLParameterParser(
 
     @property
     def dp_elem(self):
-        return (self.root.domain_parameters)
+        return self.root.domain_parameters
 
     @property
     def domain(self):
@@ -830,7 +669,7 @@ class XMLParameterParser(
 
     @property
     def aa_elem(self):
-        return (self.root.accuracy_assessment)
+        return self.root.accuracy_assessment
 
     @property
     def accuracy_assessment_folder(self):
@@ -861,7 +700,7 @@ class XMLParameterParser(
     @property
     def accuracy_diagnostics_element(self):
         if self.aa_elem.find('diagnostics') is not None:
-            return (self.aa_elem.diagnostics)
+            return self.aa_elem.diagnostics
         else:
             return None
 
@@ -1061,7 +900,7 @@ class XMLParameterParser(
     @property
     def oa_elem(self):
         if self.root.find('outlier_assessment') is not None:
-            return (self.root.outlier_assessment)
+            return self.root.outlier_assessment
         else:
             return None
 
@@ -1075,7 +914,7 @@ class XMLParameterParser(
         oa_elem = self.oa_elem
         if oa_elem is not None:
             if self.oa_elem.find('diagnostics') is not None:
-                return (self.oa_elem.diagnostics)
+                return self.oa_elem.diagnostics
             else:
                 return None
         else:
@@ -1139,7 +978,6 @@ class XMLParameterParser(
 
     @property
     def variable_deviation_file(self):
-        variable_deviation_file = ''
         if self.outlier_diagnostics:
             ode = self.outlier_diagnostics_element
             if ode.find('variable_deviation_outlier') is not None:
@@ -1149,4 +987,3 @@ class XMLParameterParser(
                 return ''
         else:
             return ''
-        return variable_deviation_file
