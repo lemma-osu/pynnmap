@@ -66,22 +66,29 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Read in the predicted raster
         ds = gdal.Open(self.predicted_raster, gdalconst.GA_ReadOnly)
-        rat = ds.GetRasterBand(1).GetDefaultRAT()
+        rb = ds.GetRasterBand(1)
 
         # Get the cell area for converting from pixel counts to hectares
         gt = ds.GetGeoTransform()
         cell_area = gt[1] * gt[1]
+        hectares_per_pixel = cell_area / 10000.0
+
+        # Calculate statistics directly on the raster
+        z_min, z_max = int(rb.GetMinimum()), int(rb.GetMaximum())
+        z_range = z_max - z_min + 1
+        hist = rb.GetHistogram(z_min - 0.5, z_max + 0.5, z_range, False, False)
+        bins = list(range(z_min, z_max + 1))
+        rat = [(x, y) for x, y in zip(bins, hist) if y != 0]
 
         # Get the IDs and counts (converted to hectares)
         id_recs = []
         nf_hectares = 0
-        for i in range(rat.GetRowCount()):
-            id = rat.GetValueAsInt(i, 0)
-            hectares = rat.GetValueAsInt(i, 1) * cell_area / 10000.0
-            if id <= 0:
+        for (id_val, count) in rat:
+            hectares = count * hectares_per_pixel 
+            if id_val <= 0:
                 nf_hectares += hectares
             else:
-                id_recs.append((id, hectares))
+                id_recs.append((id_val, hectares))
 
         # Release the dataset
         ds = None
