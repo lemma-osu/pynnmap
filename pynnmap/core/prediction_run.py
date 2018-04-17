@@ -329,7 +329,7 @@ class PredictionRun(object):
         fp_dict = fp_parser.parse(fp_file)
         fp_offsets = {}
         fp_windows = {}
-        for (id_val, data_source, x, y) in coord_list:
+        for (id_val, data_source, year, x, y) in coord_list:
             fp_offsets[id_val] = fp_dict[data_source].offsets
             fp_windows[id_val] = fp_dict[data_source].window((x, y))
 
