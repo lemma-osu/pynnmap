@@ -61,8 +61,8 @@ def draw_scatterplot(
 
     # Draw the 1:1 line and format the x and y axes
     pl.plot([abs_min, abs_max], [abs_min, abs_max], 'k-', linewidth=0.5)
-    ylabel_str = 'Predicted ' + variable
-    xlabel_str = 'Observed ' + variable
+    ylabel_str = 'Observed ' + variable
+    xlabel_str = 'Predicted ' + variable
     if units != 'none':
         ylabel_str += ' (' + units + ')'
         xlabel_str += ' (' + units + ')'
@@ -90,14 +90,14 @@ def draw_scatterplot(
     frame_y = 0.100
     frame_height = 0.830
     pl.gca().set_position([frame_x, frame_y, frame_width, frame_height])
-    pl.gca().axesPatch.set_linewidth(0.2)
+    pl.gca().patch.set_linewidth(0.2)
     axis = pl.gca()
     for spine in axis.spines:
         axis.spines[spine].set_linewidth(0.2)
 
     # Set fill and edge for the figure
-    pl.gcf().figurePatch.set_edgecolor('k')
-    pl.gcf().figurePatch.set_linewidth(2.0)
+    pl.gcf().patch.set_edgecolor('k')
+    pl.gcf().patch.set_linewidth(2.0)
 
     # Draw and output to file if requested
     pl.draw()
@@ -246,13 +246,13 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
     frame_height -= adj_factor
 
     pl.gca().set_position([frame_x, frame_y, frame_width, frame_height])
-    pl.gca().axesPatch.set_linewidth(0.2)
+    pl.gca().patch.set_linewidth(0.2)
     axis = pl.gca()
     for spine in axis.spines:
         axis.spines[spine].set_linewidth(0.2)
 
-    pl.gcf().figurePatch.set_edgecolor('k')
-    pl.gcf().figurePatch.set_linewidth(2.0)
+    pl.gcf().patch.set_edgecolor('k')
+    pl.gcf().patch.set_linewidth(2.0)
 
     if output_type == FILE:
         pl.savefig(output_file, dpi=250, edgecolor='k')
