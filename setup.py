@@ -12,13 +12,22 @@ setup(
     description='Python based nearest neighbor mapping',
     install_requires=[
         'click',
-        'impute',
+        # 'impute',
         'lxml',
+        'matplotlib',
         'numpy',
+        'pandas',
         'rpy2',
         'scipy',
         'six'
     ],
+    extras_require={
+        'test': [
+            'pytest',
+            'pytest-cov',
+            'tox'
+        ]
+    },
     entry_points='''
         [console_scripts]
         pynnmap=pynnmap.cli.main:main_group
