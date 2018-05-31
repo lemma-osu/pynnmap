@@ -336,14 +336,20 @@ class XMLParameterParser(
     @plot_image_crosswalk.setter
     def plot_image_crosswalk(self, records):
         if self.model_type in self.imagery_model_types:
-
             # Create a new XML tree of these pairs
             new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
-            for record in records.itertuples():
+            for rec in records.itertuples():
                 child = etree.SubElement(
                     new_pi_crosswalk_elem, 'plot_image_pair')
-                child.plot_year = record.PLOT_YEAR
-                child.image_year = record.IMAGE_YEAR
+                try:
+                    child.plot_year = rec.PLOT_YEAR
+                    child.image_year = rec.IMAGE_YEAR
+                except ValueError:
+                    err_msg = (
+                        'Record does not have PLOT_YEAR or IMAGE_YEAR '
+                        'attributes'
+                    )
+                    raise ValueError(err_msg)
 
             # Replace the old XML tree with the newly created one
             pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
@@ -491,15 +497,22 @@ class XMLParameterParser(
     def set_ordination_variables(self, records):
         # Create a new XML tree of these pairs
         new_ov_elem = objectify.Element('ordination_variables')
-        for record in records.itertuples():
+        for rec in records.itertuples():
             child = etree.SubElement(new_ov_elem, 'ordination_variable')
-            child.variable_name = record.VARIABLE_NAME
-            child.variable_path = record.VARIABLE_PATH
-            if record.MODEL_YEAR == 0:
-                child.set('variable_type', 'STATIC')
-            else:
-                child.set('variable_type', 'TEMPORAL')
-                child.set('model_year', str(record.MODEL_YEAR))
+            try:
+                child.variable_name = rec.VARIABLE_NAME
+                child.variable_path = rec.VARIABLE_PATH
+                if rec.MODEL_YEAR == 0:
+                    child.set('variable_type', 'STATIC')
+                else:
+                    child.set('variable_type', 'TEMPORAL')
+                    child.set('model_year', str(rec.MODEL_YEAR))
+            except ValueError:
+                err_msg = (
+                    'Record does not have VARIABLE_NAME, VARIABLE_NAME or '
+                    'MODEL_YEAR attributes'
+                )
+                raise ValueError(err_msg)
 
         # Replace the old XML tree with the newly created one
         ov_elem = self.op_elem.ordination_variables

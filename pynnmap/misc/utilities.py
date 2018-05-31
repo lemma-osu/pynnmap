@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import pandas as pd
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -103,6 +104,31 @@ def rec2csv(rec_array, csv_file, formatd=None, **kwargs):
 
     # Pass this specification to mlab.rec2csv
     mlab.rec2csv(rec_array, csv_file, formatd=formatd, **kwargs)
+
+
+def df2csv(df, csv_file):
+    """
+    Specialization of pd.to_csv for LEMMA options
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame to write out
+    csv_file : str
+        Output file path
+    """
+    # Fill all missing data with zeros
+    df.fillna(0.0, inplace=True)
+
+    # Convert all boolean fields to integer
+    bool_cols = df.select_dtypes(include='bool').columns
+    df[bool_cols] = df[bool_cols].astype('int')
+
+    # Strip any whitespace from character fields
+    df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+
+    # Convert to CSV
+    df.to_csv(csv_file, index=False, float_format='%.4f')
 
 
 def pyodbc2rec(records, description):
@@ -248,7 +274,7 @@ def pretty_print(node):
 
     Parameters
     ----------
-    node : lxml.ObjectiedNode
+    node : lxml.ObjectifiedNode
         The node to print (including descendents)
 
     Returns
