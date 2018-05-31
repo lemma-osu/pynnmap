@@ -339,19 +339,11 @@ class XMLParameterParser(
 
             # Create a new XML tree of these pairs
             new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
-            for record in records:
-                child = \
-                    etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
-                if isinstance(record, np.core.records.record):
-                    child.plot_year = record.PLOT_YEAR
-                    child.image_year = record.IMAGE_YEAR
-                elif isinstance(record, tuple):
-                    child.plot_year = record[0]
-                    child.image_year = record[1]
-                else:
-                    err_msg = 'Record is neither a numpy recarray record or '
-                    err_msg += 'tuple'
-                    raise ValueError(err_msg)
+            for record in records.itertuples():
+                child = etree.SubElement(
+                    new_pi_crosswalk_elem, 'plot_image_pair')
+                child.plot_year = record.PLOT_YEAR
+                child.image_year = record.IMAGE_YEAR
 
             # Replace the old XML tree with the newly created one
             pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
@@ -499,28 +491,15 @@ class XMLParameterParser(
     def set_ordination_variables(self, records):
         # Create a new XML tree of these pairs
         new_ov_elem = objectify.Element('ordination_variables')
-        for record in records:
+        for record in records.itertuples():
             child = etree.SubElement(new_ov_elem, 'ordination_variable')
-            if isinstance(record, np.core.records.record):
-                child.variable_name = record.VARIABLE_NAME
-                child.variable_path = record.VARIABLE_PATH
-                if record.MODEL_YEAR == 0:
-                    child.set('variable_type', 'STATIC')
-                else:
-                    child.set('variable_type', 'TEMPORAL')
-                    child.set('model_year', str(record.MODEL_YEAR))
-            elif isinstance(record, tuple):
-                child.variable_name = record[0]
-                child.variable_path = record[1]
-                if record[2] == 0:
-                    child.set('variable_type', 'STATIC')
-                else:
-                    child.set('variable_type', 'TEMPORAL')
-                    child.set('model_year', str(record[2]))
+            child.variable_name = record.VARIABLE_NAME
+            child.variable_path = record.VARIABLE_PATH
+            if record.MODEL_YEAR == 0:
+                child.set('variable_type', 'STATIC')
             else:
-                err_msg = 'Record is neither a numpy recarray record or '
-                err_msg += 'tuple'
-                raise ValueError(err_msg)
+                child.set('variable_type', 'TEMPORAL')
+                child.set('model_year', str(record.MODEL_YEAR))
 
         # Replace the old XML tree with the newly created one
         ov_elem = self.op_elem.ordination_variables
