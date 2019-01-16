@@ -11,6 +11,7 @@ dist
 tox.ini
 
 # Miscellaneous files
+.idea
 *.swp
 
 # For now, ignore docs
