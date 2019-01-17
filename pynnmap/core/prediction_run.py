@@ -430,7 +430,7 @@ class PredictionRun(object):
                     v = v[np.newaxis, :]
 
                     # Run the imputation
-                    nn_ids, nn_dists = imp_model.get_neighbors(v, id=id_val)
+                    nn_ids, nn_dists = imp_model.get_neighbors(v, id_val=id_val)
 
                     # Append this pixel to the NNFootprint object
                     obj.append(NNPixel(nn_ids, nn_dists))
