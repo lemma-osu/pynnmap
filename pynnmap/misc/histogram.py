@@ -88,7 +88,7 @@ class ContinuousHistogramBC(HistogramBC):
             fmt_str = '%.1f'
         else:
             fmt_str = '%.1e'
-        for i in xrange(self.bin_endpoints.size - 1):
+        for i in range(self.bin_endpoints.size - 1):
             first = fmt_str % (self.bin_endpoints[i])
             second = fmt_str % (self.bin_endpoints[i+1])
             if float(first) == 0.0:

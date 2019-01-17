@@ -1,6 +1,5 @@
 import numpy as np
-
-import impute
+from sklearn.neighbors import NearestNeighbors
 
 
 class ImputationModel(object):
@@ -30,24 +29,20 @@ class ImputationModel(object):
         # Set up the ANN model
         # Use the parameter 'max_neighbors' to determine how many neighbors
         # to return
-        self.ann_obj = impute.Impute(ord_model.n_plots, n_axes, max_neighbors)
         plot_scores = \
             np.dot(ord_model.plot_scores[:, 0:n_axes], self.ax_weights)
-        self.ann_obj.setAnnTree(plot_scores)
+        self.nn_finder = NearestNeighbors(max_neighbors)
+        self.nn_finder.fit(plot_scores)
 
         # Create arrays of the ord_model's var_coeff and axis_intercepts
         # for repeated use
         self.var_coeff = ord_model.var_coeff
         self.axis_intercepts = ord_model.axis_intercepts
 
-        # Create containers for the neighbors and distances
-        self.neighbors = np.zeros(max_neighbors, dtype=np.int)
-        self.distances = np.zeros(max_neighbors, dtype=np.float)
-
         # Lookup of index to plot ID to get correct neighbor IDs
         self.ipd = ord_model.id_plot_dict
 
-    def get_neighbors(self, env_values, id=None):
+    def get_neighbors(self, env_values, id_val=None):
         """
         Given the vector of env_values, return the sorted neighbors and
         distances for this vector.  If id is specified, ensure that if the
@@ -59,7 +54,7 @@ class ImputationModel(object):
             A vector of environmental values (1 x v) for which to determine
             neighbors and distances
 
-        id : int
+        id_val : int
             The ID of this vector, if known.  This ID is guaranteed to be
             ordered as first if it is the nearest neighbor
 
@@ -79,26 +74,23 @@ class ImputationModel(object):
         axis_scores = np.dot(axis_scores, self.ax_weights)
 
         # Run the imputation
-        self.ann_obj.getNeighbors(
-            axis_scores[0, :], self.neighbors, self.distances)
+        d, n = self.nn_finder.kneighbors(axis_scores)
+        d, n = d[0], n[0]
 
         # If id is specified, find ties in distances - this happens when
         # two plots have exactly the same environmental information. Swap
         # neighbors such that ID is ordered first
-        if id is not None:
-            same_distances = np.where(self.distances == self.distances[0])[0]
+        if id_val is not None:
+            same_distances = np.where(d == d[0])[0]
             if len(same_distances) > 1:
                 for i in range(1, len(same_distances)):
-                    if self.ipd[self.neighbors[i]] == id:
-                        temp = self.neighbors[0]
-                        self.neighbors[0] = self.neighbors[i]
-                        self.neighbors[i] = temp
+                    if self.ipd[n[i]] == id_val:
+                        temp = n[0]
+                        n[0] = n[i]
+                        n[i] = temp
 
         # Crosswalk the neighbors from indexes to IDs
-        neighbor_ids = np.array([self.ipd[x] for x in self.neighbors])
-
-        # Make a copy of the distance array
-        distance_arr = self.distances[:]
+        neighbor_ids = np.array([self.ipd[x] for x in n])
 
         # Return neighbor IDs and distances
-        return (neighbor_ids, distance_arr)
+        return neighbor_ids, d

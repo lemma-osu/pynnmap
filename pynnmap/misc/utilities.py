@@ -199,7 +199,7 @@ def pyodbc2rec(records, description):
     type_codes = [x[1] for x in description]
     new_records = []
     for r in records:
-        for i in xrange(len(r)):
+        for i in range(len(r)):
             if r[i] is None:
                 try:
                     r[i] = pyodbc_null[type_codes[i]]

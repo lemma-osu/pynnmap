@@ -78,8 +78,8 @@ def get_blocks(band):
     x_grid_size = band.XSize
     y_grid_size = band.YSize
 
-    for j in xrange(y_blocks):
-        for k in xrange(x_blocks):
+    for j in range(y_blocks):
+        for k in range(x_blocks):
             if (k + 1) * x_block_size <= x_grid_size:
                 x_size = x_block_size
             else:
@@ -130,7 +130,7 @@ def get_chunks(band, max_size=250000000):
     y_grid_size = band.YSize
     y_chunks = (y_grid_size + (y_chunk_size - 1)) / y_chunk_size
 
-    for j in xrange(y_chunks):
+    for j in range(y_chunks):
         if (j + 1) * y_chunk_size <= y_grid_size:
             y_size = y_chunk_size
         else:
@@ -183,7 +183,7 @@ def get_chunks_from_raster_envelope(rds, re, max_size=250000000):
     y_grid_size = re.n_rows
     y_chunks = (y_grid_size + (y_chunk_size - 1)) / y_chunk_size
 
-    for j in xrange(y_chunks):
+    for j in range(y_chunks):
         if (j + 1) * y_chunk_size <= y_grid_size:
             y_size = y_chunk_size
         else:
@@ -236,7 +236,7 @@ def compare_datasets(ds_01, ds_02, skip=()):
     }
 
     failed_tests = []
-    for (kw, fcn) in all_tests.iteritems():
+    for (kw, fcn) in all_tests.items():
         if kw not in skip:
             result = fcn(ds_01, ds_02)
             if not result:

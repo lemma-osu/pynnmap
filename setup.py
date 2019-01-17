@@ -12,12 +12,13 @@ setup(
     description='Python based nearest neighbor mapping',
     install_requires=[
         'click',
-        # 'impute',
+        'gdal',
         'lxml',
         'matplotlib',
         'numpy',
         'pandas',
         'rpy2',
+        'scikit-learn',
         'scipy',
         'six'
     ],
