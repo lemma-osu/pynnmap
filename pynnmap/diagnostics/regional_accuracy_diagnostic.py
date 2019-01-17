@@ -152,7 +152,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 fm = mp.get_attribute(v)
             except:
                 err_msg = v + ' is missing metadata.'
-                print err_msg
+                print(err_msg)
                 continue
 
             # Skip over ID fields

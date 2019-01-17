@@ -37,7 +37,7 @@ class IntervalClassifier(object):
 
     def __repr__(self):
         out_str = ''
-        for i in xrange(self.edges.size - 1):
+        for i in range(self.edges.size - 1):
             out_str += \
                 '(%.4f' % self.edges[i] + ' - ' + '%.4f)\n' % self.edges[i + 1]
         return out_str

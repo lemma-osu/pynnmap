@@ -140,7 +140,7 @@ class NumpyCCA(object):
             xiuk[i] = xi - s
         y = self.X.T
         y_xiuk_sqr = np.zeros((uk.shape[0], uk.shape[1]), dtype=np.float64)
-        for i in xrange(y.shape[0]):
+        for i in range(y.shape[0]):
             y_xiuk_sqr[i] = np.dot(y[i], np.square(xiuk[i]))
         species_tolerances = np.sqrt(y_xiuk_sqr / y.sum(axis=1).reshape(-1, 1))
         return species_tolerances
@@ -301,7 +301,7 @@ class NumpyRDA(object):
             xiuk[i] = xi - s
         y = self.X.T
         y_xiuk_sqr = np.zeros((uk.shape[0], uk.shape[1]), dtype=np.float64)
-        for i in xrange(y.shape[0]):
+        for i in range(y.shape[0]):
             y_xiuk_sqr[i] = np.dot(y[i], np.square(xiuk[i]))
         species_tolerances = np.sqrt(y_xiuk_sqr / y.sum(axis=1).reshape(-1, 1))
         return species_tolerances

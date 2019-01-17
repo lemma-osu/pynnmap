@@ -339,7 +339,7 @@ class PredictionRun(object):
         fp_value_dict = {}
         for (fn, count) in raster_counts.iteritems():
             if count == len(years):
-                print fn
+                print(fn)
                 ds, processed = raster_dict[fn]
 
                 # Get the footprint window values for this dataset
@@ -374,7 +374,7 @@ class PredictionRun(object):
 
         # Main loop to iterate over all years
         for year in years:
-            print year
+            print(year)
 
             # Get the subset of footprint offsets and windows for this year
             offsets = dict((x, fp_offsets[x]) for x in year_ids[year])
@@ -385,7 +385,7 @@ class PredictionRun(object):
             for (var, fn) in ord_year_var_dict[year].iteritems():
                 ds, processed = raster_dict[fn]
                 if not processed:
-                    print fn
+                    print(fn)
 
                     # Extract footprint values for this dataset
                     fp_values = self.get_footprint_values(ds, windows)
@@ -716,7 +716,7 @@ class PredictionRun(object):
 
         # Write out the k neighbors and distances for each pixel
         for pp in plot_prediction:
-            for i in xrange(pp.k):
+            for i in range(pp.k):
                 zonal_pixel_fh.write('%d,%d,%d,%d,%.8f\n' % (
                     pp.id,
                     pp.pixel_number + 1,

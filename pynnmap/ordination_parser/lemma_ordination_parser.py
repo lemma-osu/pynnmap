@@ -329,4 +329,4 @@ class LemmaOrdinationParser(parser.Parser):
 if __name__ == '__main__':
     lop = LemmaOrdinationParser()
     m = lop.parse(sys.argv[1], delimiter=',')
-    print m
+    print(m)

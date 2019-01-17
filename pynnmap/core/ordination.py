@@ -181,7 +181,7 @@ class NumpyCCAOrdination(NumpyOrdination):
 
         # Print out environmental coefficients loadings
         numpy_fh.write('### Coefficient Loadings ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('VARIABLE,' + header_str + '\n')
         for (i, c) in enumerate(cca.coefficients()):
             coeff = ','.join(['%.10f' % x for x in c])
@@ -190,7 +190,7 @@ class NumpyCCAOrdination(NumpyOrdination):
 
         # Print out biplot scores
         numpy_fh.write('### Biplot Scores ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('VARIABLE,' + header_str + '\n')
         for (i, b) in enumerate(cca.biplot_scores()):
             scores = ','.join(['%.10f' % x for x in b])
@@ -199,7 +199,7 @@ class NumpyCCAOrdination(NumpyOrdination):
 
         # Print out species centroids
         numpy_fh.write('### Species Centroids ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, c) in enumerate(cca.species_centroids()):
             scores = ','.join(['%.10f' % x for x in c])
@@ -209,7 +209,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         # Print out species tolerances
         numpy_fh.write('### Species Tolerances ###\n')
         header_str = \
-            ','.join(['CCA%d' % (i + 1) for i in xrange(cca.rank)])
+            ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, t) in enumerate(cca.species_tolerances()):
             scores = ','.join(['%.21f' % x for x in t])
@@ -220,14 +220,14 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('### Miscellaneous Species Information ###\n')
         numpy_fh.write('SPECIES,WEIGHT,N2\n')
         species_weights, species_n2 = cca.species_information()
-        for i in xrange(len(species_weights)):
+        for i in range(len(species_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
                 spp_ra.dtype.names[i], species_weights[i], species_n2[i]))
         numpy_fh.write('\n')
 
         # Print out site LC scores
         numpy_fh.write('### Site LC Scores ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('ID,' + header_str + '\n')
         for (i, s) in enumerate(cca.site_lc_scores()):
             scores = ','.join(['%.10f' % x for x in s])
@@ -236,7 +236,7 @@ class NumpyCCAOrdination(NumpyOrdination):
 
         # Print out site WA scores
         numpy_fh.write('### Site WA Scores ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('ID,' + header_str + '\n')
         for (i, s) in enumerate(cca.site_wa_scores()):
             scores = ','.join(['%.10f' % x for x in s])
@@ -247,7 +247,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('### Miscellaneous Site Information ###\n')
         numpy_fh.write('ID,WEIGHT,N2\n')
         site_weights, site_n2 = cca.site_information()
-        for i in xrange(len(site_weights)):
+        for i in range(len(site_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
                 spp_plot_ids[i], site_weights[i], site_n2[i]))
 
@@ -309,7 +309,7 @@ class NumpyRDAOrdination(NumpyOrdination):
 
         # Print out environmental coefficients loadings
         numpy_fh.write('### Coefficient Loadings ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('VARIABLE,' + header_str + '\n')
         for (i, c) in enumerate(cca.coefficients()):
             coeff = ','.join(['%.10f' % x for x in c])
@@ -318,7 +318,7 @@ class NumpyRDAOrdination(NumpyOrdination):
 
         # Print out biplot scores
         numpy_fh.write('### Biplot Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('VARIABLE,' + header_str + '\n')
         for (i, b) in enumerate(cca.biplot_scores()):
             scores = ','.join(['%.10f' % x for x in b])
@@ -327,7 +327,7 @@ class NumpyRDAOrdination(NumpyOrdination):
 
         # Print out species centroids
         numpy_fh.write('### Species Centroids ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, c) in enumerate(cca.species_centroids()):
             scores = ','.join(['%.10f' % x for x in c])
@@ -337,7 +337,7 @@ class NumpyRDAOrdination(NumpyOrdination):
         # Print out species tolerances
         numpy_fh.write('### Species Tolerances ###\n')
         header_str = \
-            ','.join(['RDA%d' % (i + 1) for i in xrange(cca.rank)])
+            ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, t) in enumerate(cca.species_tolerances()):
             scores = ','.join(['%.21f' % x for x in t])
@@ -348,14 +348,14 @@ class NumpyRDAOrdination(NumpyOrdination):
         numpy_fh.write('### Miscellaneous Species Information ###\n')
         numpy_fh.write('SPECIES,WEIGHT,N2\n')
         species_weights, species_n2 = cca.species_information()
-        for i in xrange(len(species_weights)):
+        for i in range(len(species_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
                 spp_ra.dtype.names[i], species_weights[i], species_n2[i]))
         numpy_fh.write('\n')
 
         # Print out site LC scores
         numpy_fh.write('### Site LC Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('ID,' + header_str + '\n')
         for (i, s) in enumerate(cca.site_lc_scores()):
             scores = ','.join(['%.10f' % x for x in s])
@@ -364,7 +364,7 @@ class NumpyRDAOrdination(NumpyOrdination):
 
         # Print out site WA scores
         numpy_fh.write('### Site WA Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in xrange(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
         numpy_fh.write('ID,' + header_str + '\n')
         for (i, s) in enumerate(cca.site_wa_scores()):
             scores = ','.join(['%.10f' % x for x in s])
@@ -375,7 +375,7 @@ class NumpyRDAOrdination(NumpyOrdination):
         numpy_fh.write('### Miscellaneous Site Information ###\n')
         numpy_fh.write('ID,WEIGHT,N2\n')
         site_weights, site_n2 = cca.site_information()
-        for i in xrange(len(site_weights)):
+        for i in range(len(site_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
                 spp_plot_ids[i], site_weights[i], site_n2[i]))
 
@@ -384,18 +384,18 @@ class NumpyRDAOrdination(NumpyOrdination):
 
 
 class NumpyEUCOrdination(NumpyOrdination):
-    def __init__(self, p):
+    def __init__(self):
         super(NumpyEUCOrdination, self).__init__()
-        print 'Created a NumpyEUCOrdination'
+        print('Created a NumpyEUCOrdination')
 
     def run(self):
         raise NotImplementedError
 
 
 class NumpyCCORAOrdination(NumpyOrdination):
-    def __init__(self, p):
+    def __init__(self):
         super(NumpyCCORAOrdination, self).__init__()
-        print 'Created a NumpyCCORAOrdination'
+        print('Created a NumpyCCORAOrdination')
 
     def run(self):
         raise NotImplementedError
@@ -410,18 +410,18 @@ class CanocoOrdination(Ordination):
 
 
 class CanocoCCAOrdination(CanocoOrdination):
-    def __init__(self, p):
+    def __init__(self):
         super(CanocoCCAOrdination, self).__init__()
-        print 'Created a CanocoCCAOrdination'
+        print('Created a CanocoCCAOrdination')
 
     def run(self):
         raise NotImplementedError
 
 
 class CanocoRDAOrdination(CanocoOrdination):
-    def __init__(self, p):
+    def __init__(self):
         super(CanocoRDAOrdination, self).__init__()
-        print 'Created a CanocoRDAOrdination'
+        print('Created a CanocoRDAOrdination')
 
     def run(self):
         raise NotImplementedError
