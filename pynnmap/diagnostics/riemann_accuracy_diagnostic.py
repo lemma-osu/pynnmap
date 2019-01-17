@@ -294,7 +294,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
             # Iterate over all sets of statistics and write a unique file
             # for each set
-            for (stat_name, stat_fields) in stat_sets.iteritems():
+            for (stat_name, stat_fields) in stat_sets.items():
 
                 # Get the output file name
                 obs_out_file = \
@@ -318,7 +318,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
                 # Iterate over all sets of statistics and write a unique file
                 # for each set
-                for (stat_name, stat_fields) in stat_sets.iteritems():
+                for (stat_name, stat_fields) in stat_sets.items():
 
                     # Get the output file name
                     prd_out_file = '_'.join((

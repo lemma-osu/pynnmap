@@ -4,8 +4,6 @@ import re
 import numpy as np
 import numpy.ma as ma
 from lxml import objectify
-from six.moves import range
-from six import iteritems
 
 from pynnmap.misc import utilities
 
@@ -280,7 +278,7 @@ class KappaCalculator(object):
         n_classes = len(class_xwalk)
 
         # Create a reverse crosswalk as well
-        rev_class_xwalk = dict((i, c) for (c, i) in iteritems(class_xwalk))
+        rev_class_xwalk = dict((i, c) for (c, i) in class_xwalk.items())
 
         # Create a non-fuzzy mask to apply to the error matrix
         mask = np.diag(np.ones(n_classes))
@@ -529,7 +527,7 @@ class ErrorMatrix(object):
         self.c_f_correct = np.zeros(num_classes)
         self.m_f_incorrect = 0
 
-        for (c, i) in sorted(iteritems(self.class_xwalk)):
+        for (c, i) in sorted(self.class_xwalk.items()):
 
             # Get the fuzzy classes and indexes associated with this class
             f_classes = self.classifier.fuzzy_classification(c)

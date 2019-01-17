@@ -236,7 +236,7 @@ def compare_datasets(ds_01, ds_02, skip=()):
     }
 
     failed_tests = []
-    for (kw, fcn) in all_tests.iteritems():
+    for (kw, fcn) in all_tests.items():
         if kw not in skip:
             result = fcn(ds_01, ds_02)
             if not result:

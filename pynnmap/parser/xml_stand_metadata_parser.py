@@ -12,10 +12,6 @@ class XMLStandMetadataParser(xml_parser.XMLParser):
         ----------
         xml_file_name : file
             name and location of XML metadata parameter file
-
-        Returns
-        -------
-        None
         """
 
         super(XMLStandMetadataParser, self).__init__(xml_file_name)

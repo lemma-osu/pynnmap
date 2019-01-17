@@ -170,11 +170,12 @@ class PredictionRun(object):
         out_dict = {}
         gt = ds.GetGeoTransform()
         band = ds.GetRasterBand(band)
-        for (k, v) in windows.iteritems():
+        for (k, v) in windows.items():
             out_dict[k] = self.get_footprint_value(v, band, gt)
         return out_dict
 
-    def get_footprint_value(self, window, band, gt):
+    @staticmethod
+    def get_footprint_value(window, band, gt):
         """
         Extract a footprint window from a GDAL band
 
@@ -199,7 +200,8 @@ class PredictionRun(object):
         value = band.ReadAsArray(col, row, x_size, y_size)
         return value
 
-    def get_values_from_offset(self, footprints, offset):
+    @staticmethod
+    def get_values_from_offset(footprints, offset):
         """
         Given a set of footprints representing ordination variables, extract
         the values associated with the given offset into the footprint window
@@ -260,14 +262,14 @@ class PredictionRun(object):
             raise NotImplementedError(err_msg)
 
         # Get a list of the unique IDs
-        ids = np.unique(id_x_year.keys())
+        ids = np.unique(list(id_x_year.keys()))
 
         # Get a list of the years over which we need to run models
-        years = np.unique(id_x_year.values())
+        years = np.unique(list(id_x_year.values()))
 
         # Create a dictionary of all plots associated with each model year
         year_ids = {}
-        for (k, v) in id_x_year.iteritems():
+        for (k, v) in id_x_year.items():
             try:
                 year_ids[v].append(k)
             except KeyError:
@@ -337,7 +339,7 @@ class PredictionRun(object):
         # common to all years and store in a dict keyed by ID and raster
         # file name
         fp_value_dict = {}
-        for (fn, count) in raster_counts.iteritems():
+        for (fn, count) in raster_counts.items():
             if count == len(years):
                 print(fn)
                 ds, processed = raster_dict[fn]
@@ -350,7 +352,7 @@ class PredictionRun(object):
 
                 # Store these footprint values in a dictionary keyed by
                 # id and variable file name
-                for (id_val, fp) in fp_values.iteritems():
+                for (id_val, fp) in fp_values.items():
                     try:
                         fp_value_dict[id_val][fn] = fp
                     except KeyError:
@@ -382,7 +384,7 @@ class PredictionRun(object):
 
             # Extract footprints for any variables that are not common to all
             # years, but specialized for this year
-            for (var, fn) in ord_year_var_dict[year].iteritems():
+            for (var, fn) in ord_year_var_dict[year].items():
                 ds, processed = raster_dict[fn]
                 if not processed:
                     print(fn)
@@ -394,7 +396,7 @@ class PredictionRun(object):
                     raster_dict[fn][1] = True
 
                     # Store these values
-                    for (id_val, fp) in fp_values.iteritems():
+                    for (id_val, fp) in fp_values.items():
                         try:
                             fp_value_dict[id_val][fn] = fp
                         except KeyError:
@@ -623,7 +625,7 @@ class PredictionRun(object):
                 kwargs['nsa_id_dict'] = None
 
             if kwargs['nsa_id_dict'] is None:
-                ids = self.neighbor_data.keys()
+                ids = list(self.neighbor_data.keys())
                 nsa_id_dict = dict((x, x) for x in ids)
             else:
                 nsa_id_dict = kwargs['nsa_id_dict']
