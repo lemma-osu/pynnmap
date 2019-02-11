@@ -1,7 +1,7 @@
 import numpy as np
+import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
-from pynnmap.misc import utilities
 from pynnmap.misc import classification_accuracy as ca
 from pynnmap.parser import parameter_parser as pp
 
@@ -113,31 +113,24 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
 
         # Ensure that the fields identified exist in the recarrays
         for field in field_dict.values():
-            if field not in obs.dtype.names:
+            if field not in obs.columns:
                 raise ValueError('Cannot find ' + field + ' in observed file')
-            if field not in prd.dtype.names:
+            if field not in prd.columns:
                 raise ValueError('Cannot find ' + field + ' in predicted file')
 
         # Get the vegetation class for every observed and predicted record
-        vc_dict = {}
-        for rec in obs:
-            id_val = getattr(rec, field_dict['id'])
-            vc_dict[id_val] = {}
-            obs_vc = self.get_vegclass(rec, field_dict)
-            vc_dict[id_val]['obs_vc'] = obs_vc
-
-        for rec in prd:
-            id_val = getattr(rec, field_dict['id'])
-            prd_vc = self.get_vegclass(rec, field_dict)
-            vc_dict[id_val]['prd_vc'] = prd_vc
-
-        return vc_dict
+        # and merge together into a data frame
+        obs['VC'] = obs.apply(self.get_vegclass, axis=1, args=(field_dict,))
+        prd['VC'] = prd.apply(self.get_vegclass, axis=1, args=(field_dict,))
+        obs_vc = obs[[id_field, 'VC']]
+        prd_vc = prd[[id_field, 'VC']]
+        return obs_vc.merge(prd_vc, on=id_field)
 
     def run_diagnostic(self):
 
         # Read the observed and predicted files into numpy recarrays
-        obs = utilities.csv2rec(self.observed_file)
-        prd = utilities.csv2rec(self.predicted_file)
+        obs = pd.read_csv(self.observed_file, low_memory=False)
+        prd = pd.read_csv(self.predicted_file, low_memory=False)
 
         # Subset the observed data just to the IDs that are in the
         # predicted file
@@ -146,19 +139,9 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
         obs = obs[obs_keep]
 
         # Calculate VEGCLASS for both the observed and predicted data
-        vc_dict = self.vegclass_aa(obs, prd, id_field=self.id_field)
-
-        # Print out the vegclass file
-        vc_fh = open(self.vegclass_file, 'w')
-        vc_fh.write(','.join((self.id_field, 'OBSERVED', 'PREDICTED')) + '\n')
-
-        # Print out the observed and predicted vegetation classes
-        for id_val in sorted(vc_dict.keys()):
-            obs_vc = vc_dict[id_val]['obs_vc']
-            prd_vc = vc_dict[id_val]['prd_vc']
-            out_list = ['%d' % x for x in (id_val, obs_vc, prd_vc)]
-            vc_fh.write(','.join(out_list) + '\n')
-        vc_fh.close()
+        vc_df = self.vegclass_aa(obs, prd, id_field=self.id_field)
+        vc_df.columns = [self.id_field, 'OBSERVED', 'PREDICTED']
+        vc_df.to_csv(self.vegclass_file, index=False)
 
         # Create the vegetation class kappa and error matrix files
         vc_xml = 'L:/resources/code/xml/vegclass.xml'

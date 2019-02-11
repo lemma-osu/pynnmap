@@ -3,9 +3,8 @@ import re
 
 import numpy as np
 import numpy.ma as ma
+import pandas as pd
 from lxml import objectify
-
-from pynnmap.misc import utilities
 
 
 def natural_sort(l):
@@ -693,7 +692,7 @@ def classification_accuracy(
     """
 
     # Read in the raw input file
-    csv = utilities.csv2rec(input_fn)
+    csv = pd.read_csv(input_fn)
     obs_data = csv[observed_column]
     prd_data = csv[predicted_column]
 

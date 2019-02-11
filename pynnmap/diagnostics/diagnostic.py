@@ -7,10 +7,8 @@ class MissingConstraintError(Exception):
 
 
 class Diagnostic(object):
-    def __init__(self):
-        pass
-
-    def check_missing_files(self, files):
+    @staticmethod
+    def check_missing_files(files):
         missing_files = []
         for f in files:
             if not os.path.exists(f):

@@ -1,8 +1,7 @@
 import numpy as np
-from matplotlib import mlab
+import pandas as pd
 
 from pynnmap.misc import numpy_ordination
-from pynnmap.misc import utilities
 from pynnmap.parser import parameter_parser as pp
 
 VEGAN_SCRIPT = 'L:/resources/code/models/pre_process/gnn_vegan.r'
@@ -133,27 +132,27 @@ class NumpyCCAOrdination(NumpyOrdination):
     def run(self):
 
         # Convert the species and environment matrices to numpy rec arrays
-        spp_ra = utilities.csv2rec(self.spp_file)
-        env_ra = utilities.csv2rec(self.env_file)
+        spp_df = pd.read_csv(self.spp_file)
+        env_df = pd.read_csv(self.env_file)
 
         # Extract the plot IDs from both the species and environment matrices
         # and ensure that they are equal
-        spp_plot_ids = getattr(spp_ra, self.id_field)
-        env_plot_ids = getattr(env_ra, self.id_field)
+        spp_plot_ids = spp_df[self.id_field]
+        env_plot_ids = env_df[self.id_field]
         if not np.all(spp_plot_ids == env_plot_ids):
             err_msg = 'Species and environment plot IDs do not match'
             raise ValueError(err_msg)
 
-        # Drop the ID column from both arrays
-        spp_ra = mlab.rec_drop_fields(spp_ra, [self.id_field])
-        env_ra = mlab.rec_drop_fields(env_ra, [self.id_field])
+        # Drop the ID column from both dataframes
+        spp_df.drop(labels=[self.id_field], axis=1, inplace=True)
+        env_df.drop(labels=[self.id_field], axis=1, inplace=True)
 
         # For the environment matrix, only keep the variables specified
-        env_ra = mlab.rec_keep_fields(env_ra, self.variables)
+        env_df = env_df[self.variables]
 
         # Convert these matrices to pure floating point arrays
-        spp = np.array([spp_ra[x] for x in spp_ra.dtype.names], dtype=float).T
-        env = np.array([env_ra[x] for x in env_ra.dtype.names], dtype=float).T
+        spp = spp_df.values.astype(float)
+        env = env_df.values.astype(float)
 
         # Apply transformation if desired
         if self.species_transform == 'SQRT':
@@ -203,7 +202,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, c) in enumerate(cca.species_centroids()):
             scores = ','.join(['%.10f' % x for x in c])
-            numpy_fh.write('%s,%s\n' % (spp_ra.dtype.names[i], scores))
+            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
         numpy_fh.write('\n')
 
         # Print out species tolerances
@@ -213,7 +212,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, t) in enumerate(cca.species_tolerances()):
             scores = ','.join(['%.21f' % x for x in t])
-            numpy_fh.write('%s,%s\n' % (spp_ra.dtype.names[i], scores))
+            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
         numpy_fh.write('\n')
 
         # Print out miscellaneous species information
@@ -222,7 +221,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         species_weights, species_n2 = cca.species_information()
         for i in range(len(species_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
-                spp_ra.dtype.names[i], species_weights[i], species_n2[i]))
+                spp_df.columns[i], species_weights[i], species_n2[i]))
         numpy_fh.write('\n')
 
         # Print out site LC scores
@@ -261,27 +260,27 @@ class NumpyRDAOrdination(NumpyOrdination):
 
     def run(self):
         # Convert the species and environment matrices to numpy rec arrays
-        spp_ra = utilities.csv2rec(self.spp_file)
-        env_ra = utilities.csv2rec(self.env_file)
+        spp_df = pd.read_csv(self.spp_file)
+        env_df = pd.read_csv(self.env_file)
 
         # Extract the plot IDs from both the species and environment matrices
         # and ensure that they are equal
-        spp_plot_ids = getattr(spp_ra, self.id_field)
-        env_plot_ids = getattr(env_ra, self.id_field)
+        spp_plot_ids = spp_df[self.id_field]
+        env_plot_ids = env_df[self.id_field]
         if not np.all(spp_plot_ids == env_plot_ids):
             err_msg = 'Species and environment plot IDs do not match'
             raise ValueError(err_msg)
 
-        # Drop the ID column from both arrays
-        spp_ra = mlab.rec_drop_fields(spp_ra, [self.id_field])
-        env_ra = mlab.rec_drop_fields(env_ra, [self.id_field])
+        # Drop the ID column from both dataframes
+        spp_df.drop(labels=[self.id_field], axis=1, inplace=True)
+        env_df.drop(labels=[self.id_field], axis=1, inplace=True)
 
         # For the environment matrix, only keep the variables specified
-        env_ra = mlab.rec_keep_fields(env_ra, self.variables)
+        env_df = env_df[self.variables]
 
         # Convert these matrices to pure floating point arrays
-        spp = np.array([spp_ra[x] for x in spp_ra.dtype.names], dtype=float).T
-        env = np.array([env_ra[x] for x in env_ra.dtype.names], dtype=float).T
+        spp = spp_df.values.astype(float)
+        env = env_df.values.astype(float)
 
         # Apply transformation if desired
         if self.species_transform == 'SQRT':

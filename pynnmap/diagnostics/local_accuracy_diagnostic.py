@@ -1,14 +1,13 @@
 import numpy as np
+import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import statistics
-from pynnmap.misc import utilities
 from pynnmap.parser import parameter_parser as pp
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
-
     def __init__(self, **kwargs):
         if 'parameters' in kwargs:
             p = kwargs['parameters']
@@ -57,8 +56,8 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
         stats_fh.write(','.join(out_list) + '\n')
 
         # Read the observed and predicted files into numpy recarrays
-        obs = utilities.csv2rec(self.observed_file)
-        prd = utilities.csv2rec(self.predicted_file)
+        obs = pd.read_csv(self.observed_file, low_memory=False)
+        prd = pd.read_csv(self.predicted_file, low_memory=False)
 
         # Subset the observed data just to the IDs that are in the
         # predicted file
@@ -70,18 +69,19 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
         mp = xsmp.XMLStandMetadataParser(self.stand_metadata_file)
 
         # For each variable, calculate the statistics
-        for v in obs.dtype.names:
+        for v in obs.columns:
 
             # Get the metadata for this field
             try:
                 fm = mp.get_attribute(v)
-            except:
-                err_msg = v + ' is missing metadata.'
+            except ValueError:
+                err_msg = 'Missing metadata for {}'.format(v)
+                # TODO: log this as warning instead
                 print(err_msg)
                 continue
 
             # Only continue if this is a continuous accuracy variable
-            if fm.field_type != 'CONTINUOUS' or fm.accuracy_attr == 0:
+            if not fm.is_continuous_accuracy_attr():
                 continue
 
             obs_vals = getattr(obs, v)
