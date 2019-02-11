@@ -226,6 +226,16 @@ class XMLParameterParser(
         self.fl_elem.environmental_matrix_file = value
 
     @property
+    def plot_independence_crosswalk_file(self):
+        file_name = str(self.fl_elem.plot_independence_crosswalk_file)
+        return self._get_path('plot_independence_crosswalk_file', file_name)
+
+    @property
+    def plot_year_crosswalk_file(self):
+        file_name = str(self.fl_elem.plot_year_crosswalk_file)
+        return self._get_path('plot_year_crosswalk_file', file_name)
+
+    @property
     def stand_attribute_file(self):
         file_name = str(self.fl_elem.stand_attribute_file)
         return self._get_path('stand_attribute_file', file_name)
@@ -339,8 +349,9 @@ class XMLParameterParser(
             # Create a new XML tree of these pairs
             new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
             for rec in records.itertuples():
-                child = etree.SubElement(
-                    new_pi_crosswalk_elem, 'plot_image_pair')
+                child = (
+                    etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
+                )
                 try:
                     child.plot_year = rec.PLOT_YEAR
                     child.image_year = rec.IMAGE_YEAR

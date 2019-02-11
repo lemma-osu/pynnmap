@@ -7,7 +7,6 @@ class ParameterParser(object):
     Abstract base class for parsing model parameters from an
     input file.
     """
-
     def __init__(self):
         self.imagery_model_types = ['sppsz']
         self.no_imagery_model_types = ['sppba', 'trecov', 'wdycov', 'trepa']
