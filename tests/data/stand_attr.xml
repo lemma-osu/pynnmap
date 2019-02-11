@@ -1,0 +1,4001 @@
+<attributes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://lemma.forestry.oregonstate.edu/xml/stand_attributes.xsd">
+  <attribute>
+    <field_name>FCID</field_name>
+    <field_type>ID</field_type>
+    <units>none</units>
+    <description>Forest class identification number assigned by LEMMA</description>
+    <short_description>Forest class identification number assigned by LEMMA</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>MAP_SOURCE</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Source of map data</description>
+    <short_description>Source of map data</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>ESLF</code_value>
+        <description>Grid data from Ecological Systems map</description>
+        <label>Grid data from Ecological Systems map</label>
+      </code>
+      <code>
+        <code_value>GNN</code_value>
+        <description>Grid data from GNN map</description>
+        <label>Grid data from GNN map</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>ESLF_CODE</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Ecological systems code</description>
+    <short_description>Ecological systems code</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ESLF_NAME</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Ecological systems description</description>
+    <short_description>Ecological systems description</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DATA_SOURCE</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Identification of the source of the inventory data</description>
+    <short_description>Identification of the source of the inventory data</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>BLMWO</code_value>
+        <description>Bureau of Land Management, Western Oregon inventory (Current Vegetation Survey)</description>
+        <label>BLM, Western OR inventory (Current Vegetation Survey)</label>
+      </code>
+      <code>
+        <code_value>FIA_ANNUAL</code_value>
+        <description>Forest Inventory and Analysis, Annual plot design</description>
+        <label>Forest Inventory and Analysis, Annual inventory</label>
+      </code>
+      <code>
+        <code_value>FIACA</code_value>
+        <description>Forest Inventory and Analysis, California inventory</description>
+        <label>Forest Inventory and Analysis, CA inventory</label>
+      </code>
+      <code>
+        <code_value>FIAEO</code_value>
+        <description>Forest Inventory and Analysis, PNW, Eastern Oregon inventory</description>
+        <label>Forest Inventory and Analysis, Eastern OR inventory</label>
+      </code>
+      <code>
+        <code_value>FIAEO_JUN</code_value>
+        <description>Forest Inventory and Analysis, PNW, Eastern Oregon special juniper inventory</description>
+        <label>Forest Inventory and Analysis, Eastern OR juniper inventory</label>
+      </code>
+      <code>
+        <code_value>FIAEW</code_value>
+        <description>Forest Inventory and Analysis, PNW, Eastern Washington inventory</description>
+        <label>Forest Inventory and Analysis, Eastern WA inventory</label>
+      </code>
+      <code>
+        <code_value>FIAWO</code_value>
+        <description>Forest Inventory and Analysis, PNW, Western Oregon inventory</description>
+        <label>Forest Inventory and Analysis, Western OR inventory</label>
+      </code>
+      <code>
+        <code_value>FIAWW</code_value>
+        <description>Forest Inventory and Analysis, PNW, Western Washington inventory</description>
+        <label>Forest Inventory and Analysis, Western WA inventory</label>
+      </code>
+      <code>
+        <code_value>JACKJO</code_value>
+        <description>BLM FIREMON plots from Jackson and Josephine counties</description>
+        <label>BLM FIREMON plots, Jackson and Josephine Counties</label>
+      </code>
+      <code>
+        <code_value>N/A</code_value>
+        <description>Not applicable</description>
+        <label>Not applicable</label>
+      </code>
+      <code>
+        <code_value>R5</code_value>
+        <description>Region 5, California inventory</description>
+        <label>Region 5, USDA Forest Service, CA inventory</label>
+      </code>
+      <code>
+        <code_value>R6</code_value>
+        <description>Region 6, Oregon and Washington inventories (Current Vegetation Survey)</description>
+        <label>Region 6, OR and WA inventories (Current Vegetation Survey)</label>
+      </code>
+      <code>
+        <code_value>R6_ANNUAL</code_value>
+        <description>Region 6, Installed by FIA using Annual protocol</description>
+        <label>Region 6, Installed by FIA</label>
+      </code>
+      <code>
+        <code_value>R6_CVS</code_value>
+        <description>Region 6, Oregon and Washington inventories (Current Vegetation Survey)</description>
+        <label>Region 6, OR and WA inventories (Current Vegetation Survey)</label>
+      </code>
+      <code>
+        <code_value>R6_ECO</code_value>
+        <description>Forest Service Region 6 Ecology Plots</description>
+        <label>Forest Service Region 6 Ecology Plots</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>ASSESSMENT_YEAR</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Year the plot was visited or assessed by photo or map</description>
+    <short_description>Year the plot was visited or assessed by photo or map</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STATE</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>State abbreviation</description>
+    <short_description>State abbreviation</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>CA</code_value>
+        <description>California</description>
+        <label>California</label>
+      </code>
+      <code>
+        <code_value>CO</code_value>
+        <description>Colorado</description>
+        <label>Colorado</label>
+      </code>
+      <code>
+        <code_value>ID</code_value>
+        <description>Idaho</description>
+        <label>Idaho</label>
+      </code>
+      <code>
+        <code_value>MT</code_value>
+        <description>Montana</description>
+        <label>Montana</label>
+      </code>
+      <code>
+        <code_value>OR</code_value>
+        <description>Oregon</description>
+        <label>Oregon</label>
+      </code>
+      <code>
+        <code_value>WA</code_value>
+        <description>Washington</description>
+        <label>Washington</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>CNTY</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>County code (code values not enumerated since the value depends on the state)</description>
+    <short_description>County code (not enumerated in METADATA_CODES since the value depends on the state)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>PLOT</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Original plot number from source database</description>
+    <short_description>Original plot number from source database</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>OCCASION_NUM</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Inventory occasion number of this plot</description>
+    <short_description>Inventory occasion number of this plot</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live trees 2.5-25 cm dbh</description>
+    <short_description>Basal area of live trees 2.5-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live trees 25-50 cm dbh</description>
+    <short_description>Basal area of live trees 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live trees 50-75 cm dbh</description>
+    <short_description>Basal area of live trees 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live trees 75-100 cm dbh</description>
+    <short_description>Basal area of live trees 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live trees &gt;=2.5 cm dbh</description>
+    <short_description>Basal area of live trees &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of trees &gt;=25 cm dbh</description>
+    <short_description>Basal area of trees &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of trees &gt;=50 cm dbh</description>
+    <short_description>Basal area of trees &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of trees &gt;=75 cm dbh</description>
+    <short_description>Basal area of trees &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BA_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live trees &gt;=100 cm dbh</description>
+    <short_description>Basal area of live trees &gt;=100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live conifers 2.5-25 cm dbh</description>
+    <short_description>Basal area of live conifers 2.5-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live conifers 25-50 cm dbh</description>
+    <short_description>Basal area of live conifers 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live conifers 50-75 cm dbh</description>
+    <short_description>Basal area of live conifers 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live conifers 75-100 cm dbh</description>
+    <short_description>Basal area of live conifers 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live conifers &gt;=2.5 cm dbh</description>
+    <short_description>Basal area of live conifers &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of conifers &gt;=25 cm dbh</description>
+    <short_description>Basal area of conifers &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of conifers &gt;=50 cm dbh</description>
+    <short_description>Basal area of conifers &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of conifers &gt;=75 cm dbh</description>
+    <short_description>Basal area of conifers &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live conifers &gt;=100 cm dbh</description>
+    <short_description>Basal area of live conifers &gt;=100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAC_PROP</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>proportion</units>
+    <description>Proportion of total basal area that is conifer</description>
+    <short_description>Proportion of total basal area that is conifer</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live hardwoods 2.5-25 cm dbh</description>
+    <short_description>Basal area of live hardwoods 2.5-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live hardwoods 25-50 cm dbh</description>
+    <short_description>Basal area of live hardwoods 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live hardwoods 50-75 cm dbh</description>
+    <short_description>Basal area of live hardwoods 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live hardwoods 75-100 cm dbh</description>
+    <short_description>Basal area of live hardwoods 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live hardwoods &gt;=2.5 cm dbh</description>
+    <short_description>Basal area of live hardwoods &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of hardwoods &gt;=25 cm dbh</description>
+    <short_description>Basal area of hardwoods &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of hardwoods &gt;=50 cm dbh</description>
+    <short_description>Basal area of hardwoods &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of hardwoods &gt;=75 cm dbh</description>
+    <short_description>Basal area of hardwoods &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of live hardwoods &gt;=100 cm dbh</description>
+    <short_description>Basal area of live hardwoods &gt;=100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BAH_PROP</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>proportion</units>
+    <description>Proportion of total basal area that is hardwood</description>
+    <short_description>Proportion of total basal area that is hardwood</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_3_25_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live trees 2.5-25 cm DBH</description>
+    <short_description>CRM biomass of live trees 2.5-25 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_25_50_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method  biomass of live trees 25-50 cm DBH</description>
+    <short_description>CRM biomass of live trees 25-50 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_50_75_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live trees 50-75 cm DBH</description>
+    <short_description>CRM biomass of live trees 50-75 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_75_100_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live trees 75-100 cm DBH</description>
+    <short_description>CRM biomass of live trees 75-100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_3_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of all live trees &gt;=2.5 cm dbh</description>
+    <short_description>CRM biomass of all live trees &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_25_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live trees &gt;=25 cm dbh</description>
+    <short_description>CRM biomass of live trees &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_50_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of all live trees &gt;=50 cm dbh</description>
+    <short_description>CRM biomass of all live trees &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_75_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live trees &gt;= 75 cm dbh</description>
+    <short_description>CRM biomass of live trees &gt;= 75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_100_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live trees &gt;= 100 cm DBH</description>
+    <short_description>CRM biomass of live trees &gt;= 100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_3_25_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers 2.5-25 cm DBH</description>
+    <short_description>CRM biomass of live conifers 2.5-25 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_25_50_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers 25-50 cm DBH</description>
+    <short_description>CRM biomass of live conifers 25-50 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_50_75_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers 50-75 cm DBH</description>
+    <short_description>CRM biomass of live conifers 50-75 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_75_100_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers 75-100 cm DBH</description>
+    <short_description>CRM biomass of live conifers 75-100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_3_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers &gt;=2.5 cm dbh</description>
+    <short_description>CRM biomass of live conifers &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_25_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers &gt;=25 cm dbh</description>
+    <short_description>CRM biomass of live conifers &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_50_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers &gt;=50 cm dbh</description>
+    <short_description>CRM biomass of live conifers &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_75_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers &gt;=75 cm dbh</description>
+    <short_description>CRM biomass of live conifers &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_100_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live conifers &gt;= 100 cm DBH</description>
+    <short_description>CRM biomass of live conifers &gt;= 100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_3_25_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods 2.5-25 cm DBH</description>
+    <short_description>CRM biomass of live hardwoods 2.5-25 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_25_50_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods 25-50 cm DBH</description>
+    <short_description>CRM biomass of live hardwoods 25-50 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_50_75_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods 50-75 cm DBH</description>
+    <short_description>CRM biomass of live hardwoods 50-75 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_75_100_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods 75-100 cm DBH</description>
+    <short_description>CRM biomass of live hardwoods 75-100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_3_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of all live hardwoods &gt;=2.5 cm dbh</description>
+    <short_description>CRM biomass of all live hardwoods &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_25_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods &gt;=25 cm dbh</description>
+    <short_description>CRM biomass of live hardwoods &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_50_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods &gt;=50 cm dbh</description>
+    <short_description>CRM biomass of live hardwoods &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_75_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods &gt;=75 cm dbh</description>
+    <short_description>CRM biomass of live hardwoods &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_100_CRM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Component Ratio Method biomass of live hardwoods &gt;= 100 cm DBH</description>
+    <short_description>CRM biomass of live hardwoods &gt;= 100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_3_25_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live trees 2.5-25 cm DBH</description>
+    <short_description>Jenkins biomass of live trees 2.5-25 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_25_50_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live trees 25-50 cm DBH</description>
+    <short_description>Jenkins biomass of live trees 25-50 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_50_75_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live trees 50-75 cm DBH</description>
+    <short_description>Jenkins biomass of live trees 50-75 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_75_100_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live trees 75-100 cm DBH</description>
+    <short_description>Jenkins biomass of live trees 75-100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_3_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of all live trees &gt;=2.5 cm dbh</description>
+    <short_description>Jenkins biomass of all live trees &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_25_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live trees &gt;=25 cm dbh</description>
+    <short_description>Jenkins biomass of live trees &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_50_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of all live trees &gt;=50 cm dbh</description>
+    <short_description>Jenkins biomass of all live trees &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_75_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live trees &gt;=75 cm dbh</description>
+    <short_description>Jenkins biomass of live trees &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_100_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live trees &gt;= 100 cm DBH</description>
+    <short_description>Jenkins biomass of live trees &gt;= 100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_3_25_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers 2.5-25 cm DBH</description>
+    <short_description>Jenkins biomass of live conifers 2.5-25 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_25_50_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers 25-50 cm DBH</description>
+    <short_description>Jenkins biomass of live conifers 25-50 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_50_75_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers 50-75 cm DBH</description>
+    <short_description>Jenkins biomass of live conifers 50-75 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_75_100_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers 75-100 cm DBH</description>
+    <short_description>Jenkins biomass of live conifers 75-100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_3_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of all live conifers &gt;=2.5 cm dbh</description>
+    <short_description>Jenkins biomass of all live conifers &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_25_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers &gt;=25 cm dbh</description>
+    <short_description>Jenkins biomass of live conifers &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_50_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers &gt;=50 cm dbh</description>
+    <short_description>Jenkins biomass of live conifers &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_75_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers &gt;=75 cm dbh</description>
+    <short_description>Jenkins biomass of live conifers &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_100_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live conifers &gt;= 100 cm DBH</description>
+    <short_description>Jenkins biomass of live conifers &gt;= 100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_3_25_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods 2.5-25 cm DBH</description>
+    <short_description>Jenkins biomass of live hardwoods 2.5-25 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_25_50_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods 25-50 cm DBH</description>
+    <short_description>Jenkins biomass of live hardwoods 25-50 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_50_75_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods 50-75 cm DBH</description>
+    <short_description>Jenkins biomass of live hardwoods 50-75 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_75_100_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods 75-100 cm DBH</description>
+    <short_description>Jenkins biomass of live hardwoods 75-100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_3_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of all live hardwoods &gt;=2.5 cm dbh</description>
+    <short_description>Jenkins biomass of all live hardwoods &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_25_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods &gt;=25 cm dbh</description>
+    <short_description>Jenkins biomass of live hardwoods &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_50_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods &gt;=50 cm dbh</description>
+    <short_description>Jenkins biomass of live hardwoods &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_75_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods &gt;=75 cm dbh</description>
+    <short_description>Jenkins biomass of live hardwoods &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_100_JENK</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Jenkins biomass of live hardwoods &gt;= 100 cm DBH</description>
+    <short_description>Jenkins biomass of live hardwoods &gt;= 100 cm DBH</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPH_GE_3_REG</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>FIA Regional biomass of all live trees &gt;= 2.5cm dbh</description>
+    <short_description>FIA Regional biomass of all live trees &gt;= 2.5cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHC_GE_3_REG</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>FIA Regional biomass of all live conifers &gt;= 2.5cm dbh</description>
+    <short_description>FIA Regional biomass of all live conifers &gt;= 2.5cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BPHH_GE_3_REG</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>FIA Regional biomass of all live hardwoods &gt;= 2.5cm dbh</description>
+    <short_description>FIA Regional biomass of all live hardwoods &gt;= 2.5cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees 2.5-25 cm dbh</description>
+    <short_description>Density of live trees 2.5-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees 25-50 cm dbh</description>
+    <short_description>Density of live trees 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees 50-75 cm dbh</description>
+    <short_description>Density of live trees 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees 75-100 cm dbh</description>
+    <short_description>Density of live trees 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees &gt;=2.5 cm dbh</description>
+    <short_description>Density of live trees &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees &gt;=25 cm dbh</description>
+    <short_description>Density of live trees &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees &gt;=50 cm dbh</description>
+    <short_description>Density of live trees &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees &gt;=75 cm dbh</description>
+    <short_description>Density of live trees &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live trees &gt;=100 cm dbh</description>
+    <short_description>Density of live trees &gt;=100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers 3-25 cm dbh</description>
+    <short_description>Density of live conifers 3-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers 25-50 cm dbh</description>
+    <short_description>Density of live conifers 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers 50-75 cm dbh</description>
+    <short_description>Density of live conifers 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers 75-100 cm dbh</description>
+    <short_description>Density of live conifers 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers &gt;=2.5 cm dbh</description>
+    <short_description>Density of live conifers &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers &gt;=25 cm dbh</description>
+    <short_description>Density of live conifers &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers &gt;= 50 cm dbh</description>
+    <short_description>Density of live conifers &gt;= 50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers &gt;= 75 cm dbh</description>
+    <short_description>Density of live conifers &gt;= 75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers &gt;= 100 cm dbh</description>
+    <short_description>Density of live conifers &gt;= 100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods 3-25 cm dbh</description>
+    <short_description>Density of live hardwoods 3-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods 25-50 cm dbh</description>
+    <short_description>Density of live hardwoods 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods 50-75 cm dbh</description>
+    <short_description>Density of live hardwoods 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods 75-100 cm dbh</description>
+    <short_description>Density of live hardwoods 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of hardwoods &gt;=2.5 cm dbh</description>
+    <short_description>Density of hardwoods &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods &gt;=25 cm dbh</description>
+    <short_description>Density of live hardwoods &gt;=25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods &gt;=50 cm dbh</description>
+    <short_description>Density of live hardwoods &gt;=50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods &gt;=75 cm dbh</description>
+    <short_description>Density of live hardwoods &gt;=75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live hardwoods &gt;=100 cm dbh</description>
+    <short_description>Density of live hardwoods &gt;=100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHINTOL_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of shade-intolerant trees &gt;=2.5 cm dbh</description>
+    <short_description>Density of shade-intolerant trees &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHTOL_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of shade-tolerant trees &gt;=2.5 cm dbh</description>
+    <short_description>Density of shade-tolerant trees &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees 2.5-25 cm dbh</description>
+    <short_description>Volume of live trees 2.5-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees 25-50 cm dbh</description>
+    <short_description>Volume of live trees 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees 50-75 cm dbh</description>
+    <short_description>Volume of live trees 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees 75-100 cm dbh</description>
+    <short_description>Volume of live trees 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees &gt;= 2.5 cm dbh</description>
+    <short_description>Volume of live trees &gt;= 2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees &gt;= 25 cm dbh</description>
+    <short_description>Volume of live trees &gt;= 25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees &gt;= 50 cm dbh</description>
+    <short_description>Volume of live trees &gt;= 50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees &gt;= 75 cm dbh</description>
+    <short_description>Volume of live trees &gt;= 75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live trees &gt;= 100 cm dbh</description>
+    <short_description>Volume of live trees &gt;= 100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers 2.5-25 cm dbh</description>
+    <short_description>Volume of live conifers 2.5-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers 25-50 cm dbh</description>
+    <short_description>Volume of live conifers 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers 50-75 cm dbh</description>
+    <short_description>Volume of live conifers 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers 75-100 cm dbh</description>
+    <short_description>Volume of live conifers 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers &gt;= 2.5 cm dbh</description>
+    <short_description>Volume of live conifers &gt;= 2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers &gt;= 25 cm dbh</description>
+    <short_description>Volume of live conifers &gt;= 25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers &gt;= 50 cm dbh</description>
+    <short_description>Volume of live conifers &gt;= 50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers &gt;= 75 cm dbh</description>
+    <short_description>Volume of live conifers &gt;= 75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHC_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live conifers &gt;= 100 cm dbh</description>
+    <short_description>Volume of live conifers &gt;= 100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_3_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods 2.5-25 cm dbh</description>
+    <short_description>Volume of live hardwoods 2.5-25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods 25-50 cm dbh</description>
+    <short_description>Volume of live hardwoods 25-50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods 50-75 cm dbh</description>
+    <short_description>Volume of live hardwoods 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods 75-100 cm dbh</description>
+    <short_description>Volume of live hardwoods 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods &gt;= 2.5 cm dbh</description>
+    <short_description>Volume of live hardwoods &gt;= 2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods &gt;= 25 cm dbh</description>
+    <short_description>Volume of live hardwoods &gt;= 25 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods &gt;= 50 cm dbh</description>
+    <short_description>Volume of live hardwoods &gt;= 50 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods &gt;= 75 cm dbh</description>
+    <short_description>Volume of live hardwoods &gt;= 75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPHH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of live hardwoods &gt;= 100 cm dbh</description>
+    <short_description>Volume of live hardwoods &gt;= 100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>AGE_DOM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>years</units>
+    <description>Basal area weighted stand age based on field recorded or modeled ages of dom/codom trees</description>
+    <short_description>BA weighted stand age based on dom/codom trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>AGE_DOM_NO_REM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>years</units>
+    <description>Basal area weighted stand age based on field recorded or modeled ages of dom/codom trees excluding remnant trees</description>
+    <short_description>BA weighted stand age based on dom/codom trees (no remnants)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>AGEC_DOM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>years</units>
+    <description>Basal area weighted stand age based on field recorded ages of dom/codom conifers</description>
+    <short_description>BA weighted stand age based on dom/codom conifers</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>AGEH_DOM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>years</units>
+    <description>Basal area weighted stand age based on field recorded ages of dominant and codominant hardwoods</description>
+    <short_description>BA weighted stand age based on dom/codom hardwoods</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CANCOV</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Canopy cover of all live trees: calculated using methods in the Forest Vegetation Simulator for Inventory plots; sum of occular estimates for Ecology plots</description>
+    <short_description>Canopy cover of all live trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CANCOV_CON</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Canopy cover of all conifers: calculated using methods in the Forest Vegetation Simulator for Inventory plots; sum of occular estimates for Ecology plots</description>
+    <short_description>Canopy cover of all conifers</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CANCOV_HDW</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Canopy cover of all hardwoods: calculated using methods in the Forest Vegetation Simulator for Inventory plots; sum of occular estimates for Ecology plots</description>
+    <short_description>Canopy cover of all hardwoods</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CANCOV_DOM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Canopy cover of all dominant trees (i.e. CROWN_CLASS &gt;= 3); calculated using methods in the Forest Vegetation Simulator</description>
+    <short_description>Canopy cover of all dominant trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CANCOV_LAYERS</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units># layers</units>
+    <description>Number of tree canopy layers present</description>
+    <short_description>Number of tree canopy layers present</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>FORTYPBA</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Forest type, which describes dominant tree species (based on basal area) of current vegetation. Alpha code comprised of one or two hyphenated species codes (from 2000 PLANTS database).</description>
+    <short_description>Forest type (based on dominance of basal area)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>FORTYPCOV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Forest type, which describes dominant tree species (based on foliar cover) of current vegetation. Alpha code comprised of one or two hyphenated species codes (from 2000 PLANTS database).</description>
+    <short_description>Forest type (dominant tree species (based on foliar cover) of current vegetation)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>FORTYPIV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Forest type, which describes dominant tree species (based on importance value) of current vegetation. Alpha code comprised of one or two hyphenated species codes (from 2000 PLANTS database).</description>
+    <short_description>Forest type (dominant tree species (based on importance value) of current vegetation)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>IV_CON</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Importance value of conifers based on basal area and TPH ratios</description>
+    <short_description>Importance value of all conifers</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>IV_HDW</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Importance value of hardwoods based on basal area and TPH ratios</description>
+    <short_description>Importance value of all hardwoods</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>IV_VS</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Importance value of trees &lt;12.5 cm DBH based on basal area and TPH ratios</description>
+    <short_description>Importance value of trees &lt; 12.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>IV_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Importance value of trees &gt;=100 cm DBH based on basal area and TPH ratios</description>
+    <short_description>Importance value of trees &gt;=100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>MNDBHBA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Basal-area weighted mean diameter of all live trees</description>
+    <short_description>Basal-area weighted mean diameter of all live trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>MNDBHBA_CON</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Basal-area weighted mean diameter of all live conifers</description>
+    <short_description>Basal-area weighted mean diameter of all live conifers</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>MNDBHBA_HDW</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Basal-area weighted mean diameter of all live hardwoods</description>
+    <short_description>Basal-area weighted mean diameter of all live hardwoods</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QMD_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Quadratic mean diameter of trees &gt;=2.5 cm dbh</description>
+    <short_description>Quadratic mean diameter of trees &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QMDC_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Quadratic mean diameter of conifers &gt;=2.5 cm dbh</description>
+    <short_description>Quadratic mean diameter of conifers &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QMDH_GE_3</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Quadratic mean diameter of hardwoods &gt;=2.5 cm dbh</description>
+    <short_description>Quadratic mean diameter of hardwoods &gt;=2.5 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QMD_DOM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Quadratic mean diameter of all dominant and codominant trees</description>
+    <short_description>Quadratic mean diameter of all dom/codom trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QMDC_DOM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Quadratic mean diameter of all dominant and codominant conifers</description>
+    <short_description>Quadratic mean diameter of all dominant and codominant conifers</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QMDH_DOM</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Quadratic mean diameter of all dominant and codominant hardwoods</description>
+    <short_description>Quadratic mean diameter of all dominant and codominant hardwoods</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QMD_HT25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>in</units>
+    <description>Quadratic mean diameter in inches of trees whose heights are in the top 25% of all tree heights on the plot</description>
+    <short_description>Quadratic mean diameter of the top 25% of trees by height</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>LSOG</field_name>
+    <field_type>BOOLEAN</field_type>
+    <units>none</units>
+    <description>Late successional old growth: 1 if CANCOV_CON &gt;= 10% and QMDC_DOM &gt;= 50.8; 0 otherwise</description>
+    <short_description>Late successional old growth</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>LSOG_TPHC_50</field_name>
+    <field_type>BOOLEAN</field_type>
+    <units>none</units>
+    <description>Late successional old growth: 1 if TPHC_GE_50 &gt;= 57.0; 0 otherwise</description>
+    <short_description>Late successional old growth</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>OGSI</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Regionalized old-growth structure index for plots within NWFP. Calculated from abundance of large live trees, snags and down wood, and diversity of tree sizes.</description>
+    <short_description>Old-growth structure index</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>OGSI_80</field_name>
+    <field_type>BOOLEAN</field_type>
+    <units>none</units>
+    <description>1 if OGSI exceeds threshold for 80 year old stand; 0 otherwise</description>
+    <short_description>1 if OGSI exceeds threshold for 80 year old stand; 0 otherwise</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>OGSI_200</field_name>
+    <field_type>BOOLEAN</field_type>
+    <units>none</units>
+    <description>1 if OGSI exceeds threshold for 200 year old stand; 0 otherwise</description>
+    <short_description>1 if OGSI exceeds threshold for 200 year stand; 0 otherwise</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TREER</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>count</units>
+    <description>Richness (count) of all tree species</description>
+    <short_description>Richness (count) of all tree species</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CONR</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>count</units>
+    <description>Richness (count) of conifer tree species</description>
+    <short_description>Richness (count) of conifer tree species</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>HDWR</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>count</units>
+    <description>Richness (count) of hardwood tree species</description>
+    <short_description>Richness (count) of hardwood tree species</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DDI</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Diameter diversity index. DDI is a measure of the structural diversity of a forest stand, based on tree densities in different DBH classes.</description>
+    <short_description>Diameter diversity index</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>COVCL</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Cover class, based on CANCOV, modified slightly from O'Neil et al. (2001)</description>
+    <short_description>Cover class (modified) from O'Neil et al. 2001</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>1</code_value>
+        <description>Sparse/remnant (CANCOV &lt; 10)</description>
+        <label>Sparse/remnant</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Open (CANCOV &gt;= 10 and &lt; 40)</description>
+        <label>Open</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Moderate (CANCOV &gt;= 40 and &lt; 70)</description>
+        <label>Moderate</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Closed (CANCOV &gt;= 70)</description>
+        <label>Closed</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>SIZECL</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Size class, based on QMD_DOM and CANCOV, modified slightly from O'Neil et al. (2001)</description>
+    <short_description>Size class (modified) from O'Neil et al. (2001)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>1</code_value>
+        <description>Shrub/seedling (QMD_DOM &lt; 2.5 or CANCOV &lt; 10)</description>
+        <label>Shrub/seedling</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Sapling/pole (QMD_DOM &gt;= 2.5 and &lt; 25.0)</description>
+        <label>Sapling/pole</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Small tree (QMD_DOM &gt;= 25.0 and &lt; 37.5)</description>
+        <label>Small tree</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Medium tree (QMD_DOM &gt;= 37.5 and &lt; 50.0)</description>
+        <label>Medium tree</label>
+      </code>
+      <code>
+        <code_value>5</code_value>
+        <description>Large tree (QMD_DOM &gt;= 50.0 and &lt; 75)</description>
+        <label>Large tree</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Giant tree (QMD_DOM &gt;= 75.0)</description>
+        <label>Giant tree</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>SC</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Structural condition (lumping of Johnson et al.'s (2001) SIZECL and COVCL), used in Ohmann and Waddell (2002)</description>
+    <short_description>Structural condition (after Ohmann and Waddell (2002))</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>0</code_value>
+        <description>Not classified</description>
+        <label>Not classified</label>
+      </code>
+      <code>
+        <code_value>1</code_value>
+        <description>Grass/Forb/Shrub/Seedling (CANCOV &lt; 10)</description>
+        <label>Sparse</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Sapling/Pole - Open/Moderate (CANCOV 10-70, QMD_DOM &lt; 25)</description>
+        <label>Sapling/Pole - Open/Moderate</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Sapling/Pole - Closed (CANCOV &gt;= 70, QMD_DOM &lt; 25)</description>
+        <label>Sapling/Pole - Closed</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Small/Medium Tree - Open/Moderate (CANCOV 10-70, QMD_DOM 25-50)</description>
+        <label>Small/Medium - Open/Moderate</label>
+      </code>
+      <code>
+        <code_value>5</code_value>
+        <description>Small/Medium Tree - Closed (CANCOV &gt;= 70, QMD_DOM 25-50)</description>
+        <label>Small/Medium - Closed</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Large/Giant Tree - Open/Moderate (CANCOV 10-70, QMD_DOM &gt;= 50)</description>
+        <label>Large/Giant - Open/Moderate</label>
+      </code>
+      <code>
+        <code_value>7</code_value>
+        <description>Large/Giant Tree - Closed (CANCOV &gt;= 70, QMD_DOM &gt;= 50)</description>
+        <label>Large/Giant - Closed</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>SC_DECAID</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Structural condition (lumping of SC classes), used in the DecAID Decayed Wood Advisor (Marcot et al. 2010)&#13;
+(http://www.fs.fed.us/r6/nr/wildlife/decaid/)</description>
+    <short_description>Structural condition (DecAID lumping of SC)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>L</code_value>
+        <description>Larger trees (CANCOV &gt; 10% and QMD_DOM &gt; 50) [SC classes 6,7]</description>
+        <label>Larger trees</label>
+      </code>
+      <code>
+        <code_value>O</code_value>
+        <description>Open (CANCOV &lt; 10 or QMD_DOM &lt; 25) [SC classes 1,2,3]</description>
+        <label>Open</label>
+      </code>
+      <code>
+        <code_value>S</code_value>
+        <description>Small/medium trees (CANCOV &gt; 10 and QMD_DOM 25-50) [SC classes 4,5]</description>
+        <label>Small/medium trees</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>STRUCCOND</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Structural condition (lumping of O'Neil et al. (2001) SIZECL and COVCL)</description>
+    <short_description>Structural condition (O'Neil et al. 2001)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>1</code_value>
+        <description>Sparse (CANCOV &lt; 10%)</description>
+        <label>Sparse</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Open (CANCOV 10-40%)</description>
+        <label>Open</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Sapling/pole - moderate/closed (CANCOV &gt; 40, QMD_DOM &lt; 25 cm)</description>
+        <label>Closed - Sm</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Small/medium tree - moderate/closed (CANCOV &gt;= 40, QMD_DOM 25-50)</description>
+        <label>Closed - Md</label>
+      </code>
+      <code>
+        <code_value>5</code_value>
+        <description>Large tree - moderate/closed (CANCOV &gt;= 40, QMD_DOM 50-75)</description>
+        <label>Closed - Lg</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Large/giant tree - moderate/closed (CANCOV &gt;= 40, QMD_DOM &gt;= 75)</description>
+        <label>Closed - VLg</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>STRUCCONDR</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Structural condition (STRUCCOND plus remnant classes -- for CLAMS EcoApp analyses)</description>
+    <short_description>Structural condition plus remnant classes</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>1</code_value>
+        <description>Sparse (CANCOV &lt; 10), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Sparse, no remnants</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Sparse (CANCOV &lt; 10), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Sparse, low remnants</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Sparse (CANCOV &lt; 10), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Sparse, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Sparse (CANCOV &lt; 10), high remnants (TPHREML &gt;= 12)</description>
+        <label>Sparse, high remnants</label>
+      </code>
+      <code>
+        <code_value>5</code_value>
+        <description>Open (CANCOV 10-40), no remnants (TPHREML &lt;0.5)</description>
+        <label>Open, no remnants</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Open (CANCOV 10-40), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Open, low remnants</label>
+      </code>
+      <code>
+        <code_value>7</code_value>
+        <description>Open (CANCOV 10-40), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Open, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>8</code_value>
+        <description>Open (CANCOV 10-40), high remnants (TPHREML &gt;= 12)</description>
+        <label>Open, high remnants</label>
+      </code>
+      <code>
+        <code_value>9</code_value>
+        <description>Sapling/pole (QMD_DOM 2.54-25), moderate/closed (CANCOV &gt;= 40), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Closed Sm, no remnants</label>
+      </code>
+      <code>
+        <code_value>10</code_value>
+        <description>Sapling/pole (QMD_DOM 2.54-25), moderate/closed (CANCOV &gt;= 40), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Closed Sm, low remnants</label>
+      </code>
+      <code>
+        <code_value>11</code_value>
+        <description>Sapling/pole (QMD_DOM 2.54-25), moderate/closed (CANCOV &gt;= 40), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Closed Sm, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>12</code_value>
+        <description>Sapling/pole (QMD_DOM 2.54-25), moderate/closed (CANCOV &gt;= 40), high remnants (TPHREML &gt;= 12)</description>
+        <label>Closed Sm, high remnants</label>
+      </code>
+      <code>
+        <code_value>13</code_value>
+        <description>Small/medium (QMD_DOM 25-50), moderate/closed (CANCOV &gt;= 40), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Closed Md, no remnants</label>
+      </code>
+      <code>
+        <code_value>14</code_value>
+        <description>Small/medium (QMD_DOM 25-50), moderate/closed (CANCOV &gt;= 40), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Closed Md, low remnants</label>
+      </code>
+      <code>
+        <code_value>15</code_value>
+        <description>Small/medium (QMD_DOM 25-50), moderate/closed (CANCOV &gt;= 40), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Closed Md, medium remnants</label>
+      </code>
+      <code>
+        <code_value>16</code_value>
+        <description>Small/medium (QMD_DOM 25-50), moderate/closed (CANCOV &gt;= 40), high remnants (TPHREML &gt;= 12)</description>
+        <label>Closed Md, high remnants</label>
+      </code>
+      <code>
+        <code_value>17</code_value>
+        <description>Large/giant (QMD_DOM &gt;= 50), moderate/closed (CANCOV &gt;= 40)</description>
+        <label>Closed Lg/VLg</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>VEGCLASS</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Vegetation class based on CANCOV, BAH_PROP, QMD_DOM</description>
+    <short_description>Vegetation class based on CANCOV, BAH_PROP, QMD_DOM</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>1</code_value>
+        <description>Sparse (CANCOV &lt; 10)</description>
+        <label>Sparse</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Open (CANCOV 10-39)</description>
+        <label>Open</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Broadleaf, sap/pole, mod/closed (CANCOV &gt;= 40, BAH_PROP &gt;= 0.65, QMD_DOM &lt; 25 cm )</description>
+        <label>Blf - Sm</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Broadleaf, sm/med/lg, mod/closed (CANCOV &gt;= 40, BAH_PROP &gt;= 0.65, QMD_DOM &gt; 25 cm)</description>
+        <label>Blf - Md/Lg</label>
+      </code>
+      <code>
+        <code_value>5</code_value>
+        <description>Mixed, sap/pole, mod/closed (CANCOV &gt;= 40, BAH_PROP 0.20-0.64, QMD_DOM &lt; 25 cm)</description>
+        <label>Mix - Sm</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Mixed, sm/med, mod/closed (CANCOV &gt;= 40, BAH_PROP 0.20-0.64, QMD_DOM 25-50 cm)</description>
+        <label>Mix - Md</label>
+      </code>
+      <code>
+        <code_value>7</code_value>
+        <description>Mixed, large+giant, mod/closed (CANCOV &gt;= 40, BAH_PROP 0.20-0.64, QMD_DOM &gt; 50 cm)</description>
+        <label>Mix - Lg</label>
+      </code>
+      <code>
+        <code_value>8</code_value>
+        <description>Conifer, sap/pole, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, QMD_DOM &lt; 25 cm)</description>
+        <label>Con - Sm</label>
+      </code>
+      <code>
+        <code_value>9</code_value>
+        <description>Conifer, sm/med, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, QMD_DOM 25-50 cm)</description>
+        <label>Con - Md</label>
+      </code>
+      <code>
+        <code_value>10</code_value>
+        <description>Conifer, large, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, QMD_DOM 50-75 cm)</description>
+        <label>Con - Lg</label>
+      </code>
+      <code>
+        <code_value>11</code_value>
+        <description>Conifer, giant, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, QMD_DOM &gt;75 cm)</description>
+        <label>Con - VLg</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>VEGCLASSR</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Vegetation class with remnants (used for CLAMS EcoApp papers)</description>
+    <short_description>Vegetation class with remnants</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>1</code_value>
+        <description>Open (CANCOV &lt; 40), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Open, no remnants</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Open (CANCOV &lt; 40), low remnants</description>
+        <label>Open, low remnants</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Open (CANCOV &lt; 40), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Open, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Open (CANCOV &lt; 40), high remnants (TPHREML &gt;= 12)</description>
+        <label>Open, high remnants</label>
+      </code>
+      <code>
+        <code_value>5</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), small (QMD_DOM &lt; 25), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Blf - Sm, no remnants</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), small (QMD_DOM &lt; 25), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Blf - Sm, low remnants</label>
+      </code>
+      <code>
+        <code_value>7</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), small (QMD_DOM &lt; 25), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Blf - Sm, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>8</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), small (QMD_DOM &lt; 25), high remnants (TPHREML &gt;= 12)</description>
+        <label>Blf - Sm, high remnants</label>
+      </code>
+      <code>
+        <code_value>9</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), medium/large/very large (QMD_DOM &gt;= 25), no remnants</description>
+        <label>Blf - Md/Lg, no remnants</label>
+      </code>
+      <code>
+        <code_value>10</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), medium/large/very large (QMD_DOM &gt;= 25), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Blf - Md/Lg, low remnants</label>
+      </code>
+      <code>
+        <code_value>11</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), medium/large/very large (QMD_DOM &gt;= 25), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Blf - Md/Lg, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>12</code_value>
+        <description>Hardwood (BAH_PROP &gt; 0.65), medium/large/very large (QMD_DOM &gt;= 25), high remnants (TPHREML &gt;= 12)</description>
+        <label>Blf - Md/Lg, high remnants</label>
+      </code>
+      <code>
+        <code_value>13</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), small (QMD_DOM &lt;25), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Mix - Sm, no remnants</label>
+      </code>
+      <code>
+        <code_value>14</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), small (QMD_DOM &lt;25), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Mix - Sm, low remnants</label>
+      </code>
+      <code>
+        <code_value>15</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), small (QMD_DOM &lt;25), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Mix - Sm, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>16</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), small (QMD_DOM &lt; 25), high remnants (TPHREML &gt;= 12)</description>
+        <label>Mix - Sm, high remnants</label>
+      </code>
+      <code>
+        <code_value>17</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), medium (QMD_DOM 25-50), no remnants (TPHREML &lt;0.5)</description>
+        <label>Mix - Md, no remnants</label>
+      </code>
+      <code>
+        <code_value>18</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), medium (QMD_DOM 25-50), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Mix - Md, low remnants</label>
+      </code>
+      <code>
+        <code_value>19</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), medium (QMD_DOM 25-50), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Mix - Md, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>20</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), medium (QMD_DOM 25-50), high remnants (TPHREML &gt;= 12)</description>
+        <label>Mix - Md, high remnants</label>
+      </code>
+      <code>
+        <code_value>21</code_value>
+        <description>Mixed (BAH_PROP 0.20-0.64), large/very large (QMD_DOM &gt;= 50)</description>
+        <label>Mix - Lg</label>
+      </code>
+      <code>
+        <code_value>22</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), small (QMD_DOM &lt; 25), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Con - Sm, no remnants</label>
+      </code>
+      <code>
+        <code_value>23</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), small (QMD_DOM &lt; 25), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Con - Sm, low remnants</label>
+      </code>
+      <code>
+        <code_value>24</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), small (QMD_DOM &lt; 25), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Con - Sm, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>25</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), small (QMD_DOM &lt; 25), high remnants (TPHREML &gt;= 12)</description>
+        <label>Con - Sm, high remnants</label>
+      </code>
+      <code>
+        <code_value>26</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), medium (QMD_DOM 25-50), no remnants (TPHREML &lt; 0.5)</description>
+        <label>Con - Md, no remnants</label>
+      </code>
+      <code>
+        <code_value>27</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), medium (QMD_DOM 25-50), low remnants (TPHREML 0.5-5.5)</description>
+        <label>Con - Md, low remnants</label>
+      </code>
+      <code>
+        <code_value>28</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), medium (QMD_DOM 25-50), moderate remnants (TPHREML 5.5-12)</description>
+        <label>Con - Md, moderate remnants</label>
+      </code>
+      <code>
+        <code_value>29</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), medium (QMD_DOM 25-50), high remnants (TPHREML &gt;= 12)</description>
+        <label>Con - Md, high remnants</label>
+      </code>
+      <code>
+        <code_value>30</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), large (QMD_DOM 50-75)</description>
+        <label>Con - Lg</label>
+      </code>
+      <code>
+        <code_value>31</code_value>
+        <description>Conifer (BAH_PROP &lt; 0.20), very large (QMD_DOM &gt;= 75)</description>
+        <label>Con - VLg</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>VC_MNDBHBA</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Vegetation class based on CANCOV, BAH_PROP, MNDBHBA</description>
+    <short_description>Vegetation class based on CANCOV, BAH_PROP, MNDBHBA</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>1</code_value>
+        <description>Sparse (CANCOV &lt; 10)</description>
+        <label>Sparse</label>
+      </code>
+      <code>
+        <code_value>2</code_value>
+        <description>Open (CANCOV 10-39)</description>
+        <label>Open</label>
+      </code>
+      <code>
+        <code_value>3</code_value>
+        <description>Broadleaf, sap/pole, mod/closed (CANCOV &gt;= 40, BAH_PROP &gt;= 0.65, MNDBHBA &lt; 25 cm )</description>
+        <label>Blf - Sm</label>
+      </code>
+      <code>
+        <code_value>4</code_value>
+        <description>Broadleaf, sm/med/lg, mod/closed (CANCOV &gt;= 40, BAH_PROP &gt;= 0.65, MNDBHBA &gt; 25 cm)</description>
+        <label>Blf - Md/Lg</label>
+      </code>
+      <code>
+        <code_value>5</code_value>
+        <description>Mixed, sap/pole, mod/closed (CANCOV &gt;= 40, BAH_PROP 0.20-0.64, MNDBHBA &lt; 25 cm)</description>
+        <label>Mix - Sm</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Mixed, sm/med, mod/closed (CANCOV &gt;= 40, BAH_PROP 0.20-0.64, MNDBHBA 25-50 cm)</description>
+        <label>Mix - Md</label>
+      </code>
+      <code>
+        <code_value>7</code_value>
+        <description>Mixed, large+giant, mod/closed (CANCOV &gt;= 40, BAH_PROP 0.20-0.64, MNDBHBA &gt; 50 cm)</description>
+        <label>Mix - Lg</label>
+      </code>
+      <code>
+        <code_value>8</code_value>
+        <description>Conifer, sap/pole, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, MNDBHBA &lt; 25 cm)</description>
+        <label>Con - Sm</label>
+      </code>
+      <code>
+        <code_value>9</code_value>
+        <description>Conifer, sm/med, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, MNDBHBA 25-50 cm)</description>
+        <label>Con - Md</label>
+      </code>
+      <code>
+        <code_value>10</code_value>
+        <description>Conifer, large, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, MNDBHBA 50-75 cm)</description>
+        <label>Con - Lg</label>
+      </code>
+      <code>
+        <code_value>11</code_value>
+        <description>Conifer, giant, mod/closed (CANCOV &gt;= 40, BAH_PROP &lt; 0.20, MNDBHBA &gt;75 cm)</description>
+        <label>Con - VLg</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>VC_QMD</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Vegetation class based on BAA_GE_3, BAH_PROP, QMD_DOM (old CLAMS vegclass)</description>
+    <short_description>Vegetation class based on BAA_GE_3, BAH_PROP, QMD_DOM</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>3</code_value>
+        <description>Open (BA_GE_3 &lt; 1.447, QMD_DOM &lt; 50)</description>
+        <label>Open</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Broadleaf (BA_GE_3 &gt; 1.447, BAH_PROP &gt; 0.65)</description>
+        <label>Blf</label>
+      </code>
+      <code>
+        <code_value>7</code_value>
+        <description>Mixed--sm (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMD_DOM 12.5-24.9)</description>
+        <label>Mix - Sm</label>
+      </code>
+      <code>
+        <code_value>8</code_value>
+        <description>Mixed--md (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMD_DOM 25.0-49.9)</description>
+        <label>Mix - Md</label>
+      </code>
+      <code>
+        <code_value>9</code_value>
+        <description>Mixed--lg (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMD_DOM 50.0-74.9)</description>
+        <label>Mix - Lg</label>
+      </code>
+      <code>
+        <code_value>10</code_value>
+        <description>Mixed--vl (BA_ALL &gt; 1.447, BAH_PROP 0.20-0.64, QMD_DOM &gt; 75.0)</description>
+        <label>Mix - VLg</label>
+      </code>
+      <code>
+        <code_value>11</code_value>
+        <description>Conifer--sm (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMD_DOM 12.5-24.9)</description>
+        <label>Con - Sm</label>
+      </code>
+      <code>
+        <code_value>12</code_value>
+        <description>Conifer--md (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMD_DOM 25.0-49.9)</description>
+        <label>Con - Md</label>
+      </code>
+      <code>
+        <code_value>13</code_value>
+        <description>Conifer--lg (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMD_DOM 50.0-74.9)</description>
+        <label>Con - Lg</label>
+      </code>
+      <code>
+        <code_value>14</code_value>
+        <description>Conifer--vl (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMD_DOM &gt; 75.0)</description>
+        <label>Con - VLg</label>
+      </code>
+      <code>
+        <code_value>17</code_value>
+        <description>Mixed--very sm (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMD_DOM &lt; 12.5)</description>
+        <label>Mix - VSm</label>
+      </code>
+      <code>
+        <code_value>18</code_value>
+        <description>Conifer--very sm (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMD_DOM &lt; 12.5)</description>
+        <label>Con - Vsm</label>
+      </code>
+      <code>
+        <code_value>19</code_value>
+        <description>Remnants (BA_GE_3 &lt; 10, QMD_DOM &gt; 50)</description>
+        <label>Remnants</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>VC_QMDC</field_name>
+    <field_type>CATEGORICAL</field_type>
+    <units>none</units>
+    <description>Vegetation class based on BAA_GE_3, BAH_PROP, QMDC_75PCT (old CLAMS vegclass)</description>
+    <short_description>Vegetation class based on BAA_GE_3, BAH_PROP, QMDC_75PCT</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+    <codes>
+      <code>
+        <code_value>3</code_value>
+        <description>Open (BA_GE_3 &lt; 1.447, QMDC_75PCT &lt; 50)</description>
+        <label>Open</label>
+      </code>
+      <code>
+        <code_value>6</code_value>
+        <description>Broadleaf (BA_GE_3 &gt; 1.447, BAH_PROP &gt; 0.65)</description>
+        <label>Blf</label>
+      </code>
+      <code>
+        <code_value>7</code_value>
+        <description>Mixed--sm (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMDC_75PCT 12.5-24.9)</description>
+        <label>Mix - Sm</label>
+      </code>
+      <code>
+        <code_value>8</code_value>
+        <description>Mixed--md (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMDC_75PCT 25.0-49.9)</description>
+        <label>Mix - Md</label>
+      </code>
+      <code>
+        <code_value>9</code_value>
+        <description>Mixed--lg (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMDC_75PCT 50.0-74.9)</description>
+        <label>Mix - Lg</label>
+      </code>
+      <code>
+        <code_value>10</code_value>
+        <description>Mixed--vl (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMDC_75PCT &gt; 75.0)</description>
+        <label>Mix - VLg</label>
+      </code>
+      <code>
+        <code_value>11</code_value>
+        <description>Conifer--sm (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMDC_75PCT 12.5-24.9)</description>
+        <label>Con - Sm</label>
+      </code>
+      <code>
+        <code_value>12</code_value>
+        <description>Conifer--md (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMDC_75PCT 25.0-49.9)</description>
+        <label>Con - Md</label>
+      </code>
+      <code>
+        <code_value>13</code_value>
+        <description>Conifer--lg (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMDC_75PCT 50.0-74.9)</description>
+        <label>Con - Lg</label>
+      </code>
+      <code>
+        <code_value>14</code_value>
+        <description>Conifer--vl (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMDC_75PCT &gt; 75.0)</description>
+        <label>Con - VLg</label>
+      </code>
+      <code>
+        <code_value>17</code_value>
+        <description>Mixed--very sm (BA_GE_3 &gt; 1.447, BAH_PROP 0.20-0.64, QMDC_75PCT &lt; 12.5)</description>
+        <label>Mix - VSm</label>
+      </code>
+      <code>
+        <code_value>18</code_value>
+        <description>Conifer--very sm (BA_GE_3 &gt; 1.447, BAH_PROP &lt; 0.20, QMDC_75PCT &lt; 12.5)</description>
+        <label>Con - VSm</label>
+      </code>
+      <code>
+        <code_value>19</code_value>
+        <description>Remnants (BA_GE_3 &lt; 10, QMDC_75PCT &gt; 50)</description>
+        <label>Remnants</label>
+      </code>
+    </codes>
+  </attribute>
+  <attribute>
+    <field_name>HCB</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m</units>
+    <description>Height to crown base</description>
+    <short_description>Height to crown base</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STNDHGT</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m</units>
+    <description>Stand height, computed as average of heights of all dominant and codominant trees</description>
+    <short_description>Stand height of all dominant and codominant trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SDI</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Stand density index</description>
+    <short_description>Stand density index = sqrt(BAA_GE_3 * TPH_GE_3)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SDI_REINEKE</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>none</units>
+    <description>Reineke's stand density index</description>
+    <short_description>Reineke's stand density index</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SDDBH</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Standard deviation of dbh of all live trees</description>
+    <short_description>Standard deviation of dbh of all live trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SDDBHC</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>cm</units>
+    <description>Standard deviation of dbh of all live conifers</description>
+    <short_description>Standard deviation of dbh of all live conifers</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SDBA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Standard deviation of basal area of all live trees</description>
+    <short_description>Standard deviation of basal area of all live trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_REML</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of remnant live trees</description>
+    <short_description>Density of remnant live trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_REML</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of remnant live trees</description>
+    <short_description>Volume of remnant live trees</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>REM_PCTL</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Percent of live tree volume that is remnant</description>
+    <short_description>Percent of live tree volume that is remnant</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TREEPLBA</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Tree species with plurality of basal area (alphanumeric PLANTS code)</description>
+    <short_description>Tree species with plurality of basal area (alphanumeric PLANTS code)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CONPLBA</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Conifer tree species with plurality of basal area (alphanumeric PLANTS code)</description>
+    <short_description>Conifer tree species with plurality of basal area</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>HDWPLBA</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Hardwood tree species with plurality of basal area (alphanumeric PLANTS code)</description>
+    <short_description>Hardwood tree species with plurality of basal area</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TREEPLCOV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Tree species with largest percent cover  (alphanumeric PLANTS code)</description>
+    <short_description>Tree species with largest percent cover  (alphanumeric PLANTS code)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CONPLCOV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Conifer tree species with largest percent cover  (alphanumeric PLANTS code)</description>
+    <short_description>Conifer tree species with largest percent cover</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>HDWPLCOV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Hardwood tree species with largest percent cover (alphanumeric PLANTS code)</description>
+    <short_description>Hardwood tree species with largest percent cover</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TREEPLIV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Tree species with greatest importance value (basal area and density) (alphanumeric PLANTS code)</description>
+    <short_description>Tree species with greatest importance value (basal area and density) (alphanumeric PLANTS code)</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CONPLIV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Conifer tree species with greatest importance value (basal area and density) (alphanumeric PLANTS code)</description>
+    <short_description>Conifer tree species with greatest importance value</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>HDWPLIV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Hardwood tree species with greatest importance value (basal area and density) (alphanumeric PLANTS code)</description>
+    <short_description>Hardwood tree species with greatest importance value</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>UPLCOV</field_name>
+    <field_type>CHARACTER</field_type>
+    <units>none</units>
+    <description>Understory species with largest percent cover (alphanumeric PLANTS code)</description>
+    <short_description>Understory species with largest percent cover</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>0</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SHRUB_COV</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Total shrub cover; calculated by summing over all shrub species (i.e. all species with LIFE_FORM_DOM = shrub)</description>
+    <short_description>Total shrub cover; calculated by summing over all shrub species</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SBPH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of snags 25-50 cm dbh and &gt;=2 m tall</description>
+    <short_description>Biomass of snags 25-50 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SBPH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of snags 50-75 cm dbh and &gt;=2 m tall</description>
+    <short_description>Biomass of snags 50-75 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SBPH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of snags 75-100 cm dbh and &gt;=2 m tall</description>
+    <short_description>Biomass of snags 75-100 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SBPH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of snags &gt;=25 cm dbh and &gt;=2 m tall</description>
+    <short_description>Biomass of snags &gt;=25 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SBPH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of snags &gt;=50 cm dbh and &gt;=2 m tall</description>
+    <short_description>Biomass of snags &gt;=50 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SBPH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of snags &gt;=75 cm dbh and &gt;=2 m tall</description>
+    <short_description>Biomass of snags &gt;=75 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SBPH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of snags &gt;=100 cm dbh and &gt;=2 m tall</description>
+    <short_description>Biomass of snags &gt;=100 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STPH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of snags 25-50 cm dbh and &gt;=2 m tall</description>
+    <short_description>Density of snags 25-50 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STPH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of snags 50-75 cm dbh and &gt;=2 m tall</description>
+    <short_description>Density of snags 50-75 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STPH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of snags 75-100 cm dbh and &gt;=2 m tall</description>
+    <short_description>Density of snags 75-100 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STPH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of snags &gt;=25 cm dbh and &gt;=2 m tall</description>
+    <short_description>Density of snags &gt;=25 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STPH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of snags &gt;=50 cm dbh and &gt;=2 m tall</description>
+    <short_description>Density of snags &gt;=50 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STPH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of snags &gt;=75 cm dbh and &gt;=2 m tall</description>
+    <short_description>Density of snags &gt;=75 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>STPH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of snags &gt;=100 cm dbh &gt;=2 m tall</description>
+    <short_description>Density of snags &gt;=100 cm dbh &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SVPH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of snags 25-50 cm dbh and &gt;=2 m tall</description>
+    <short_description>Volume of snags 25-50 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SVPH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of snags 50-75 cm dbh and &gt;=2 m tall</description>
+    <short_description>Volume of snags 50-75 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SVPH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of snags 75-100 cm dbh and &gt;=2 m tall</description>
+    <short_description>Volume of snags 75-100 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SVPH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of snags &gt;=25 cm dbh and &gt;=2 m tall</description>
+    <short_description>Volume of snags &gt;=25 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SVPH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of snags &gt;=50 cm dbh and &gt;=2 m tall</description>
+    <short_description>Volume of snags &gt;=50 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SVPH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of snags &gt;=75 cm dbh and &gt;=2 m tall</description>
+    <short_description>Volume of snags &gt;=75 cm dbh and &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>SVPH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of snags &gt;=100 cm dbh &gt;=2 m tall</description>
+    <short_description>Volume of snags &gt;=100 cm dbh &gt;=2 m tall</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>REM_PCTS</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Percent of snag volume that is remnant</description>
+    <short_description>Percent of snag volume that is remnant</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_REMS</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of remnant snags</description>
+    <short_description>Density of remnant snags</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_REMS</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of remnant snags</description>
+    <short_description>Volume of remnant snags</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DBPH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of down wood 25-50 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Biomass of down wood 25-50 cm diameter at large end and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DBPH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of down wood 50-75 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Biomass of down wood 50-75 cm diameter at large end and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DBPH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of down wood 75-100 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Biomass of down wood 75-100 cm diameter at large end and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DBPH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of down wood &gt;=25 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Biomass of down wood &gt;=25 cm diameter at large end and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DBPH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of down wood &gt;=50 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Biomass of down wood &gt;=50 cm diameter at large end and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DBPH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of down wood &gt;=75 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Biomass of down wood &gt;=75 cm diameter at large end and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DBPH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>kg/ha</units>
+    <description>Biomass of down wood &gt;=100 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Biomass of down wood &gt;=100 cm diameter at large end and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DCOV_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Cover of down wood 25-50 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Cover of down wood 25-50 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DCOV_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Cover of down wood 50-75 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Cover of down wood 50-75 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DCOV_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Cover of down wood 75-100 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Cover of down wood 75-100 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DCOV_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Cover of down wood &gt;=25 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Cover of down wood &gt;=25 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DCOV_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Cover of down wood &gt;=50 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Cover of down wood &gt;=50 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DCOV_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Cover of down wood &gt;=75 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Cover of down wood &gt;=75 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DCOV_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Cover of down wood &gt;=100 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Cover of down wood &gt;=100 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DVPH_25_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of down wood 25-50 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Volume of down wood 25-50 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DVPH_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of down wood 50-75 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Volume of down wood 50-75 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DVPH_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of down wood 75-100 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Volume of down wood 75-100 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DVPH_GE_25</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of down wood &gt;=25 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Volume of down wood &gt;=25 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DVPH_GE_50</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of down wood &gt;=50 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Volume of down wood &gt;=50 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DVPH_GE_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of down wood &gt;=75 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Volume of down wood &gt;=75 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>DVPH_GE_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of down wood &gt;=100 cm diameter at large end and &gt;=3m long</description>
+    <short_description>Volume of down wood &gt;=100 cm large end diameter and &gt;=3m long</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>REM_PCTD</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>percent</units>
+    <description>Percent of down wood volume that is remnant</description>
+    <short_description>Percent of down wood volume that is remnant</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>VPH_REMD</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^3/ha</units>
+    <description>Volume of remnant down wood</description>
+    <short_description>Volume of remnant down wood</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PSME_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PSME 50-75 cm dbh</description>
+    <short_description>Density of live PSME 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_TSHE_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live TSHE 50-75 cm dbh</description>
+    <short_description>Density of live TSHE 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_THPL_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live THPL 50-75 cm dbh</description>
+    <short_description>Density of live THPL 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PISI_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PISI 50-75 cm dbh</description>
+    <short_description>Density of live PISI 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_SESE3_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live SESE3 50-75 cm dbh</description>
+    <short_description>Density of live SESE3 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_OC_50_75</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of other live conifers 50-75 cm dbh (excluding PSME, TSHE, THPL, PISI, SESE3)</description>
+    <short_description>Density of other live conifers 50-75 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PSME_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PSME 75-100 cm dbh</description>
+    <short_description>Density of live PSME 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_TSHE_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live TSHE 75-100 cm dbh</description>
+    <short_description>Density of live TSHE 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_THPL_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live THPL 75-100 cm dbh</description>
+    <short_description>Density of live THPL 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PISI_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PISI 75-100 cm dbh</description>
+    <short_description>Density of live PISI 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_SESE3_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live SESE3 75-100 cm dbh</description>
+    <short_description>Density of live SESE3 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_OC_75_100</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of other live conifers 75-100 cm dbh (excluding PSME, TSHE, THPL, PISI, SESE3)</description>
+    <short_description>Density of other live conifers 75-100 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PSME_100_125</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PSME 100-125 cm dbh</description>
+    <short_description>Density of live PSME 100-125 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_TSHE_100_125</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live TSHE 100-125 cm dbh</description>
+    <short_description>Density of live TSHE 100-125 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_THPL_100_125</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live THPL 100-125 cm dbh</description>
+    <short_description>Density of live THPL 100-125 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PISI_100_125</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PISI 100-125 cm dbh</description>
+    <short_description>Density of live PISI 100-125 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_SESE3_100_125</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live SESE3 100-125 cm dbh</description>
+    <short_description>Density of live SESE3 100-125 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_OC_100_125</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of other live conifers 100-125 cm dbh (excluding PSME, TSHE, THPL, PISI, SESE3)</description>
+    <short_description>Density of other live conifers 100-125 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PSME_125_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PSME 125-150 cm dbh</description>
+    <short_description>Density of live PSME 125-150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_TSHE_125_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live TSHE 125-150 cm dbh</description>
+    <short_description>Density of live TSHE 125-150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_THPL_125_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live THPL 125-150 cm dbh</description>
+    <short_description>Density of live THPL 125-150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PISI_125_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PISI 125-150 cm dbh</description>
+    <short_description>Density of live PISI 125-150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_SESE3_125_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live SESE3 125-150 cm dbh</description>
+    <short_description>Density of live SESE3 125-150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_OC_125_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of other live conifers 125-150 cm dbh (excluding PSME, TSHE, THPL, PISI, SESE3)</description>
+    <short_description>Density of other live conifers 125-150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PSME_GE_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PSME &gt;= 150 cm dbh</description>
+    <short_description>Density of live PSME &gt;= 150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_TSHE_GE_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live TSHE &gt;= 150 cm dbh</description>
+    <short_description>Density of live TSHE &gt;= 150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_THPL_GE_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live THPL &gt;= 150 cm dbh</description>
+    <short_description>Density of live THPL &gt;= 150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_PISI_GE_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live PISI &gt;= 150 cm dbh</description>
+    <short_description>Density of live PISI &gt;= 150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_SESE3_GE_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live SESE3 &gt;= 150 cm dbh</description>
+    <short_description>Density of live SESE3 &gt;= 150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPH_OC_GE_150</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of other live conifers &gt;= 150 cm dbh (excluding PSME, TSHE, THPL, PISI, SESE3)</description>
+    <short_description>Density of other live conifers &gt;= 150 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TPHC_GE_140</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>trees/ha</units>
+    <description>Density of live conifers &gt;= 140 cm dbh</description>
+    <short_description>Density of live conifers &gt;= 140 cm dbh</short_description>
+    <species_attr>0</species_attr>
+    <project_attr>0</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ABAM_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Abies amabilis</description>
+    <short_description>Basal area of Abies amabilis</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ABGRC_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Abies grandis/concolor</description>
+    <short_description>Basal area of Abies grandis/concolor</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ABLA_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Abies lasiocarpa</description>
+    <short_description>Basal area of Abies lasiocarpa</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ABPRSH_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Abies procera/shastensis/magnifica</description>
+    <short_description>Basal area of Abies procera/shastensis/magnifica</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ACMA3_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Acer macrophyllum</description>
+    <short_description>Basal area of Acer macrophyllum</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ALRH2_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Alnus rhombifolia</description>
+    <short_description>Basal area of Alnus rhombifolia</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>ALRU2_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Alnus rubra</description>
+    <short_description>Basal area of Alnus rubra</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BEOC2_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Betula occidentalis</description>
+    <short_description>Basal area of Betula occidentalis</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>BEPA_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Betula papyrifera</description>
+    <short_description>Basal area of Betula papyrifera</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CHCH7_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Chrysolepis chrysophylla</description>
+    <short_description>Basal area of Chrysolepis chrysophylla</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>CHNO_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Chamaecyparis nootkatensis</description>
+    <short_description>Basal area of Chamaecyparis nootkatensis</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>LALY_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Larix lyallii</description>
+    <short_description>Basal area of Larix lyallii</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>LAOC_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Larix occidentalis</description>
+    <short_description>Basal area of Larix occidentalis</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>NOTALY_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of No tally placeholder</description>
+    <short_description>Basal area of No tally placeholder</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>PIAL_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Pinus albicaulis</description>
+    <short_description>Basal area of Pinus albicaulis</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>PICO_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Pinus contorta</description>
+    <short_description>Basal area of Pinus contorta</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>PIEN_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Picea engelmannii</description>
+    <short_description>Basal area of Picea engelmannii</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>PIMO3_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Pinus monticola</description>
+    <short_description>Basal area of Pinus monticola</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>PIPO_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Pinus ponderosa</description>
+    <short_description>Basal area of Pinus ponderosa</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>POBAT_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Populus balsamifera ssp. trichocarpa</description>
+    <short_description>Basal area of Populus balsamifera ssp. trichocarpa</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>POTR5_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Populus tremuloides</description>
+    <short_description>Basal area of Populus tremuloides</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>PSME_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Pseudotsuga menziesii</description>
+    <short_description>Basal area of Pseudotsuga menziesii</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>QUGA4_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Quercus garryana</description>
+    <short_description>Basal area of Quercus garryana</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TABR2_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Taxus brevifolia</description>
+    <short_description>Basal area of Taxus brevifolia</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>THPL_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Thuja plicata</description>
+    <short_description>Basal area of Thuja plicata</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TSHE_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Tsuga heterophylla</description>
+    <short_description>Basal area of Tsuga heterophylla</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+  <attribute>
+    <field_name>TSME_BA</field_name>
+    <field_type>CONTINUOUS</field_type>
+    <units>m^2/ha</units>
+    <description>Basal area of Tsuga mertensiana</description>
+    <short_description>Basal area of Tsuga mertensiana</short_description>
+    <species_attr>1</species_attr>
+    <project_attr>1</project_attr>
+    <accuracy_attr>1</accuracy_attr>
+  </attribute>
+</attributes>
