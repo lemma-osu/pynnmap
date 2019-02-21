@@ -1,13 +1,17 @@
 import os
+from collections import OrderedDict
 
 import numpy as np
-from matplotlib import mlab
+import pandas as pd
 
-from pynnmap.core import prediction_run
+from pynnmap.core.attribute_predictor import AttributePredictor
+from pynnmap.core.independence_filter import IndependenceFilter
+from pynnmap.core.nn_finder import NNFinder
+from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
-from pynnmap.misc import utilities
 from pynnmap.parser import parameter_parser as pp
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.parser.xml_stand_metadata_parser import Flags
 
 
 class ECDF:
@@ -43,13 +47,13 @@ class RiemannVariable(object):
         # Short circuit the condition where there is no observed or predicted
         # variance typically caused by no observed or predicted presences
         if self.x.var() == 0.0 or self.y.var() == 0.0:
-            gmfr_stats = {}
-            gmfr_stats['gmfr_a'] = 0.0
-            gmfr_stats['gmfr_b'] = 0.0
-            gmfr_stats['ac'] = 0.0
-            gmfr_stats['ac_sys'] = 0.0
-            gmfr_stats['ac_uns'] = 0.0
-            return gmfr_stats
+            return {
+                'gmfr_a': 0.0,
+                'gmfr_b': 0.0,
+                'ac': 0.0,
+                'ac_sys': 0.0,
+                'ac_uns': 0.0
+            }
 
         x_mean = self.x.mean()
         y_mean = self.y.mean()
@@ -80,16 +84,15 @@ class RiemannVariable(object):
         ac_sys = 1.0 - (spd_s / spod)
         ac_uns = 1.0 - (spd_u / spod)
 
-        gmfr_stats = {}
-        gmfr_stats['gmfr_a'] = a
-        gmfr_stats['gmfr_b'] = b
-        gmfr_stats['ac'] = ac
-        gmfr_stats['ac_sys'] = ac_sys
-        gmfr_stats['ac_uns'] = ac_uns
+        return {
+            'gmfr_a': a,
+            'gmfr_b': b,
+            'ac': ac,
+            'ac_sys': ac_sys,
+            'ac_uns': ac_uns
+        }
 
-        return gmfr_stats
-
-    def ks_statistics(self):
+    def ks_statistics(self, num_bins=1000):
 
         x_sorted = np.sort(self.x)
         y_sorted = np.sort(self.y)
@@ -97,7 +100,7 @@ class RiemannVariable(object):
         global_max = np.max(np.hstack((x_sorted, y_sorted)))
         global_min = np.min(np.hstack((x_sorted, y_sorted)))
 
-        bins = np.linspace(global_min, global_max, 1000)
+        bins = np.linspace(global_min, global_max, num_bins)
 
         x_ecdf = ECDF(x_sorted)
         y_ecdf = ECDF(y_sorted)
@@ -108,11 +111,10 @@ class RiemannVariable(object):
         ks_max = np.max(diff_freq)
         ks_mean = np.mean(diff_freq)
 
-        ks_stats = {}
-        ks_stats['ks_max'] = ks_max
-        ks_stats['ks_mean'] = ks_mean
-
-        return ks_stats
+        return {
+            'ks_max': ks_max,
+            'ks_mean': ks_mean
+        }
 
 
 class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
@@ -125,10 +127,12 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 # We need the parameter parser for many attributes when
                 # running the diagnostic, so just keep a reference to it
                 self.parameter_parser = p
+                self.id_field = p.plot_id_field
 
                 # We want to check on the existence of the hex attribute
                 # file before running, so make this an instance property
                 self.hex_attribute_file = p.hex_attribute_file
+                self.hex_id_file = p.hex_id_file
             else:
                 err_msg = 'Passed object is not a ParameterParser object'
                 raise ValueError(err_msg)
@@ -137,198 +141,169 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             raise NotImplementedError(err_msg)
 
         # Ensure all input files are present
-        files = [self.hex_attribute_file]
+        files = [self.hex_attribute_file, self.hex_id_file]
         try:
             self.check_missing_files(files)
         except diagnostic.MissingConstraintError as e:
             e.message += '\nSkipping RiemannAccuracyDiagnostic\n'
             raise e
 
-    def write_hex_stats(
-            self, data, id_field, stat_fields, min_plots_per_hex, out_file):
+        # Read in the hex ID crosswalk file
+        self.hex_id_xwalk = pd.read_csv(self.hex_id_file)
 
-        # Summarize the observed output
-        stats = mlab.rec_groupby(data, (id_field,), stat_fields)
-
-        # Filter so that the minimum number of plots per hex is maintained
-        stats = stats[stats.PLOT_COUNT >= min_plots_per_hex]
-
-        # Write out the file
-        utilities.rec2csv(stats, out_file)
-
-    def run_diagnostic(self):
-
-        # Shortcut to the parameter parser
-        p = self.parameter_parser
-
-        # ID field
-        id_field = p.plot_id_field
-
-        # Root directory for Riemann files
-        root_dir = p.riemann_output_folder
-
-        # Read in hex input file
-        obs_data = utilities.csv2rec(self.hex_attribute_file)
-
-        # Get the hexagon levels and ensure that the fields exist in the
-        # hex_attribute file
-        hex_resolutions = p.riemann_hex_resolutions
-        hex_fields = [x[0] for x in hex_resolutions]
-        for field in hex_fields:
-            if field not in obs_data.dtype.names:
-                err_msg = 'Field ' + field + ' does not exist in the '
-                err_msg += 'hex_attribute file'
-                raise ValueError(err_msg)
-
-        # Create the directory structure based on the hex levels
-        hex_levels = ['hex_' + str(x[1]) for x in hex_resolutions]
+    @staticmethod
+    def _create_directory_structure(hex_resolutions, root_dir):
+        hex_levels = ['hex_{}'.format(x[1]) for x in hex_resolutions]
         all_levels = ['plot_pixel'] + hex_levels
         for level in all_levels:
             sub_dir = os.path.join(root_dir, level)
             if not os.path.exists(sub_dir):
                 os.makedirs(sub_dir)
 
-        # Get the values of k
-        k_values = p.riemann_k_values
-
-        # Create a dictionary of plot ID to image year (or model_year for
-        # non-imagery models) for these plots
+    @staticmethod
+    def _get_id_year_crosswalk(p):
+        id_field = p.plot_id_field
+        xwalk_df = pd.read_csv(p.plot_year_crosswalk_file, low_memory=False)
         if p.model_type in p.imagery_model_types:
-            id_x_year = dict((x[id_field], x.IMAGE_YEAR) for x in obs_data)
+            s = pd.Series(xwalk_df.IMAGE_YEAR.values, index=xwalk_df[id_field])
         else:
-            id_x_year = dict((x[id_field], p.model_year) for x in obs_data)
+            s = pd.Series(p.model_year, index=xwalk_df[id_field])
+        return dict(s.to_dict())
 
-        # Create a PredictionRun instance
-        pr = prediction_run.PredictionRun(p)
+    @staticmethod
+    def _get_independence_filter(p, no_self_assign_field='LOC_ID'):
+        id_field = p.plot_id_field
+        fn = p.plot_independence_crosswalk_file
+        fields = [id_field, no_self_assign_field]
+        df = pd.read_csv(fn, usecols=fields, index_col=id_field)
+        return IndependenceFilter.from_common_lookup(
+            df.index, df[no_self_assign_field]
+        )
 
-        # Get the neighbors and distances for these IDs
-        pr.calculate_neighbors_at_ids(id_x_year, id_field=id_field)
+    def run_diagnostic(self):
+        # Shortcut to the parameter parser and set up often used fields
+        p = self.parameter_parser
+        id_field = p.plot_id_field
+        root_dir = p.riemann_output_folder
+        k_values = p.riemann_k_values
+        hex_resolutions = p.riemann_hex_resolutions
 
-        # Create the lookup of id_field to LOC_ID for the hex plots
-        nsa_id_dict = dict((x[id_field], x.LOC_ID) for x in obs_data)
+        # Create the directory structure based on the hex levels
+        self._create_directory_structure(hex_resolutions, root_dir)
 
-        # Create a dictionary between id_field and no_self_assign_field
-        # for the model plots
-        env_file = p.environmental_matrix_file
-        env_data = utilities.csv2rec(env_file)
-        model_nsa_id_dict = dict(
-            (getattr(x, id_field), x.LOC_ID) for x in env_data)
-
-        # Stitch the two dictionaries together
-        for id_val in sorted(model_nsa_id_dict.keys()):
-            if id_val not in nsa_id_dict:
-                nsa_id_dict[id_val] = model_nsa_id_dict[id_val]
-
-        # Get the stand attribute metadata and retrieve only the
-        # continuous accuracy attributes
-        stand_metadata_file = p.stand_metadata_file
-        mp = xsmp.XMLStandMetadataParser(stand_metadata_file)
-        attrs = [
-            x.field_name for x in mp.attributes
-            if x.field_type == 'CONTINUOUS' and x.accuracy_attr == 1]
-
-        # Subset the attributes for fields that are in the
-        # hex_attribute file
-        attrs = [x for x in attrs if x in obs_data.dtype.names]
-        plot_pixel_obs = mlab.rec_keep_fields(obs_data, [id_field] + attrs)
+        # Get the stand attributes and filter to continuous accuracy fields
+        attr_fn = self.hex_attribute_file
+        mp = xsmp.XMLStandMetadataParser(p.stand_metadata_file)
+        attr_data = StandAttributes(attr_fn, mp, id_field=id_field)
+        flags = Flags.CONTINUOUS | Flags.ACCURACY
+        attrs = attr_data.get_attr_df(flags=flags).columns
 
         # Write out the plot_pixel observed file
         file_name = 'plot_pixel_observed.csv'
         output_file = os.path.join(root_dir, 'plot_pixel', file_name)
-        utilities.rec2csv(plot_pixel_obs, output_file)
+        plot_pixel_obs = attr_data.get_attr_df(flags=flags).astype(np.float64)
+        plot_pixel_obs.to_csv(output_file, index=True, float_format='%.4f')
 
-        # Iterate over values of k
+        # Create a dictionary of plot ID to image year (or model_year for
+        # non-imagery models) for these plots
+        id_x_year = self._get_id_year_crosswalk(p)
+        id_x_year = dict(
+            (k, v) for k, v in id_x_year.items() if k in plot_pixel_obs.index)
+
+        # # Create a NNFinder object and calculate neighbors and distances
+        finder = NNFinder(p)
+        neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
+
+        # Create an independence filter based on the relationship of the
+        # id_field and the no_self_assign_field
+        fltr = self._get_independence_filter(p)
+
+        # Create a plot attribute predictor instance
+        prd_attr_fn = p.stand_attribute_file
+        prd_attr_data = StandAttributes(prd_attr_fn, mp, id_field=id_field)
+        plot_attr_predictor = AttributePredictor(prd_attr_data, fltr)
+
+        # Iterate over values of k to calculate plot-pixel values
         for k in k_values:
-
             # Construct the output file name
-            file_name = '_'.join(('plot_pixel', 'predicted', 'k' + str(k)))
-            file_name += '.csv'
+            file_name = 'plot_pixel_predicted_k{k}.csv'.format(k=k)
             output_file = os.path.join(root_dir, 'plot_pixel', file_name)
-            out_fh = open(output_file, 'w')
 
-            # For the plot/pixel scale, retrieve the independent predicted
-            # data for this value of k.  Even though attributes are being
-            # returned from this function, we want to use the attribute list
-            # that we've already found above.
-            prediction_generator = pr.calculate_predictions_at_k(
-                k=k, id_field=id_field, independent=True,
-                nsa_id_dict=nsa_id_dict)
+            # Calculate the predictions
+            df = plot_attr_predictor.calculate_predictions(neighbor_data, k=k)
 
-            # Write out the field names
-            out_fh.write(id_field + ',' + ','.join(attrs) + '\n')
-
-            # Write out the predictions for this k
-            for plot_prediction in prediction_generator:
-
-                # Write this record to the predicted attribute file
-                pr.write_predicted_record(plot_prediction, out_fh, attrs=attrs)
-
-            # Close this file
-            out_fh.close()
+            # Subset columns down to just columns present in the hex
+            # attribute file and write out
+            df.sort_index(inplace=True)
+            df.index.rename(id_field, inplace=True)
+            df[attrs].to_csv(output_file, index=True, float_format='%.4f')
 
         # Create the fields for which to extract statistics at the hexagon
         # levels
-        mean_fields = [(id_field, len, 'PLOT_COUNT')]
-        mean_fields.extend([(x, np.mean, x) for x in attrs])
-        mean_fields = tuple(mean_fields)
+        mean_list = [(id_field, len)]
+        mean_list.extend([(x, np.mean) for x in attrs])
+        mean_dict = OrderedDict(mean_list)
 
-        sd_fields = [(id_field, len, 'PLOT_COUNT')]
-        sd_fields.extend([(x, np.std, x) for x in attrs])
-        sd_fields = tuple(sd_fields)
+        sd_list = [(id_field, len)]
+        sd_list.extend([(x, lambda i: np.std(i)) for x in attrs])
+        sd_dict = OrderedDict(sd_list)
 
         stat_sets = {
-            'mean': mean_fields,
-            'std': sd_fields,
+            'mean': mean_dict,
+            'std': sd_dict,
         }
 
         # For each hexagon level, associate the plots with their hexagon ID
         # and find observed and predicted statistics for each hexagon
         for hex_resolution in hex_resolutions:
 
-            (hex_id_field, hex_distance) = hex_resolution[0:2]
+            hex_id_field, hex_distance = hex_resolution[0:2]
             min_plots_per_hex = hex_resolution[3]
-            prefix = 'hex_' + str(hex_distance)
+            prefix = 'hex_{}'.format(hex_distance)
 
             # Create a crosswalk between the id_field and the hex_id_field
-            id_x_hex = mlab.rec_keep_fields(obs_data, [id_field, hex_id_field])
+            s1 = self.hex_id_xwalk[id_field]
+            s2 = self.hex_id_xwalk[hex_id_field]
+            id_x_hex = dict(zip(s1, s2))
 
             # Iterate over all sets of statistics and write a unique file
             # for each set
             for (stat_name, stat_fields) in stat_sets.items():
-
                 # Get the output file name
-                obs_out_file = \
-                    '_'.join((prefix, 'observed', stat_name)) + '.csv'
-                obs_out_file = os.path.join(root_dir, prefix, obs_out_file)
+                file_name = '{}_observed_{}.csv'.format(prefix, stat_name)
+                obs_out_file = os.path.join(root_dir, prefix, file_name)
 
-                # Write out the observed file
-                self.write_hex_stats(
-                    obs_data, hex_id_field, stat_fields, min_plots_per_hex,
-                    obs_out_file)
+                s = pd.Series(id_x_hex, name=hex_id_field)
+                df = plot_pixel_obs.merge(s, left_index=True, right_index=True)
+                df[id_field] = df.index
+                grouped = df.groupby(hex_id_field)
+                agg_df = grouped.agg(stat_fields).rename(
+                    columns={id_field: 'PLOT_COUNT'})
+                agg_df = agg_df[agg_df.PLOT_COUNT >= min_plots_per_hex]
+                agg_df.to_csv(obs_out_file, index=True, float_format='%.4f')
 
             # Iterate over values of k for the predicted values
             for k in k_values:
-
                 # Open the plot_pixel predicted file for this value of k
                 # and join the hex_id_field to the recarray
-                prd_file = 'plot_pixel_predicted_k' + str(k) + '.csv'
+                prd_file = 'plot_pixel_predicted_k{}.csv'.format(k)
                 prd_file = os.path.join(root_dir, 'plot_pixel', prd_file)
-                prd_data = utilities.csv2rec(prd_file)
-                prd_data = mlab.rec_join(id_field, prd_data, id_x_hex)
+                prd_data = pd.read_csv(prd_file)
+                prd_data = prd_data.merge(self.hex_id_xwalk, on=id_field)
 
                 # Iterate over all sets of statistics and write a unique file
                 # for each set
                 for (stat_name, stat_fields) in stat_sets.items():
-
                     # Get the output file name
-                    prd_out_file = '_'.join((
-                        prefix, 'predicted', 'k' + str(k), stat_name)) + '.csv'
-                    prd_out_file = os.path.join(root_dir, prefix, prd_out_file)
+                    file_name = '{}_predicted_k{}_{}.csv'.format(
+                        prefix, k, stat_name)
+                    prd_out_file = os.path.join(root_dir, prefix, file_name)
 
-                    # Write out the predicted file
-                    self.write_hex_stats(
-                        prd_data, hex_id_field, stat_fields, min_plots_per_hex,
-                        prd_out_file)
+                    grouped = prd_data.groupby(hex_id_field)
+                    agg_df = grouped.agg(stat_fields).rename(
+                        columns={id_field: 'PLOT_COUNT'})
+                    agg_df = agg_df[agg_df.PLOT_COUNT >= min_plots_per_hex]
+                    agg_df.to_csv(prd_out_file, index=True, float_format='%.4f')
 
         # Calculate the ECDF and AC statistics
         # For ECDF and AC, it is a paired comparison between the observed
@@ -347,12 +322,11 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         compare_list = []
         for hex_resolution in hex_resolutions:
             (hex_id_field, hex_distance) = hex_resolution[0:2]
-            prefix = 'hex_' + str(hex_distance)
-            obs_file = '_'.join((prefix, 'observed', 'mean')) + '.csv'
+            prefix = 'hex_{}'.format(hex_distance)
+            obs_file = '{}_observed_mean.csv'.format(prefix)
             obs_file = os.path.join(root_dir, prefix, obs_file)
             for k in k_values:
-                prd_file = '_'.join((
-                    prefix, 'predicted', 'k' + str(k), 'mean')) + '.csv'
+                prd_file = '{}_predicted_k{}_mean.csv'.format(prefix, k)
                 prd_file = os.path.join(root_dir, prefix, prd_file)
                 r = RiemannComparison(
                     prefix, obs_file, prd_file, hex_id_field, k)
@@ -363,19 +337,15 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         obs_file = 'plot_pixel_observed.csv'
         obs_file = os.path.join(root_dir, prefix, obs_file)
         for k in k_values:
-            prd_file = 'plot_pixel_predicted_k' + str(k) + '.csv'
+            prd_file = 'plot_pixel_predicted_k{}.csv'.format(k)
             prd_file = os.path.join(root_dir, prefix, prd_file)
             r = RiemannComparison(prefix, obs_file, prd_file, id_field, k)
             compare_list.append(r)
 
         # Do all the comparisons
         for c in compare_list:
-
-            # Open the observed file
-            obs_data = utilities.csv2rec(c.obs_file)
-
-            # Open the predicted file
-            prd_data = utilities.csv2rec(c.prd_file)
+            obs_data = pd.read_csv(c.obs_file)
+            prd_data = pd.read_csv(c.prd_file)
 
             # Ensure that the IDs between the observed and predicted
             # data line up

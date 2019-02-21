@@ -106,6 +106,7 @@ class XMLParameterParser(
         ]
         riemann_files = [
             'hex_attribute_file',
+            'hex_id_file',
             'hex_statistics_file',
         ]
         validation_files = [
@@ -818,6 +819,15 @@ class XMLParameterParser(
         if r_elem is not None:
             file_name = str(r_elem.hex_attribute_file)
             return self._get_path('hex_attribute_file', file_name)
+        else:
+            return ''
+
+    @property
+    def hex_id_file(self):
+        r_elem = self.riemann_element
+        if r_elem is not None:
+            file_name = str(r_elem.hex_id_file)
+            return self._get_path('hex_id_file', file_name)
         else:
             return ''
 
