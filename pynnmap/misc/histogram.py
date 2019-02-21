@@ -87,7 +87,7 @@ class ContinuousHistogramBC(HistogramBC):
             if float(first) == 0.0:
                 first = '0.0'
             bn = '-'.join((first, second))
-            bn = ''.join(re.split('\+0+', bn))
+            bn = ''.join(re.split(r'\+0+', bn))
             self.bin_names.append(bn)
 
 

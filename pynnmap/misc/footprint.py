@@ -149,18 +149,20 @@ class FootprintParser(parser.Parser):
         fp_fh.close()
 
         # Regular expression to match footprint specification starting lines
-        fp_start = re.compile('^[A-Za-z0-9_]+\s+\d+\s+\d+\s+(\d+\.*\d*)$')
+        fp_start = re.compile(r'^[A-Za-z0-9_]+\s+\d+\s+\d+\s+(\d+\.*\d*)$')
 
         # Get all footprints from and write them to individual Footprint
         # instances.  Push each of these to a footprint dictionary (fp_dict)
         fp_dict = {}
+        key = None
+        cell_size = None
         chunks = self.read_chunks(
             all_lines, fp_start, self.blank_re, skip_lines=0, flush=True)
         for chunk in chunks:
             pixels = []
-            for (i, line) in enumerate(chunk):
+            for i, line in enumerate(chunk):
                 if i == 0:
-                    (key, n_rows, n_cols, cell_size) = line.strip().split()
+                    key, n_rows, n_cols, cell_size = line.strip().split()
                 else:
                     pixels.append([int(x) for x in line.strip().split()])
             fp_dict[key] = Footprint(key, np.array(pixels), float(cell_size))

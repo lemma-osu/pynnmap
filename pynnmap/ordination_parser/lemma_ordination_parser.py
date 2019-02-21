@@ -131,7 +131,7 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the model eigenvalues
-        eig_re = re.compile('^###\s+Eigenvalues\s+###.*')
+        eig_re = re.compile(r'^###\s+Eigenvalues\s+###.*')
         chunks = self.read_chunks(
             all_lines, eig_re, self.blank_re, skip_lines=1, flush=True)
 
@@ -165,7 +165,7 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the model coefficients
-        coeff_re = re.compile('^###\s+Coefficient\s+Loadings\s+###')
+        coeff_re = re.compile(r'^###\s+Coefficient\s+Loadings\s+###')
         chunks = self.read_chunks(
             all_lines, coeff_re, self.blank_re, skip_lines=2, flush=True)
 
@@ -200,7 +200,7 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the ordination variable means
-        mean_re = re.compile('^###\s+Variable\s+Means\\s+###.*')
+        mean_re = re.compile(r'^###\s+Variable\s+Means\\s+###.*')
         chunks = self.read_chunks(
             all_lines, mean_re, self.blank_re, skip_lines=1, flush=True)
 
@@ -235,7 +235,7 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the species scores
-        species_re = re.compile('^###\s+Species\s+Centroids\s+###.*')
+        species_re = re.compile(r'^###\s+Species\s+Centroids\s+###.*')
         chunks = self.read_chunks(
             all_lines, species_re, self.blank_re, skip_lines=2, flush=True)
 
@@ -270,7 +270,7 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the ordination variable means
-        plot_re = re.compile('^###\s+Site\s+LC\s+Scores\s+###.*')
+        plot_re = re.compile(r'^###\s+Site\s+LC\s+Scores\s+###.*')
         chunks = self.read_chunks(
             all_lines, plot_re, self.blank_re, skip_lines=2, flush=True)
 
@@ -312,7 +312,7 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the biplot section
-        biplot_re = re.compile('^###\s+Biplot\s+Scores\s+###.*')
+        biplot_re = re.compile(r'^###\s+Biplot\s+Scores\s+###.*')
         chunks = self.read_chunks(
             all_lines, biplot_re, self.blank_re, skip_lines=2, flush=True)
 
@@ -325,6 +325,7 @@ class LemmaOrdinationParser(parser.Parser):
                 var_names.append(data[0])
                 biplot_scores.append([float(x) for x in data[1:]])
         return np.array(var_names), np.array(biplot_scores)
+
 
 if __name__ == '__main__':
     lop = LemmaOrdinationParser(delimiter=',')

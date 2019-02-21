@@ -80,9 +80,9 @@ def draw_scatterplot(
     pl.xticks(size=4)
     pl.yticks(size=4)
 
-    range = abs_max - abs_min
-    pl.xlim(abs_min - (0.01 * range), abs_max + (0.01 * range))
-    pl.ylim(abs_min - (0.01 * range), abs_max + (0.01 * range))
+    range_ = abs_max - abs_min
+    pl.xlim(abs_min - (0.01 * range_), abs_max + (0.01 * range_))
+    pl.ylim(abs_min - (0.01 * range_), abs_max + (0.01 * range_))
 
     # Position the main axis within the figure
     frame_x = 0.125

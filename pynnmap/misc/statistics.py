@@ -61,7 +61,7 @@ class SimpleLinearRegression:
 
         b1 = self.sxy / self.sxx
         b0 = self.y_mean - (b1 * self.x_mean)
-        return (b0, b1)
+        return b0, b1
 
     def inverse(self):
         """
@@ -72,7 +72,7 @@ class SimpleLinearRegression:
         y_b0 = self.x_mean - (y_b1 * self.y_mean)
         b1 = 1.0 / y_b1
         b0 = y_b0 / y_b1
-        return (b0, b1)
+        return b0, b1
 
     def rma(self):
         """
@@ -81,7 +81,7 @@ class SimpleLinearRegression:
 
         b1 = math.sqrt(self.syy / self.sxx)
         b0 = self.y_mean - (b1 * self.x_mean)
-        return (b0, b1)
+        return b0, b1
 
 
 # Two-by-two error matrix for presence/absence data
@@ -392,8 +392,7 @@ def r2(x, y):
     x_mean = x_float.mean()
     ss_mean = ((x_float - x_mean) * (x_float - x_mean)).sum()
     ss_pred = ((x_float - y_float) * (x_float - y_float)).sum()
-    r2 = (ss_mean - ss_pred) / ss_mean
-    return r2
+    return (ss_mean - ss_pred) / ss_mean
 
 
 def gmfr(x, y):
@@ -419,7 +418,7 @@ def gmfr(x, y):
     y_mean = y.mean()
     b = np.sqrt(y.var() / x.var())
     a = y_mean - (b * x_mean)
-    return (a, b)
+    return a, b
 
 
 def ac(x, y):
@@ -467,11 +466,12 @@ def ac(x, y):
 
     # Agreement coefficients for total, systematic and
     # unsystematic differences
-    ac = 1.0 - (ssd / spod)
+    ac_ = 1.0 - (ssd / spod)
     ac_sys = 1.0 - (spd_s / spod)
     ac_uns = 1.0 - (spd_u / spod)
 
-    return (ac, ac_sys, ac_uns)
+    return ac_, ac_sys, ac_uns
+
 
 if __name__ == '__main__':
     import doctest

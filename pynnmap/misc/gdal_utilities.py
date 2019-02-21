@@ -256,9 +256,9 @@ def compare_dimension(ds_01, ds_02):
     """
     Compare dimensions between two datasets
     """
-    xsize_01, ysize_01 = ds_01.RasterXSize, ds_01.RasterYSize
-    xsize_02, ysize_02 = ds_02.RasterXSize, ds_02.RasterYSize
-    return xsize_01 == xsize_02 and ysize_01 == ysize_02
+    x_size_01, y_size_01 = ds_01.RasterXSize, ds_01.RasterYSize
+    x_size_02, y_size_02 = ds_02.RasterXSize, ds_02.RasterYSize
+    return x_size_01 == x_size_02 and y_size_01 == y_size_02
 
 
 def compare_data_type(ds_01, ds_02):

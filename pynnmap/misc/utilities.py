@@ -1,15 +1,12 @@
-import datetime
-import decimal
-import pandas as pd
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
+# import datetime
+# import decimal
 
 import numpy
+import pandas as pd
 from lxml import etree
 from lxml import objectify
 from matplotlib import mlab
+from six.moves.urllib.request import urlopen
 
 
 # Exact replicate class of FormatFloat to keep four-decimal precision for

@@ -23,7 +23,7 @@ def _assert_same_set(a, b):
 class Parser(object):
     def __init__(self):
         # Set up commonly used regular expressions for parsing
-        self.blank_re = re.compile('^\s*$')
+        self.blank_re = re.compile(r'^\s*$')
 
     def read_chunks(
             self, all_lines, start_re, end_re, skip_lines=0, flush=False):
