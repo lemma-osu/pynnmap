@@ -9,10 +9,17 @@ from pynnmap.misc import parser
 
 class LemmaOrdinationParser(parser.Parser):
 
-    def __init__(self):
+    def __init__(self, delimiter=','):
+        """
+        Parameters
+        ----------
+        delimiter : str, optional
+            Delimiter that separates fields in data sections
+        """
         super(LemmaOrdinationParser, self).__init__()
+        self.delimiter = delimiter
 
-    def parse(self, ordination_file, delimiter=','):
+    def parse(self, ordination_file):
         """
         Parse an ordination file and return an OrdinationModel to the caller.
         Currently, this handles both canonical correspondence analysis (CCA)
@@ -23,17 +30,10 @@ class LemmaOrdinationParser(parser.Parser):
         ordination_file : str
             Name of the ordination file
 
-        delimiter : str
-            Delimiter that separates fields in data sections
-
         Returns
         -------
         model : OrdinationModel instance
         """
-
-        # Set the delimiter
-        self.delimiter = delimiter
-
         # Read the ordination file into a list
         ordination_fh = open(ordination_file, 'r')
         all_lines = ordination_fh.readlines()
@@ -327,6 +327,6 @@ class LemmaOrdinationParser(parser.Parser):
         return np.array(var_names), np.array(biplot_scores)
 
 if __name__ == '__main__':
-    lop = LemmaOrdinationParser()
-    m = lop.parse(sys.argv[1], delimiter=',')
+    lop = LemmaOrdinationParser(delimiter=',')
+    m = lop.parse(sys.argv[1])
     print(m)

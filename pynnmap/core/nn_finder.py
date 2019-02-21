@@ -91,8 +91,8 @@ class NNFinder(object):
 
         # Get the ordination model and read it in
         ord_file = p.get_ordination_file()
-        lop = lemma_ordination_parser.LemmaOrdinationParser()
-        ord_model = lop.parse(ord_file, delimiter=',')
+        lop = lemma_ordination_parser.LemmaOrdinationParser(delimiter=',')
+        ord_model = lop.parse(ord_file)
 
         # Create the imputation model based on the ordination model and the
         # imputation parameters
@@ -145,8 +145,8 @@ class NNFinder(object):
         # environmental matrix file based on running GNN in a unique way.
         # This requires parsing the model and extracting just the plot IDs
         ord_file = p.get_ordination_file()
-        lop = lemma_ordination_parser.LemmaOrdinationParser()
-        ord_model = lop.parse(ord_file, delimiter=',')
+        lop = lemma_ordination_parser.LemmaOrdinationParser(delimiter=',')
+        ord_model = lop.parse(ord_file)
         plot_ids = ord_model.plot_ids
         id_x_year = dict(
             (i, id_x_year[i]) for i in id_x_year.keys() if i in plot_ids)
