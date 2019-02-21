@@ -84,7 +84,7 @@ def kappa(m):
 
     Parameters
     ----------
-    m : 2D numpy array
+    m : np.array
         Matrix for which kappa will be calculated
 
     Returns
@@ -318,14 +318,12 @@ class KappaCalculator(object):
 
         Parameters
         ----------
-        err_mat : 2D numpy array
+        err_mat : np.array
             Error (confusion) matrix
-
-        mask : 2D numpy mask array
+        mask : np.array
             Binary analysis mask which specifies what values should be
             considered correct.  Should be the same size as err_mat
-
-        c : int
+        c : int, optional
             Class to calculate.  This corresponds to the row/col of the
             error matrix.  If c is None, kappa is calculated over the entire
             matrix
@@ -335,7 +333,6 @@ class KappaCalculator(object):
         kappa : float
             Kappa coefficient for the class or matrix
         """
-
         # Create a copy of the error matrix as we'll be modifying it below
         err_mat = np.array(err_mat, copy=True)
         em_sum = err_mat.sum()

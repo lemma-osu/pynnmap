@@ -26,12 +26,7 @@ class VariableVW(object):
 
         weights : numpy-like array
             Array of associated weights, same size as values
-
-        Returns
-        -------
-        None
         """
-
         self.values = values
         self.weights = weights
 
@@ -41,7 +36,6 @@ class HistogramBC(object):
     Class to store the bins (B) and counts (C) of data that has been
     binned into histograms.  This should be an abstract super class.
     """
-
     def __init__(self, bin_counts, bin_endpoints, name):
         """
         Constructor for HistogramBC.  Called from a subclass and populates
@@ -49,10 +43,10 @@ class HistogramBC(object):
 
         Parameters
         ----------
-        bin_counts : numpy array
+        bin_counts : np.array
             One dimensional numpy array of bin counts
 
-        bin_endpoints : numpy array
+        bin_endpoints : np.array
             One dimensional numpy array of bin endpoints one larger in
             size than bin_counts
 
@@ -75,7 +69,6 @@ class ContinuousHistogramBC(HistogramBC):
     that has been binned into histograms from continuous data.
     Class names are created from endpoints of the bins
     """
-
     def __init__(self, bin_counts, bin_endpoints, name="SERIES"):
 
         # Call the HistogramBC constructor first
@@ -104,7 +97,6 @@ class CategoricalHistogramBC(HistogramBC):
     that has been binned into histograms from categorical data.
     Class names are passed to the constructor
     """
-
     def __init__(self, bin_counts, bin_endpoints, bin_names, name="SERIES"):
 
         # Call the HistogramBC constructor first
@@ -138,7 +130,6 @@ def bin_continuous(datasets, bin_type=EQUAL_INTERVAL, bins=10):
     -------
     histogram_data : list of ContinuousHistogramBC instances
     """
-
     # Create the bin endpoints based on the bin_type requested
     if bin_type == EQUAL_INTERVAL:
         classifier = ic.EqualIntervalClassifier(datasets, bins=bins)
@@ -174,7 +165,7 @@ def bin_categorical(datasets, class_names=None):
         classes.  The weights in the VariableVW instances determine the
         counts in the output histogram classes
 
-    class_names : list
+    class_names : list, optional
         A list of labels to be matched to the names
 
     Returns

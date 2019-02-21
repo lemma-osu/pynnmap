@@ -51,13 +51,9 @@ class Footprint(object):
         Based on the offsets, construct a two-dimensional numpy array
         representing the kernel for this footprint
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
-        kernel : 2D numpy array
+        kernel : np.array
             A 2D array of the footprint configuration
         """
 
@@ -139,7 +135,7 @@ class FootprintParser(parser.Parser):
 
         Parameters
         ----------
-        fp_file : file
+        fp_file : str
             File containing all footprint configurations
 
         Returns

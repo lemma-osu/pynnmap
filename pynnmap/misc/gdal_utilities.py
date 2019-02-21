@@ -106,10 +106,7 @@ def get_chunks(band, max_size=250000000):
     ----------
     band : gdal.Band
         A raster band from a valid gdal.Dataset
-
-    Keywords
-    --------
-    max_size : int
+    max_size : int, optional
         The maximum size (in bytes) of the chunk to be returned
 
     Yields
@@ -150,13 +147,9 @@ def get_chunks_from_raster_envelope(rds, re, max_size=250000000):
     ----------
     rds : RasterDataset
         A raster band from a valid gdal.Dataset
-
     re : RasterEnvelope
         A raster envelope which should be a subset of the band window
-
-    Keywords
-    --------
-    max_size : int
+    max_size : int, optional
         The maximum size (in bytes) of the chunk to be returned
 
     Yields

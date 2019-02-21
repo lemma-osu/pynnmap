@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 
 
 class VariableVW(object):
@@ -12,10 +12,10 @@ class VariableVW(object):
 
         Parameters
         ----------
-        values : numpy-like array
+        values : np.array
             Array of values
 
-        weights : numpy-like array
+        weights : np.array
             Array of associated weights, same size as values
 
         Returns
@@ -29,7 +29,7 @@ class VariableVW(object):
 
 class IntervalClassifier(object):
     """
-    Abstract base class for all interval classifiers
+    Base class for all interval classifiers
     """
 
     def __init__(self):
@@ -66,7 +66,7 @@ class EqualIntervalClassifier(IntervalClassifier):
 
         Returns
         -------
-        edges : numpy array
+        edges : np.array
             The edges of the classifier.  This list will be one larger than
             the number of bins
         """
@@ -131,7 +131,7 @@ class CustomIntervalClassifier(IntervalClassifier):
 
         Returns
         -------
-        edges : numpy array
+        edges : np.array
             The edges of the classifier.
         """
 

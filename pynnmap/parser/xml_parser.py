@@ -37,10 +37,6 @@ class XMLParser(object):
         Return a string representation of the this XML file starting at the
         root
 
-        Parameters
-        ----------
-        None
-
         Returns
         -------
         return_str: str

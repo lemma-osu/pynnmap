@@ -34,20 +34,16 @@ class Parser(object):
 
         Parameters
         ----------
-        all_lines : list
+        all_lines : list of str
             List of lines over which to check for chunks
-
         start_re : re.RegexObject
             The starting regular expression to search for
-
         end_re : re.RegexObject
             The ending regular expression to search for (not included)
-
         skip_lines : int
             The number of lines to skip after the start_re has been found.
             Defaults to 0
-
-        flush : bool
+        flush : bool, optional
             Flag for whether or not to write out the last chunk if the
             start_re has been found but the end of file has been reached
             before the chunk was appended to the master list

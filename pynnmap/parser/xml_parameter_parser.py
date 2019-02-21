@@ -26,10 +26,6 @@ class XMLParameterParser(
         ----------
         xml_file_name : file
             name and location of XML model parameter file
-
-        Returns
-        -------
-        None
         """
 
         # Call the base class constructors

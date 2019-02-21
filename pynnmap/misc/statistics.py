@@ -210,7 +210,7 @@ def _convert_to_float_array(x):
 
     Returns
     -------
-    out : numpy float64 array
+    out : np.array
         Output numpy array
     """
 
@@ -404,7 +404,6 @@ def gmfr(x, y):
     ----------
     x : array-like
         Any valid numeric array
-
     y : array-like
         Any valid numeric array identical in size to x
 
@@ -412,7 +411,6 @@ def gmfr(x, y):
     -------
     a : float
         Intercept of GMFR relationship
-
     b : float
         Slope of GMFR relationship
     """
@@ -432,7 +430,6 @@ def ac(x, y):
     ----------
     x : array-like
         Any valid numeric array
-
     y : array-like
         Any valid numeric array identical in size to x
 
@@ -441,14 +438,11 @@ def ac(x, y):
     ac : float
         Total agreement coefficient combining systematic and unsystematic
         components
-
     ac_sys : float
         Systematic component (ie. bias) of the agreement coefficient
-
     ac_uns : float
         Unsystematic component (ie. precision) of the agreement coefficient
     """
-
     # Derive the GMFR relationship between these two datasets
     (a, b) = gmfr(x, y)
 

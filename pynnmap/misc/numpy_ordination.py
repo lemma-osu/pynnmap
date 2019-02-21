@@ -14,8 +14,7 @@ class NumpyCCA(object):
     Note that the variable names are meant to be as consistent as possible
     when compared against vegan
     """
-
-    def __init__(self, X, Y):
+    def __init__(self, x, y):
         """
         Initialize the X (species) and Y (environmental variable) matrices
         and run the ordination.  Key variables are held as properties.

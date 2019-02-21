@@ -73,37 +73,35 @@ def csv2rec(csv_file, upper_case_field_names=True, **kwargs):
     return records
 
 
-def rec2csv(rec_array, csv_file, formatd=None, **kwargs):
-    """
-    Convenience wrapper function on top of mlab.rec2csv to allow fixed-
-    precision output to CSV files
-
-    Parameters
-    ----------
-    rec_aray : numpy 1-d recarray
-        The recarray to be written out
-
-    csv_file : str
-        CSV file name
-
-    kwargs : dict
-        Keyword arguments to pass through to mlab.rec2csv
-
-    Returns
-    -------
-    None
-    """
-
-    # Get the formatd objects associated with each field
-    formatd = mlab.get_formatd(rec_array, formatd)
-
-    # For all FormatFloat objects, switch to FormatDecimal objects
-    for (k, v) in formatd.iteritems():
-        if isinstance(v, mlab.FormatFloat):
-            formatd[k] = FormatDecimal()
-
-    # Pass this specification to mlab.rec2csv
-    mlab.rec2csv(rec_array, csv_file, formatd=formatd, **kwargs)
+# def rec2csv(rec_array, csv_file, formatd=None, **kwargs):
+#     """
+#     Convenience wrapper function on top of mlab.rec2csv to allow fixed-
+#     precision output to CSV files
+#
+#     Parameters
+#     ----------
+#     rec_array : numpy 1-d recarray
+#         The recarray to be written out
+#     csv_file : str
+#         CSV file name
+#     kwargs : dict
+#         Keyword arguments to pass through to mlab.rec2csv
+#
+#     Returns
+#     -------
+#     None
+#     """
+#
+#     # Get the formatd objects associated with each field
+#     formatd = mlab.get_formatd(rec_array, formatd)
+#
+#     # For all FormatFloat objects, switch to FormatDecimal objects
+#     for k, v in formatd.items():
+#         if isinstance(v, mlab.FormatFloat):
+#             formatd[k] = FormatDecimal()
+#
+#     # Pass this specification to mlab.rec2csv
+#     mlab.rec2csv(rec_array, csv_file, formatd=formatd, **kwargs)
 
 
 def df2csv(df, csv_file):

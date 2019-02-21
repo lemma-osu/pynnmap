@@ -378,7 +378,7 @@ class NNFinder(object):
 
         Returns
         -------
-        value : numpy 2d array
+        value : np.array
             Pixel values within window stored as 2d numpy array
         """
         (x_min, y_max, x_size, y_size) = window

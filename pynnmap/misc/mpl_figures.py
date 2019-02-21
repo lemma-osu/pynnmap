@@ -114,7 +114,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
 
     Parameters
     ----------
-    histograms : list of numpy arrays
+    histograms : list of np.array
         Bin counts of all series.  These should be the same length and
         represent the same bin endpoints
 
