@@ -77,7 +77,7 @@ class PredictionOutput(object):
                 ))
 
     @staticmethod
-    def write_predicted_record(plot_prediction, predicted_fh, attrs):
+    def write_predicted_record(plot_prediction, predicted_fh):
         """
         Write out a record to the predicted file which calculates predicted
         stand attributes for the passed plot
@@ -88,8 +88,6 @@ class PredictionOutput(object):
             Prediction information for each pixel in the passed plot
         predicted_fh : file
             File handle to the predicted file
-        attrs : list
-            An optional list of attributes over which to create predictions
         """
         # Print out the predicted means calculated across pixels
         values = np.array([x.get_predicted_attrs() for x in plot_prediction])
@@ -190,7 +188,7 @@ class IndependentOutput(PredictionOutput):
         for id_val, fp in sorted(neighbor_data.items()):
             prd = plot_attr_predictor.calculate_predictions_at_id(fp, p.k)
             self.write_zonal_pixel_record(prd, zonal_pixel_fh)
-            self.write_predicted_record(prd, predicted_fh, attrs)
+            self.write_predicted_record(prd, predicted_fh)
 
         # Close files
         zonal_pixel_fh.close()
@@ -237,7 +235,7 @@ class DependentOutput(PredictionOutput):
         for id_val, fp in sorted(neighbor_data.items()):
             prd = plot_attr_predictor.calculate_predictions_at_id(fp, p.k)
             self.write_zonal_pixel_record(prd, zonal_pixel_fh)
-            self.write_predicted_record(prd, predicted_fh, attrs)
+            self.write_predicted_record(prd, predicted_fh)
 
         # Close files
         zonal_pixel_fh.close()
