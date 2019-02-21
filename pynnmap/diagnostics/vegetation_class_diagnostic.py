@@ -76,17 +76,17 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
                     vc = 3
                 else:
                     vc = 4
-            elif bah >= 0.2 and bah < 0.65:
+            elif 0.2 <= bah < 0.65:
                 if sc <= 2:
                     vc = 5
-                elif sc >= 3 and sc <= 4:
+                elif 3 <= sc <= 4:
                     vc = 6
                 else:
                     vc = 7
             else:
                 if sc <= 2:
                     vc = 8
-                elif sc >= 3 and sc <= 4:
+                elif 3 <= sc <= 4:
                     vc = 9
                 elif sc == 5:
                     vc = 10
