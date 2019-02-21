@@ -7,7 +7,7 @@ class PixelPrediction(object):
         self.id = id_val
         self.pixel_number = pixel_number
         self.k = k
-        self._predicted_df = None
+        self._predicted_arr = None
         self._neighbors = None
         self._distances = None
 
@@ -36,7 +36,7 @@ class PixelPrediction(object):
         self._distances = distances
 
     def get_predicted_attrs(self):
-        return self._predicted_df
+        return self._predicted_arr
 
-    def set_predicted_attrs(self, df):
-        self._predicted_df = df
+    def set_predicted_attrs(self, arr):
+        self._predicted_arr = arr
