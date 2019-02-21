@@ -1,24 +1,37 @@
-import numpy as np
+import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
-from pynnmap.misc import utilities
+
+COARSE_VC_REMAP = {
+    1: 1,
+    2: 1,
+    3: 1,
+    4: 2,
+    5: 1,
+    6: 2,
+    7: 3,
+    8: 1,
+    9: 2,
+    10: 3,
+    11: 3,
+}
+
+
+def calculate_vc_variety(vc_records):
+    # Remap the vc_records to coarser categories
+    # - Open/young (VCs 1, 2, 3, 5, 8)
+    # - Closed/medium (VCs 4, 6, 9)
+    # - Closed/large (VCs 7, 10, 11)
+    coarse_records = [COARSE_VC_REMAP[x] for x in vc_records]
+
+    # Identify if this plot should be considered a variety plot:
+    # has at least 2 '1's and 2 '3's in it
+    young = [x for x in coarse_records if x == 1]
+    old = [x for x in coarse_records if x == 3]
+    return True if len(young) >= 2 and len(old) >= 2 else False
 
 
 class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
-
-    coarse_vc_remap = {
-        1: 1,
-        2: 1,
-        3: 1,
-        4: 2,
-        5: 1,
-        6: 2,
-        7: 3,
-        8: 1,
-        9: 2,
-        10: 3,
-        11: 3,
-    }
 
     def __init__(self, parameters):
         p = parameters
@@ -44,64 +57,38 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
             e.message += '\nSkipping VegetationClassVarietyDiagnostic\n'
             raise e
 
+    def _vc_variety(self, rec, zonal_df):
+        cond = zonal_df[self.id_field] == rec[self.id_field]
+        records = zonal_df[cond].VEGCLASS
+        return calculate_vc_variety(records)
+
     def run_diagnostic(self):
-
         # Open the stand attribute file and subset to just positive IDs
-        attr_data = utilities.csv2rec(self.stand_attr_file)
-        cond = np.where(getattr(attr_data, self.id_field) > 0)
-        attr_data = attr_data[cond]
-
-        # Create a simple dictionary of ID to vegetation class from the
-        # attr_data
-        vc_dict = dict(
-            (getattr(x, self.id_field), getattr(x, 'VEGCLASS'))
-            for x in attr_data)
-
-        # Open the output file and write the header
-        out_fh = open(self.output_file, 'w')
-        out_fh.write('%s,PREDICTION_TYPE\n' % self.id_field)
+        columns = [self.id_field, 'VEGCLASS']
+        attr_df = pd.read_csv(self.stand_attr_file, usecols=columns)
+        attr_df = attr_df[attr_df[self.id_field] > 0]
 
         # Run this for both independent and dependent predictions
+        dfs = []
         for (prd_type, zp_file) in self.zonal_pixel_files:
+            # Create a copy of the attr_df for this prd_type and insert a
+            # column for this
+            df = attr_df.copy()
+            df.insert(1, 'PREDICTION_TYPE', prd_type.upper())
 
-            # Open the zonal pixel file
-            zonal_data = utilities.csv2rec(zp_file)
+            # Open the zonal pixel file and join vegclass to it
+            zonal_df = pd.read_csv(zp_file)
+            zonal_df = zonal_df.merge(
+                df, left_on='NEIGHBOR_ID', right_on=self.id_field,
+                suffixes=['', '_DUP'])
 
-            # For each ID in zonal_data, retrieve the vegetation class of its
-            # neighbors
-            ids = getattr(attr_data, self.id_field)
-            for id in ids:
-                cond = np.where(getattr(zonal_data, self.id_field) == id)
-                zonal_records = zonal_data[cond]
-                vc_records = [vc_dict[x] for x in zonal_records.NEIGHBOR_ID]
+            # Calculate the vc_variety
+            df['OUTLIER'] = df.apply(self._vc_variety, axis=1, args=(zonal_df,))
 
-                # Apply the logic for the variety
-                outlier = self.calculate_vc_variety(vc_records)
+            # Save out the records that are True
+            df = df[df.OUTLIER]
+            dfs.append(df[[self.id_field, 'PREDICTION_TYPE']])
 
-                if outlier:
-                    out_fh.write('%d,%s\n' % (id, prd_type.upper()))
-
-        # Clean up
-        out_fh.close()
-
-    def calculate_vc_variety(self, vc_records):
-
-        # Remap the vc_records to coarser categories
-        # - Open/young (VCs 1, 2, 3, 5, 8)
-        # - Closed/medium (VCs 4, 6, 9)
-        # - Closed/large (VCs 7, 10, 11)
-
-        coarse_records = [self.coarse_vc_remap[x] for x in vc_records]
-
-        # Identify if this plot should be considered a variety plot:
-        # has at least 2 '1's and 2 '3's in it
-        young = [x for x in coarse_records if x == 1]
-        old = [x for x in coarse_records if x == 3]
-
-        if len(young) >= 2 and len(old) >= 2:
-            return True
-        else:
-            return False
-
-    def get_outlier_filename(self):
-        return self.output_file
+        # Merge together the dfs and export
+        out_df = pd.concat(dfs)
+        out_df.to_csv(self.output_file, index=False)
