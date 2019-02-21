@@ -316,6 +316,7 @@ def subset_lines_from_regex(
         chunks : list of lists
             The set of all chunks found by the parser
         """
+        all_lines = list(all_lines)
         pos = 0
         chunks = []
         chunk_lines = []

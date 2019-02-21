@@ -217,6 +217,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
     label_width = frame_width / len(histograms[0])
 
     # Find the longest label
+    bin_names = list(bin_names)
     max_label = len(bin_names[0])
     for i in range(1, len(bin_names)):
         if len(bin_names[i]) > max_label:

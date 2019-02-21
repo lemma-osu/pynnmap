@@ -228,6 +228,7 @@ def bin_categorical(datasets, class_names=None):
         # Bin the data using the unique enumeration values
         counts, endpoints = np.histogramdd(
             enum_data, bins=[class_values], weights=ds.weights)
+        endpoints = list(endpoints)
 
         # Create a new CategoricalHistogramBC instance and append
         # to histogram_data
