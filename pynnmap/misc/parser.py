@@ -8,13 +8,13 @@ class ParserError(Exception):
 
 
 # General utility functions for size and set checking
-def _assert_same_size(a, b):
+def assert_same_size(a, b):
     if a.size != b.size:
         err_msg = 'The two arrays are not the same size'
         raise ParserError(err_msg)
 
 
-def _assert_same_set(a, b):
+def assert_same_set(a, b):
     if not np.all(a == b):
         err_msg = 'The two arrays are not the same set'
         raise ParserError(err_msg)
@@ -81,5 +81,5 @@ class Parser(object):
             chunks.append(chunk_lines)
         return chunks
 
-    def parse(self):
+    def parse(self, file_name):
         raise NotImplementedError

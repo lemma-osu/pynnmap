@@ -63,28 +63,28 @@ class LemmaOrdinationParser(parser.Parser):
 
         # Data checks
         try:
-            parser._assert_same_set(var_names_1, model.var_names)
-            parser._assert_same_set(var_names_2, model.var_names)
+            parser.assert_same_set(var_names_1, model.var_names)
+            parser.assert_same_set(var_names_2, model.var_names)
         except parser.ParserError:
             err_msg = 'Variable names are not the same in all sections'
             raise parser.ParserError(err_msg)
 
         try:
-            parser._assert_same_size(model.axis_weights, model.var_coeff[0])
+            parser.assert_same_size(model.axis_weights, model.var_coeff[0])
         except parser.ParserError:
             err_msg = 'Number of axes differ between eigenvalues '
             err_msg += 'and coefficients'
             raise parser.ParserError(err_msg)
 
         try:
-            parser._assert_same_size(model.axis_weights, model.plot_scores[0])
+            parser.assert_same_size(model.axis_weights, model.plot_scores[0])
         except parser.ParserError:
             err_msg = 'Number of axes differ between eigenvalues '
             err_msg += 'and plot scores'
             raise parser.ParserError(err_msg)
 
         try:
-            parser._assert_same_size(
+            parser.assert_same_size(
                 model.axis_weights, model.biplot_scores[0])
         except parser.ParserError:
             err_msg = 'Number of axes differ between eigenvalues and '
