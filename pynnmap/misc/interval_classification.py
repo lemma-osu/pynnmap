@@ -33,7 +33,7 @@ class IntervalClassifier(object):
     """
 
     def __init__(self):
-        pass
+        self.edges = np.array([])
 
     def __repr__(self):
         out_str = ''
@@ -106,12 +106,12 @@ class EqualIntervalClassifier(IntervalClassifier):
             raise ValueError('Number of bins must be a positive integer')
 
         # Create the bins based on these values
-        self.edges = numpy.linspace(abs_min, abs_max, num=bins + 1)
+        self.edges = np.linspace(abs_min, abs_max, num=bins + 1)
 
 
 class QuantileClassifier(IntervalClassifier):
 
-    def __init__(self, datasets, bins=10):
+    def __init__(self):
         super(QuantileClassifier, self).__init__()
 
 

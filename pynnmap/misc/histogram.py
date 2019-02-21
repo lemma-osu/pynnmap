@@ -134,9 +134,11 @@ def bin_continuous(datasets, bin_type=EQUAL_INTERVAL, bins=10):
     if bin_type == EQUAL_INTERVAL:
         classifier = ic.EqualIntervalClassifier(datasets, bins=bins)
     elif bin_type == QUANTILE:
-        classifier = ic.QuantileClassifier(datasets, bins=bins)
+        classifier = ic.QuantileClassifier()
     elif bin_type == CUSTOM:
         classifier = ic.CustomIntervalClassifier(bins)
+    else:
+        classifier = None
 
     # Bin the data using this classifier
     histogram_data = []
