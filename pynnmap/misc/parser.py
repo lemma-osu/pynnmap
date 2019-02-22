@@ -25,8 +25,8 @@ class Parser(object):
         # Set up commonly used regular expressions for parsing
         self.blank_re = re.compile(r'^\s*$')
 
-    def read_chunks(
-            self, all_lines, start_re, end_re, skip_lines=0, flush=False):
+    @staticmethod
+    def read_chunks(all_lines, start_re, end_re, skip_lines=0, flush=False):
         """
         Read a subset of a list (usually a file held in memory) based on a
         start and end regular expression.  The function returns all chunks

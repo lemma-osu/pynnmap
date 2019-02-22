@@ -93,7 +93,8 @@ class NumpyCCA(object):
 
         self.wa = np.multiply(self.wa_eig, (1.0 / s[0:rank]))
 
-    def _weight_center(self, x, w):
+    @staticmethod
+    def _weight_center(x, w):
         w_c = np.average(x, axis=0, weights=w)
         x = x - w_c
         x = np.apply_along_axis(np.multiply, 0, x, np.sqrt(w))

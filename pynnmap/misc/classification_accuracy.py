@@ -310,7 +310,8 @@ class KappaCalculator(object):
         self.kappa_values['all']['fuzzy'] = \
             self._get_masked_kappa(err_mat, f_mask)
 
-    def _get_masked_kappa(self, err_mat, mask, c=None):
+    @staticmethod
+    def _get_masked_kappa(err_mat, mask, c=None):
         """
         Given an error matrix and an analysis mask, calculate the kappa
         coefficient.  If c is None, kappa is calculated for the entire matrix,

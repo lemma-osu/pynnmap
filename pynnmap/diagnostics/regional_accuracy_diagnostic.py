@@ -44,7 +44,6 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             raise e
 
     def get_observed_estimates(self):
-
         # Read the area estimate file into a recarray
         obs_data = utilities.csv2rec(self.area_estimate_file)
 
@@ -63,7 +62,6 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         return obs_data, nf_hectares, ns_hectares
 
     def get_predicted_estimates(self):
-
         # Read in the predicted raster
         ds = gdal.Open(self.predicted_raster, gdalconst.GA_ReadOnly)
         rb = ds.GetRasterBand(1)
@@ -112,14 +110,13 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         predicted_data = mlab.rec_join(self.id_field, ids, sad)
         return (predicted_data, nf_hectares)
 
-    def insert_class(self, histogram, name, count):
-        histogram.bin_counts = \
-            np.insert(histogram.bin_counts, [0], count)
-        histogram.bin_names.insert(0, name)
-        return histogram
+    @staticmethod
+    def insert_class(hist, name, count):
+        hist.bin_counts = np.insert(hist.bin_counts, [0], count)
+        hist.bin_names.insert(0, name)
+        return hist
 
     def run_diagnostic(self):
-
         # Read in the observed data from the area estimate file
         (obs_area, obs_nf_hectares, obs_ns_hectares) = \
            self.get_observed_estimates()
