@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
@@ -61,7 +60,7 @@ def find_vegclass_outlier_class(rec):
     return 'green'
 
 
-class VegetationClassOutlierDiagnostic(vcd.VegetationClassDiagnostic):
+class VegetationClassOutlierDiagnostic(object):
 
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
@@ -73,6 +72,10 @@ class VegetationClassOutlierDiagnostic(vcd.VegetationClassDiagnostic):
             ('dependent', parameters.dependent_predicted_file),
             ('independent', parameters.independent_predicted_file),
         ]
+
+        # Create a instance of the VegetationClassDiagnostic to calculate
+        # vegetation class
+        self.vc_calc = vcd.VegetationClassDiagnostic(parameters=parameters)
 
         # Ensure all input files are present
         files = [
@@ -102,7 +105,8 @@ class VegetationClassOutlierDiagnostic(vcd.VegetationClassDiagnostic):
             prd_df.reset_index(inplace=True)
 
             # Calculate VEGCLASS for both the observed and predicted data
-            vc_df = self.vegclass_aa(obs_df, prd_df, id_field=self.id_field)
+            vc_df = self.vc_calc.vegclass_aa(
+                obs_df, prd_df, id_field=self.id_field)
             vc_df.columns = [self.id_field, 'OBSERVED', 'PREDICTED']
 
             # Find the outliers
@@ -123,6 +127,3 @@ class VegetationClassOutlierDiagnostic(vcd.VegetationClassDiagnostic):
         # Merge together the dfs and export
         out_df = pd.concat(out_dfs)
         out_df.to_csv(self.vegclass_outlier_file, index=False)
-
-    def get_outlier_filename(self):
-        return self.vegclass_outlier_file
