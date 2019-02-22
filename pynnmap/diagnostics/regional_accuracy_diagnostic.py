@@ -89,7 +89,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 id_recs.append((id_val, hectares))
 
         # Release the dataset
-        ds = None
+        del ds
 
         # Convert this to a recarray
         names = (self.id_field, 'HECTARES')
@@ -108,7 +108,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Join the two recarrays together
         predicted_data = mlab.rec_join(self.id_field, ids, sad)
-        return (predicted_data, nf_hectares)
+        return predicted_data, nf_hectares
 
     @staticmethod
     def insert_class(hist, name, count):
@@ -147,7 +147,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             # Get the metadata for this field
             try:
                 fm = mp.get_attribute(v)
-            except:
+            except ValueError:
                 err_msg = v + ' is missing metadata.'
                 print(err_msg)
                 continue
@@ -188,12 +188,12 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             self.insert_class(bins[1], 'Unsampled', prd_ns_hectares)
             self.insert_class(bins[1], 'Nonforest', prd_nf_hectares)
 
-            for bin in bins:
-                for i in range(0, len(bin.bin_counts)):
+            for b in bins:
+                for i in range(0, len(b.bin_counts)):
                     out_data = [
                         '%s' % v,
-                        '%s' % bin.name,
-                        '"%s"' % bin.bin_names[i],
-                        '%.3f' % bin.bin_counts[i],
+                        '%s' % b.name,
+                        '"%s"' % b.bin_names[i],
+                        '%.3f' % b.bin_counts[i],
                     ]
                     stats_fh.write(','.join(out_data) + '\n')

@@ -174,6 +174,8 @@ def bin_categorical(datasets, class_names=None):
     -------
     histogram_data : list of CategoricalHistogramBC instances
     """
+    if class_names is None:
+        class_names = []
 
     # Figure out the unique values in these datasets
     all_unique = []
@@ -204,13 +206,13 @@ def bin_categorical(datasets, class_names=None):
     class_keys = class_mapped.keys()
     class_keys.sort()
 
-    if class_names is not None:
+    if len(class_names):
         for key in class_keys:
             if key is not None:
                 key = str(key)
 
                 # Find the key in the class_names dict
-                value = str(class_names[key])
+                value = str(class_names[int(key)])
 
                 # Add this value to the c_names list
                 c_names.append(value)

@@ -27,15 +27,8 @@ def draw_scatterplot(
     pl.gcf().set_dpi(250)
 
     # Find the min and max of both axes
-    if (x.min() < y.min()):
-        abs_min = x.min()
-    else:
-        abs_min = y.min()
-
-    if (x.max() > y.max()):
-        abs_max = x.max()
-    else:
-        abs_max = y.max()
+    abs_min = min(x.min(), y.min())
+    abs_max = max(x.max(), y.max())
 
     # Draw the scatterplot data and title
     pl.scatter(x, y, s=2, c='b', edgecolor='k', linewidth=0.25, **kwargs)
@@ -234,8 +227,6 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
         y = m * x
         rotation = 30.0 + y
         pl.setp(labels, 'rotation', rotation)
-    else:
-        rotation = 0.0
 
     # Set the vertical components of the axes based on the rotation angle
     frame_y = 0.10

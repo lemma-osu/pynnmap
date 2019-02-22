@@ -6,5 +6,5 @@ import click
     'parameter-file',
     type=click.Path(exists=True),
     required=True)
-def new_targets(parameter_file):
+def new_targets():
     print('Not Implemented')
