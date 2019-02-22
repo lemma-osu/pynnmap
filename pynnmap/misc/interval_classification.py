@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 
 
 class VariableVW(object):
@@ -12,10 +12,10 @@ class VariableVW(object):
 
         Parameters
         ----------
-        values : numpy-like array
+        values : np.array
             Array of values
 
-        weights : numpy-like array
+        weights : np.array
             Array of associated weights, same size as values
 
         Returns
@@ -29,11 +29,11 @@ class VariableVW(object):
 
 class IntervalClassifier(object):
     """
-    Abstract base class for all interval classifiers
+    Base class for all interval classifiers
     """
 
     def __init__(self):
-        pass
+        self.edges = np.array([])
 
     def __repr__(self):
         out_str = ''
@@ -66,7 +66,7 @@ class EqualIntervalClassifier(IntervalClassifier):
 
         Returns
         -------
-        edges : numpy array
+        edges : np.array
             The edges of the classifier.  This list will be one larger than
             the number of bins
         """
@@ -106,12 +106,12 @@ class EqualIntervalClassifier(IntervalClassifier):
             raise ValueError('Number of bins must be a positive integer')
 
         # Create the bins based on these values
-        self.edges = numpy.linspace(abs_min, abs_max, num=bins + 1)
+        self.edges = np.linspace(abs_min, abs_max, num=bins + 1)
 
 
 class QuantileClassifier(IntervalClassifier):
 
-    def __init__(self, datasets, bins=10):
+    def __init__(self):
         super(QuantileClassifier, self).__init__()
 
 
@@ -131,16 +131,16 @@ class CustomIntervalClassifier(IntervalClassifier):
 
         Returns
         -------
-        edges : numpy array
+        edges : np.array
             The edges of the classifier.
         """
 
         super(CustomIntervalClassifier, self).__init__()
-        bins = numpy.array(bins).ravel()
+        bins = np.array(bins).ravel()
         if bins.size < 1:
             raise ValueError('Bins must not be empty')
         if bins.size == 1:
-            bins = numpy.append(bins, bins[0])
-        if (numpy.diff(bins) < 0).any():
+            bins = np.append(bins, bins[0])
+        if (np.diff(bins) < 0).any():
                 raise AttributeError('Bins must increase monotonically')
-        self.edges = numpy.array(bins)
+        self.edges = np.array(bins)

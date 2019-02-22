@@ -8,13 +8,13 @@ class ParserError(Exception):
 
 
 # General utility functions for size and set checking
-def _assert_same_size(a, b):
+def assert_same_size(a, b):
     if a.size != b.size:
         err_msg = 'The two arrays are not the same size'
         raise ParserError(err_msg)
 
 
-def _assert_same_set(a, b):
+def assert_same_set(a, b):
     if not np.all(a == b):
         err_msg = 'The two arrays are not the same set'
         raise ParserError(err_msg)
@@ -23,10 +23,10 @@ def _assert_same_set(a, b):
 class Parser(object):
     def __init__(self):
         # Set up commonly used regular expressions for parsing
-        self.blank_re = re.compile('^\s*$')
+        self.blank_re = re.compile(r'^\s*$')
 
-    def read_chunks(
-            self, all_lines, start_re, end_re, skip_lines=0, flush=False):
+    @staticmethod
+    def read_chunks(all_lines, start_re, end_re, skip_lines=0, flush=False):
         """
         Read a subset of a list (usually a file held in memory) based on a
         start and end regular expression.  The function returns all chunks
@@ -34,20 +34,16 @@ class Parser(object):
 
         Parameters
         ----------
-        all_lines : list
+        all_lines : list of str
             List of lines over which to check for chunks
-
         start_re : re.RegexObject
             The starting regular expression to search for
-
         end_re : re.RegexObject
             The ending regular expression to search for (not included)
-
         skip_lines : int
             The number of lines to skip after the start_re has been found.
             Defaults to 0
-
-        flush : bool
+        flush : bool, optional
             Flag for whether or not to write out the last chunk if the
             start_re has been found but the end of file has been reached
             before the chunk was appended to the master list
@@ -57,6 +53,7 @@ class Parser(object):
         chunks : list of lists
             The set of all chunks found by the parser
         """
+        all_lines = list(all_lines)
         pos = 0
         chunks = []
         chunk_lines = []
@@ -85,5 +82,5 @@ class Parser(object):
             chunks.append(chunk_lines)
         return chunks
 
-    def parse(self):
+    def parse(self, file_name):
         raise NotImplementedError

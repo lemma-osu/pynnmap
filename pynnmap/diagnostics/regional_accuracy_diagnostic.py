@@ -44,7 +44,6 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             raise e
 
     def get_observed_estimates(self):
-
         # Read the area estimate file into a recarray
         obs_data = utilities.csv2rec(self.area_estimate_file)
 
@@ -63,7 +62,6 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         return obs_data, nf_hectares, ns_hectares
 
     def get_predicted_estimates(self):
-
         # Read in the predicted raster
         ds = gdal.Open(self.predicted_raster, gdalconst.GA_ReadOnly)
         rb = ds.GetRasterBand(1)
@@ -91,7 +89,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 id_recs.append((id_val, hectares))
 
         # Release the dataset
-        ds = None
+        del ds
 
         # Convert this to a recarray
         names = (self.id_field, 'HECTARES')
@@ -110,16 +108,15 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Join the two recarrays together
         predicted_data = mlab.rec_join(self.id_field, ids, sad)
-        return (predicted_data, nf_hectares)
+        return predicted_data, nf_hectares
 
-    def insert_class(self, histogram, name, count):
-        histogram.bin_counts = \
-            np.insert(histogram.bin_counts, [0], count)
-        histogram.bin_names.insert(0, name)
-        return histogram
+    @staticmethod
+    def insert_class(hist, name, count):
+        hist.bin_counts = np.insert(hist.bin_counts, [0], count)
+        hist.bin_names.insert(0, name)
+        return hist
 
     def run_diagnostic(self):
-
         # Read in the observed data from the area estimate file
         (obs_area, obs_nf_hectares, obs_ns_hectares) = \
            self.get_observed_estimates()
@@ -150,7 +147,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             # Get the metadata for this field
             try:
                 fm = mp.get_attribute(v)
-            except:
+            except ValueError:
                 err_msg = v + ' is missing metadata.'
                 print(err_msg)
                 continue
@@ -191,12 +188,12 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             self.insert_class(bins[1], 'Unsampled', prd_ns_hectares)
             self.insert_class(bins[1], 'Nonforest', prd_nf_hectares)
 
-            for bin in bins:
-                for i in range(0, len(bin.bin_counts)):
+            for b in bins:
+                for i in range(0, len(b.bin_counts)):
                     out_data = [
                         '%s' % v,
-                        '%s' % bin.name,
-                        '"%s"' % bin.bin_names[i],
-                        '%.3f' % bin.bin_counts[i],
+                        '%s' % b.name,
+                        '"%s"' % b.bin_names[i],
+                        '%.3f' % b.bin_counts[i],
                     ]
                     stats_fh.write(','.join(out_data) + '\n')

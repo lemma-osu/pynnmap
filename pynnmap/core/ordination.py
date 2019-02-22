@@ -1,8 +1,7 @@
 import numpy as np
-from matplotlib import mlab
+import pandas as pd
 
 from pynnmap.misc import numpy_ordination
-from pynnmap.misc import utilities
 from pynnmap.parser import parameter_parser as pp
 
 VEGAN_SCRIPT = 'L:/resources/code/models/pre_process/gnn_vegan.r'
@@ -133,27 +132,27 @@ class NumpyCCAOrdination(NumpyOrdination):
     def run(self):
 
         # Convert the species and environment matrices to numpy rec arrays
-        spp_ra = utilities.csv2rec(self.spp_file)
-        env_ra = utilities.csv2rec(self.env_file)
+        spp_df = pd.read_csv(self.spp_file)
+        env_df = pd.read_csv(self.env_file)
 
         # Extract the plot IDs from both the species and environment matrices
         # and ensure that they are equal
-        spp_plot_ids = getattr(spp_ra, self.id_field)
-        env_plot_ids = getattr(env_ra, self.id_field)
+        spp_plot_ids = spp_df[self.id_field]
+        env_plot_ids = env_df[self.id_field]
         if not np.all(spp_plot_ids == env_plot_ids):
             err_msg = 'Species and environment plot IDs do not match'
             raise ValueError(err_msg)
 
-        # Drop the ID column from both arrays
-        spp_ra = mlab.rec_drop_fields(spp_ra, [self.id_field])
-        env_ra = mlab.rec_drop_fields(env_ra, [self.id_field])
+        # Drop the ID column from both dataframes
+        spp_df.drop(labels=[self.id_field], axis=1, inplace=True)
+        env_df.drop(labels=[self.id_field], axis=1, inplace=True)
 
         # For the environment matrix, only keep the variables specified
-        env_ra = mlab.rec_keep_fields(env_ra, self.variables)
+        env_df = env_df[self.variables]
 
         # Convert these matrices to pure floating point arrays
-        spp = np.array([spp_ra[x] for x in spp_ra.dtype.names], dtype=float).T
-        env = np.array([env_ra[x] for x in env_ra.dtype.names], dtype=float).T
+        spp = spp_df.values.astype(float)
+        env = env_df.values.astype(float)
 
         # Apply transformation if desired
         if self.species_transform == 'SQRT':
@@ -203,7 +202,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, c) in enumerate(cca.species_centroids()):
             scores = ','.join(['%.10f' % x for x in c])
-            numpy_fh.write('%s,%s\n' % (spp_ra.dtype.names[i], scores))
+            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
         numpy_fh.write('\n')
 
         # Print out species tolerances
@@ -213,7 +212,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         numpy_fh.write('SPECIES,' + header_str + '\n')
         for (i, t) in enumerate(cca.species_tolerances()):
             scores = ','.join(['%.21f' % x for x in t])
-            numpy_fh.write('%s,%s\n' % (spp_ra.dtype.names[i], scores))
+            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
         numpy_fh.write('\n')
 
         # Print out miscellaneous species information
@@ -222,7 +221,7 @@ class NumpyCCAOrdination(NumpyOrdination):
         species_weights, species_n2 = cca.species_information()
         for i in range(len(species_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
-                spp_ra.dtype.names[i], species_weights[i], species_n2[i]))
+                spp_df.columns[i], species_weights[i], species_n2[i]))
         numpy_fh.write('\n')
 
         # Print out site LC scores
@@ -261,27 +260,27 @@ class NumpyRDAOrdination(NumpyOrdination):
 
     def run(self):
         # Convert the species and environment matrices to numpy rec arrays
-        spp_ra = utilities.csv2rec(self.spp_file)
-        env_ra = utilities.csv2rec(self.env_file)
+        spp_df = pd.read_csv(self.spp_file)
+        env_df = pd.read_csv(self.env_file)
 
         # Extract the plot IDs from both the species and environment matrices
         # and ensure that they are equal
-        spp_plot_ids = getattr(spp_ra, self.id_field)
-        env_plot_ids = getattr(env_ra, self.id_field)
+        spp_plot_ids = spp_df[self.id_field]
+        env_plot_ids = env_df[self.id_field]
         if not np.all(spp_plot_ids == env_plot_ids):
             err_msg = 'Species and environment plot IDs do not match'
             raise ValueError(err_msg)
 
-        # Drop the ID column from both arrays
-        spp_ra = mlab.rec_drop_fields(spp_ra, [self.id_field])
-        env_ra = mlab.rec_drop_fields(env_ra, [self.id_field])
+        # Drop the ID column from both dataframes
+        spp_df.drop(labels=[self.id_field], axis=1, inplace=True)
+        env_df.drop(labels=[self.id_field], axis=1, inplace=True)
 
         # For the environment matrix, only keep the variables specified
-        env_ra = mlab.rec_keep_fields(env_ra, self.variables)
+        env_df = env_df[self.variables]
 
         # Convert these matrices to pure floating point arrays
-        spp = np.array([spp_ra[x] for x in spp_ra.dtype.names], dtype=float).T
-        env = np.array([env_ra[x] for x in env_ra.dtype.names], dtype=float).T
+        spp = spp_df.values.astype(float)
+        env = env_df.values.astype(float)
 
         # Apply transformation if desired
         if self.species_transform == 'SQRT':
@@ -290,83 +289,83 @@ class NumpyRDAOrdination(NumpyOrdination):
             spp = np.log(spp)
 
         # Create the RDA object
-        cca = numpy_ordination.NumpyRDA(spp, env)
+        rda = numpy_ordination.NumpyRDA(spp, env)
 
         # Open the output file
         numpy_fh = open(self.ord_file, 'w')
 
         # Eigenvalues
         numpy_fh.write('### Eigenvalues ###\n')
-        for (i, e) in enumerate(cca.eigenvalues):
+        for i, e in enumerate(rda.eigenvalues):
             numpy_fh.write('RDA' + str(i + 1) + ',' + '%.10f' % e + '\n')
         numpy_fh.write('\n')
 
         # Print out variable means
         numpy_fh.write('### Variable Means ###\n')
-        for (i, m) in enumerate(cca.env_means):
+        for i, m in enumerate(rda.env_means):
             numpy_fh.write('%s,%.10f\n' % (self.variables[i], m))
         numpy_fh.write('\n')
 
         # Print out environmental coefficients loadings
         numpy_fh.write('### Coefficient Loadings ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
         numpy_fh.write('VARIABLE,' + header_str + '\n')
-        for (i, c) in enumerate(cca.coefficients()):
+        for i, c in enumerate(rda.coefficients()):
             coeff = ','.join(['%.10f' % x for x in c])
             numpy_fh.write('%s,%s\n' % (self.variables[i], coeff))
         numpy_fh.write('\n')
 
         # Print out biplot scores
         numpy_fh.write('### Biplot Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
         numpy_fh.write('VARIABLE,' + header_str + '\n')
-        for (i, b) in enumerate(cca.biplot_scores()):
+        for i, b in enumerate(rda.biplot_scores()):
             scores = ','.join(['%.10f' % x for x in b])
             numpy_fh.write('%s,%s\n' % (self.variables[i], scores))
         numpy_fh.write('\n')
 
         # Print out species centroids
         numpy_fh.write('### Species Centroids ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
         numpy_fh.write('SPECIES,' + header_str + '\n')
-        for (i, c) in enumerate(cca.species_centroids()):
+        for i, c in enumerate(rda.species_centroids()):
             scores = ','.join(['%.10f' % x for x in c])
-            numpy_fh.write('%s,%s\n' % (spp_ra.dtype.names[i], scores))
+            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
         numpy_fh.write('\n')
 
         # Print out species tolerances
         numpy_fh.write('### Species Tolerances ###\n')
         header_str = \
-            ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
+            ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
         numpy_fh.write('SPECIES,' + header_str + '\n')
-        for (i, t) in enumerate(cca.species_tolerances()):
+        for i, t in enumerate(rda.species_tolerances()):
             scores = ','.join(['%.21f' % x for x in t])
-            numpy_fh.write('%s,%s\n' % (spp_ra.dtype.names[i], scores))
+            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
         numpy_fh.write('\n')
 
         # Print out miscellaneous species information
         numpy_fh.write('### Miscellaneous Species Information ###\n')
         numpy_fh.write('SPECIES,WEIGHT,N2\n')
-        species_weights, species_n2 = cca.species_information()
+        species_weights, species_n2 = rda.species_information()
         for i in range(len(species_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
-                spp_ra.dtype.names[i], species_weights[i], species_n2[i]))
+                spp_df.columns[i], species_weights[i], species_n2[i]))
         numpy_fh.write('\n')
 
         # Print out site LC scores
         numpy_fh.write('### Site LC Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
         numpy_fh.write('ID,' + header_str + '\n')
-        for (i, s) in enumerate(cca.site_lc_scores()):
+        for i, s in enumerate(rda.site_lc_scores()):
             scores = ','.join(['%.10f' % x for x in s])
             numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
         numpy_fh.write('\n')
 
         # Print out site WA scores
         numpy_fh.write('### Site WA Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(cca.rank)])
+        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
         numpy_fh.write('ID,' + header_str + '\n')
-        for (i, s) in enumerate(cca.site_wa_scores()):
+        for i, s in enumerate(rda.site_wa_scores()):
             scores = ','.join(['%.10f' % x for x in s])
             numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
         numpy_fh.write('\n')
@@ -374,7 +373,7 @@ class NumpyRDAOrdination(NumpyOrdination):
         # Miscellaneous site information
         numpy_fh.write('### Miscellaneous Site Information ###\n')
         numpy_fh.write('ID,WEIGHT,N2\n')
-        site_weights, site_n2 = cca.site_information()
+        site_weights, site_n2 = rda.site_information()
         for i in range(len(site_weights)):
             numpy_fh.write('%s,%.10f,%.10f\n' % (
                 spp_plot_ids[i], site_weights[i], site_n2[i]))

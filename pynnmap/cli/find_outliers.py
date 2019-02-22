@@ -1,8 +1,7 @@
 import click
 
-from pynnmap.core import dependent_run as dr
-from pynnmap.core import independent_run as ir
-from pynnmap.core import prediction_run as pr
+from pynnmap.core.prediction_output import DependentOutput, IndependentOutput
+from pynnmap.core.nn_finder import NNFinder
 from pynnmap.diagnostics import diagnostic_wrapper as dw
 from pynnmap.parser import parameter_parser_factory as ppf
 
@@ -13,26 +12,26 @@ from pynnmap.parser import parameter_parser_factory as ppf
     type=click.Path(exists=True),
     required=True)
 def find_outliers(parameter_file):
+    # Get the model parameters
     p = ppf.get_parameter_parser(parameter_file)
 
-    # Create a PredictionRun object
-    prediction_run = pr.PredictionRun(p)
+    # Create a NNFinder object
+    finder = NNFinder(p)
 
-    # Run the PredictionRun to create the neighbor/distance information
-    prediction_run.calculate_neighbors_cross_validation()
+    # Run cross-validation to create the neighbor/distance information
+    neighbor_data = finder.calculate_neighbors_cross_validation()
 
-    # Create an IndependentRun object
-    independent_run = ir.IndependentRun(prediction_run)
+    # Create an IndependentOutput object
+    independent_output = IndependentOutput(p)
 
     # Create the independent predicted data and zonal pixel file
-    independent_run.create_predictions('LOC_ID')
+    independent_output.create_predictions(neighbor_data, 'LOC_ID')
 
-    # Create a DependentRun object
-    dependent_run = dr.DependentRun(prediction_run)
+    # Create a DependentOutput object
+    dependent_output = DependentOutput(p)
 
-    # Create the dependent predicted data, zonal pixel file and
-    # nn index file
-    dependent_run.create_predictions()
+    # Create the dependent predicted data, zonal pixel file and nn index file
+    dependent_output.create_predictions(neighbor_data)
 
     diagnostic_wrapper = dw.DiagnosticWrapper(p)
     diagnostic_wrapper.run_outlier_diagnostics()

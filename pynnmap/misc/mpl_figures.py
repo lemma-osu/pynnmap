@@ -27,15 +27,8 @@ def draw_scatterplot(
     pl.gcf().set_dpi(250)
 
     # Find the min and max of both axes
-    if (x.min() < y.min()):
-        abs_min = x.min()
-    else:
-        abs_min = y.min()
-
-    if (x.max() > y.max()):
-        abs_max = x.max()
-    else:
-        abs_max = y.max()
+    abs_min = min(x.min(), y.min())
+    abs_max = max(x.max(), y.max())
 
     # Draw the scatterplot data and title
     pl.scatter(x, y, s=2, c='b', edgecolor='k', linewidth=0.25, **kwargs)
@@ -80,9 +73,9 @@ def draw_scatterplot(
     pl.xticks(size=4)
     pl.yticks(size=4)
 
-    range = abs_max - abs_min
-    pl.xlim(abs_min - (0.01 * range), abs_max + (0.01 * range))
-    pl.ylim(abs_min - (0.01 * range), abs_max + (0.01 * range))
+    range_ = abs_max - abs_min
+    pl.xlim(abs_min - (0.01 * range_), abs_max + (0.01 * range_))
+    pl.ylim(abs_min - (0.01 * range_), abs_max + (0.01 * range_))
 
     # Position the main axis within the figure
     frame_x = 0.125
@@ -114,7 +107,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
 
     Parameters
     ----------
-    histograms : list of numpy arrays
+    histograms : list of np.array
         Bin counts of all series.  These should be the same length and
         represent the same bin endpoints
 
@@ -217,6 +210,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
     label_width = frame_width / len(histograms[0])
 
     # Find the longest label
+    bin_names = list(bin_names)
     max_label = len(bin_names[0])
     for i in range(1, len(bin_names)):
         if len(bin_names[i]) > max_label:
@@ -233,8 +227,6 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
         y = m * x
         rotation = 30.0 + y
         pl.setp(labels, 'rotation', rotation)
-    else:
-        rotation = 0.0
 
     # Set the vertical components of the axes based on the rotation angle
     frame_y = 0.10

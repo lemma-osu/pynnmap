@@ -3,9 +3,8 @@ import re
 
 import numpy as np
 import numpy.ma as ma
+import pandas as pd
 from lxml import objectify
-
-from pynnmap.misc import utilities
 
 
 def natural_sort(l):
@@ -85,7 +84,7 @@ def kappa(m):
 
     Parameters
     ----------
-    m : 2D numpy array
+    m : np.array
         Matrix for which kappa will be calculated
 
     Returns
@@ -311,7 +310,8 @@ class KappaCalculator(object):
         self.kappa_values['all']['fuzzy'] = \
             self._get_masked_kappa(err_mat, f_mask)
 
-    def _get_masked_kappa(self, err_mat, mask, c=None):
+    @staticmethod
+    def _get_masked_kappa(err_mat, mask, c=None):
         """
         Given an error matrix and an analysis mask, calculate the kappa
         coefficient.  If c is None, kappa is calculated for the entire matrix,
@@ -319,14 +319,12 @@ class KappaCalculator(object):
 
         Parameters
         ----------
-        err_mat : 2D numpy array
+        err_mat : np.array
             Error (confusion) matrix
-
-        mask : 2D numpy mask array
+        mask : np.array
             Binary analysis mask which specifies what values should be
             considered correct.  Should be the same size as err_mat
-
-        c : int
+        c : int, optional
             Class to calculate.  This corresponds to the row/col of the
             error matrix.  If c is None, kappa is calculated over the entire
             matrix
@@ -336,7 +334,6 @@ class KappaCalculator(object):
         kappa : float
             Kappa coefficient for the class or matrix
         """
-
         # Create a copy of the error matrix as we'll be modifying it below
         err_mat = np.array(err_mat, copy=True)
         em_sum = err_mat.sum()
@@ -693,7 +690,7 @@ def classification_accuracy(
     """
 
     # Read in the raw input file
-    csv = utilities.csv2rec(input_fn)
+    csv = pd.read_csv(input_fn)
     obs_data = csv[observed_column]
     prd_data = csv[predicted_column]
 

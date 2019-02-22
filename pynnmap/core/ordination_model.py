@@ -43,7 +43,7 @@ class OrdinationModel(object):
                 d[i] = self.__dict__[i].tolist()
         return json.dumps(d)
 
-    def plot_score(self, id):
+    def plot_score(self, id_val):
         # Find the corresponding row in plot_ids
-        row_num = self.plot_id_dict[id]
+        row_num = self.plot_id_dict[id_val]
         return self.plot_scores[row_num]

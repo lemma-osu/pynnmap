@@ -26,12 +26,7 @@ class VariableVW(object):
 
         weights : numpy-like array
             Array of associated weights, same size as values
-
-        Returns
-        -------
-        None
         """
-
         self.values = values
         self.weights = weights
 
@@ -41,7 +36,6 @@ class HistogramBC(object):
     Class to store the bins (B) and counts (C) of data that has been
     binned into histograms.  This should be an abstract super class.
     """
-
     def __init__(self, bin_counts, bin_endpoints, name):
         """
         Constructor for HistogramBC.  Called from a subclass and populates
@@ -49,10 +43,10 @@ class HistogramBC(object):
 
         Parameters
         ----------
-        bin_counts : numpy array
+        bin_counts : np.array
             One dimensional numpy array of bin counts
 
-        bin_endpoints : numpy array
+        bin_endpoints : np.array
             One dimensional numpy array of bin endpoints one larger in
             size than bin_counts
 
@@ -75,7 +69,6 @@ class ContinuousHistogramBC(HistogramBC):
     that has been binned into histograms from continuous data.
     Class names are created from endpoints of the bins
     """
-
     def __init__(self, bin_counts, bin_endpoints, name="SERIES"):
 
         # Call the HistogramBC constructor first
@@ -94,7 +87,7 @@ class ContinuousHistogramBC(HistogramBC):
             if float(first) == 0.0:
                 first = '0.0'
             bn = '-'.join((first, second))
-            bn = ''.join(re.split('\+0+', bn))
+            bn = ''.join(re.split(r'\+0+', bn))
             self.bin_names.append(bn)
 
 
@@ -104,7 +97,6 @@ class CategoricalHistogramBC(HistogramBC):
     that has been binned into histograms from categorical data.
     Class names are passed to the constructor
     """
-
     def __init__(self, bin_counts, bin_endpoints, bin_names, name="SERIES"):
 
         # Call the HistogramBC constructor first
@@ -138,14 +130,15 @@ def bin_continuous(datasets, bin_type=EQUAL_INTERVAL, bins=10):
     -------
     histogram_data : list of ContinuousHistogramBC instances
     """
-
     # Create the bin endpoints based on the bin_type requested
     if bin_type == EQUAL_INTERVAL:
         classifier = ic.EqualIntervalClassifier(datasets, bins=bins)
     elif bin_type == QUANTILE:
-        classifier = ic.QuantileClassifier(datasets, bins=bins)
+        classifier = ic.QuantileClassifier()
     elif bin_type == CUSTOM:
         classifier = ic.CustomIntervalClassifier(bins)
+    else:
+        classifier = None
 
     # Bin the data using this classifier
     histogram_data = []
@@ -174,13 +167,15 @@ def bin_categorical(datasets, class_names=None):
         classes.  The weights in the VariableVW instances determine the
         counts in the output histogram classes
 
-    class_names : list
+    class_names : list, optional
         A list of labels to be matched to the names
 
     Returns
     -------
     histogram_data : list of CategoricalHistogramBC instances
     """
+    if class_names is None:
+        class_names = []
 
     # Figure out the unique values in these datasets
     all_unique = []
@@ -211,13 +206,13 @@ def bin_categorical(datasets, class_names=None):
     class_keys = class_mapped.keys()
     class_keys.sort()
 
-    if class_names is not None:
+    if len(class_names):
         for key in class_keys:
             if key is not None:
                 key = str(key)
 
                 # Find the key in the class_names dict
-                value = str(class_names[key])
+                value = str(class_names[int(key)])
 
                 # Add this value to the c_names list
                 c_names.append(value)
@@ -235,6 +230,7 @@ def bin_categorical(datasets, class_names=None):
         # Bin the data using the unique enumeration values
         counts, endpoints = np.histogramdd(
             enum_data, bins=[class_values], weights=ds.weights)
+        endpoints = list(endpoints)
 
         # Create a new CategoricalHistogramBC instance and append
         # to histogram_data
