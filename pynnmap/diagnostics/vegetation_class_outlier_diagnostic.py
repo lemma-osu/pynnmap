@@ -2,6 +2,7 @@ import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
+from pynnmap.misc.utilities import df_to_csv
 
 # Define the classes of vegetation class outliers.  Red outliers represent
 # large differences between observed and predicted vegetation classes, with
@@ -60,7 +61,7 @@ def find_vegclass_outlier_class(rec):
     return 'green'
 
 
-class VegetationClassOutlierDiagnostic(object):
+class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
 
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
@@ -126,4 +127,4 @@ class VegetationClassOutlierDiagnostic(object):
 
         # Merge together the dfs and export
         out_df = pd.concat(out_dfs)
-        out_df.to_csv(self.vegclass_outlier_file, index=False)
+        df_to_csv(out_df, self.vegclass_outlier_file)

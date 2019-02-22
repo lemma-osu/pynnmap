@@ -1,6 +1,7 @@
 import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
+from pynnmap.misc.utilities import df_to_csv
 
 COARSE_VC_REMAP = {
     1: 1,
@@ -91,4 +92,4 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
 
         # Merge together the dfs and export
         out_df = pd.concat(dfs)
-        out_df.to_csv(self.output_file, index=False)
+        df_to_csv(out_df, self.output_file)

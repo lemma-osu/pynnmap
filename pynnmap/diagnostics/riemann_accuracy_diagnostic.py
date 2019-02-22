@@ -12,6 +12,7 @@ from pynnmap.diagnostics import diagnostic
 from pynnmap.parser import parameter_parser as pp
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 from pynnmap.parser.xml_stand_metadata_parser import Flags
+from pynnmap.misc.utilities import df_to_csv
 
 
 class ECDF:
@@ -202,7 +203,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         file_name = 'plot_pixel_observed.csv'
         output_file = os.path.join(root_dir, 'plot_pixel', file_name)
         plot_pixel_obs = attr_data.get_attr_df(flags=flags).astype(np.float64)
-        plot_pixel_obs.to_csv(output_file, index=True, float_format='%.4f')
+        df_to_csv(plot_pixel_obs, output_file, index=True)
 
         # Create a dictionary of plot ID to image year (or model_year for
         # non-imagery models) for these plots
@@ -236,7 +237,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             # attribute file and write out
             df.sort_index(inplace=True)
             df.index.rename(id_field, inplace=True)
-            df[attrs].to_csv(output_file, index=True, float_format='%.4f')
+            df_to_csv(df[attrs].copy(), output_file, index=True)
 
         # Create the fields for which to extract statistics at the hexagon
         # levels
@@ -280,7 +281,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 agg_df = grouped.agg(stat_fields).rename(
                     columns={id_field: 'PLOT_COUNT'})
                 agg_df = agg_df[agg_df.PLOT_COUNT >= min_plots_per_hex]
-                agg_df.to_csv(obs_out_file, index=True, float_format='%.4f')
+                df_to_csv(agg_df, obs_out_file, index=True)
 
             # Iterate over values of k for the predicted values
             for k in k_values:
@@ -303,7 +304,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                     agg_df = grouped.agg(stat_fields).rename(
                         columns={id_field: 'PLOT_COUNT'})
                     agg_df = agg_df[agg_df.PLOT_COUNT >= min_plots_per_hex]
-                    agg_df.to_csv(prd_out_file, index=True, float_format='%.4f')
+                    df_to_csv(agg_df, prd_out_file, index=True)
 
         # Calculate the ECDF and AC statistics
         # For ECDF and AC, it is a paired comparison between the observed

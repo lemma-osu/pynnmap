@@ -46,20 +46,20 @@ class LemmaOrdinationParser(parser.Parser):
         model.axis_weights = self._get_axis_weights(all_lines)
 
         # Variable coefficients and names
-        (model.var_names, model.var_coeff) = self._get_coefficients(all_lines)
+        model.var_names, model.var_coeff = self._get_coefficients(all_lines)
 
         # Variable means and names
-        (var_names_1, means) = self._get_means(all_lines)
+        var_names_1, means = self._get_means(all_lines)
 
         # Species centroids and names
-        (model.species_names, model.species_scores) = \
+        model.species_names, model.species_scores = \
             self._get_species_scores(all_lines)
 
         # Plot scores and IDs
-        (model.plot_ids, model.plot_scores) = self._get_plots(all_lines)
+        model.plot_ids, model.plot_scores = self._get_plots(all_lines)
 
         # Variable biplot scores and names
-        (var_names_2, model.biplot_scores) = self._get_biplot_scores(all_lines)
+        var_names_2, model.biplot_scores = self._get_biplot_scores(all_lines)
 
         # Data checks
         try:
@@ -194,13 +194,12 @@ class LemmaOrdinationParser(parser.Parser):
         -------
         var_names : np.array
             Variable names associated with the ordination variables
-
         var_means : np.array
             Means of the ordination variables
         """
 
         # Get the lines associated with the ordination variable means
-        mean_re = re.compile(r'^###\s+Variable\s+Means\\s+###.*')
+        mean_re = re.compile(r'^###\s+Variable\s+Means\s+###.*')
         chunks = self.read_chunks(
             all_lines, mean_re, self.blank_re, skip_lines=1, flush=True)
 

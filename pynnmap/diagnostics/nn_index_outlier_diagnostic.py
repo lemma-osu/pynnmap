@@ -1,6 +1,7 @@
 import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
+from pynnmap.misc.utilities import df_to_csv
 
 
 class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
@@ -23,15 +24,12 @@ class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
 
     def run_diagnostic(self):
         # Read in the dependent nn_index_file
-        in_data = pd.read_csv(self.nn_index_file)
+        in_df = pd.read_csv(self.nn_index_file)
 
         # Subset the observed data to just those values above the
         # index threshold
-        in_data = in_data[in_data.AVERAGE_POSITION >= self.index_threshold]
+        in_df = in_df[in_df.AVERAGE_POSITION >= self.index_threshold]
 
         # Write out the resulting recarray
-        in_data.to_csv(
-            self.nn_index_outlier_file, index=False, float_format='%.4f')
+        df_to_csv(in_df, self.nn_index_outlier_file)
 
-    def get_outlier_filename(self):
-        return self.nn_index_outlier_file

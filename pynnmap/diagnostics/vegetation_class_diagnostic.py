@@ -3,6 +3,7 @@ import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import classification_accuracy as ca
+from pynnmap.misc.utilities import df_to_csv
 from pynnmap.parser import parameter_parser as pp
 
 
@@ -141,7 +142,7 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
         # Calculate VEGCLASS for both the observed and predicted data
         vc_df = self.vegclass_aa(obs, prd, id_field=self.id_field)
         vc_df.columns = [self.id_field, 'OBSERVED', 'PREDICTED']
-        vc_df.to_csv(self.vegclass_file, index=False)
+        df_to_csv(vc_df, self.vegclass_file)
 
         # Create the vegetation class kappa and error matrix files
         vc_xml = 'L:/resources/code/xml/vegclass.xml'

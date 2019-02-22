@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
+from pynnmap.misc.utilities import df_to_csv
 
 
 class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
@@ -67,4 +68,4 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
         all_df = pd.concat(out_dfs)
 
         # Write this out
-        all_df.to_csv(self.vd_output_file, index=False, float_format='%.4f')
+        df_to_csv(all_df, self.vd_output_file)
