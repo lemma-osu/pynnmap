@@ -33,18 +33,45 @@ class AttributePredictor(object):
         # Independence filter
         self.independence_filter = independence_filter
 
-    def calculate_predictions(self, neighbor_data, k=1):
+    def calculate_predictions(self, neighbor_data, k=1, weights=None):
         # Iterate over all neighbors and calculate predictions
+        predictions = []
+        for id_val, fp in sorted(neighbor_data.items()):
+            predictions.append(self.calculate_predictions_at_id(fp, k, weights))
+        return predictions
+
+    def get_zonal_pixel_df(self, predictions):
+        zps = []
+        for prd in predictions:
+            zps.append(self.prediction_to_zonal_records(prd))
+        return pd.concat(zps)
+
+    def get_predicted_attributes_df(self, predictions, id_field):
         d = {}
         col_names = self.stand_attr_df.columns
-        for id_val, fp in sorted(neighbor_data.items()):
-            prd = self.calculate_predictions_at_id(fp, k)
-            id_val = prd[0].id
+        for prd in predictions:
             values = np.mean([x.get_predicted_attrs() for x in prd], axis=0)
-            d[id_val] = values
-        return pd.DataFrame.from_dict(d, orient='index', columns=col_names)
+            d[prd[0].id] = values
+        prd_df = pd.DataFrame.from_dict(d, orient='index', columns=col_names)
+        prd_df.sort_index(inplace=True)
+        prd_df.index.rename(id_field, inplace=True)
+        return prd_df
 
-    def calculate_predictions_at_id(self, fp, k):
+    @staticmethod
+    def prediction_to_zonal_records(pp):
+        n_pixels = len(pp)
+        k = len(pp[0].neighbors)
+        n = [pp[i].neighbors[j] for i in range(n_pixels) for j in range(k)]
+        d = [pp[i].distances[j] for i in range(n_pixels) for j in range(k)]
+        return pd.DataFrame({
+            'FCID': np.repeat(pp[0].id, k * n_pixels),
+            'PIXEL_NUMBER': np.repeat(np.arange(n_pixels) + 1, k),
+            'NEIGHBOR': np.tile(np.arange(k) + 1, n_pixels),
+            'NEIGHBOR_ID': n,
+            'DISTANCE': d
+        })
+
+    def calculate_predictions_at_id(self, fp, k, weights):
         """
         Parameters
         ----------
@@ -52,6 +79,8 @@ class AttributePredictor(object):
             The footprint for which to calculate model predictions
         k : int
             The number of neighbors over which to average predicted values
+        weights : np.array
+            Weights for each neighbor, may be None
 
         Returns
         -------
@@ -61,6 +90,9 @@ class AttributePredictor(object):
         # Create an empty list which will store all PixelPrediction
         # instances
         plot_prediction = []
+
+        # Determine if weights need to be calculated based on NN distances
+        calc_weights = True if weights is None else False
 
         # Iterate over pixels in the footprint
         for pixel_number, pixel in enumerate(fp.pixels):
@@ -82,9 +114,10 @@ class AttributePredictor(object):
 
             # Calculate the normalized weight array as the
             # inverse distance
-            weights = 1.0 / distances
-            weights /= weights.sum()
-            weights = weights.reshape(1, len(pp.neighbors)).T
+            if calc_weights:
+                weights = 1.0 / distances
+                weights /= weights.sum()
+                weights = weights.reshape(1, len(pp.neighbors)).T
 
             # Extract the data rows and attributes and multiply by weights
             indexes = [self.id_x_index[x] for x in pp.neighbors]
