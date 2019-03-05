@@ -197,7 +197,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         mp = xsmp.XMLStandMetadataParser(p.stand_metadata_file)
         attr_data = StandAttributes(attr_fn, mp, id_field=id_field)
         flags = Flags.CONTINUOUS | Flags.ACCURACY
-        attrs = attr_data.get_attr_df(flags=flags).columns
+        attrs = list(attr_data.get_attr_df(flags=flags).columns)
 
         # Write out the plot_pixel observed file
         file_name = 'plot_pixel_observed.csv'
@@ -225,18 +225,28 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         plot_attr_predictor = AttributePredictor(prd_attr_data, fltr)
 
         # Iterate over values of k to calculate plot-pixel values
-        for k in k_values:
+        for k, w in k_values:
+            # Set weights correctly
+            # TODO: Duplicate code with PredictionOutput.get_weights()
+            if w is not None:
+                if len(w) != k:
+                    raise ValueError('Length of weights does not equal k')
+                w = np.array(w).reshape(1, len(w)).T
+
             # Construct the output file name
             file_name = 'plot_pixel_predicted_k{k}.csv'.format(k=k)
             output_file = os.path.join(root_dir, 'plot_pixel', file_name)
 
             # Calculate the predictions
-            df = plot_attr_predictor.calculate_predictions(neighbor_data, k=k)
+            predictions = plot_attr_predictor.calculate_predictions(
+                neighbor_data, k=k, weights=w)
+
+            # Get the predicted attributes
+            df = plot_attr_predictor.get_predicted_attributes_df(
+                predictions, self.id_field)
 
             # Subset columns down to just columns present in the hex
             # attribute file and write out
-            df.sort_index(inplace=True)
-            df.index.rename(id_field, inplace=True)
             df_to_csv(df[attrs].copy(), output_file, index=True)
 
         # Create the fields for which to extract statistics at the hexagon
@@ -284,7 +294,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 df_to_csv(agg_df, obs_out_file, index=True)
 
             # Iterate over values of k for the predicted values
-            for k in k_values:
+            for k, _ in k_values:
                 # Open the plot_pixel predicted file for this value of k
                 # and join the hex_id_field to the recarray
                 prd_file = 'plot_pixel_predicted_k{}.csv'.format(k)
@@ -326,7 +336,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             prefix = 'hex_{}'.format(hex_distance)
             obs_file = '{}_observed_mean.csv'.format(prefix)
             obs_file = os.path.join(root_dir, prefix, obs_file)
-            for k in k_values:
+            for k, _ in k_values:
                 prd_file = '{}_predicted_k{}_mean.csv'.format(prefix, k)
                 prd_file = os.path.join(root_dir, prefix, prd_file)
                 r = RiemannComparison(
@@ -337,7 +347,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         prefix = 'plot_pixel'
         obs_file = 'plot_pixel_observed.csv'
         obs_file = os.path.join(root_dir, prefix, obs_file)
-        for k in k_values:
+        for k, _ in k_values:
             prd_file = 'plot_pixel_predicted_k{}.csv'.format(k)
             prd_file = os.path.join(root_dir, prefix, prd_file)
             r = RiemannComparison(prefix, obs_file, prd_file, id_field, k)
