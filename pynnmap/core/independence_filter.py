@@ -12,7 +12,7 @@ class IndependenceFilter(object):
 
     @classmethod
     def from_common_lookup(cls, id_list, lookup_list):
-        zipped = zip(id_list, lookup_list)
+        zipped = list(zip(id_list, lookup_list))
         d = dict((i, l) for i, l in zipped)
         reverse_d = defaultdict(list)
         for i, l in zipped:

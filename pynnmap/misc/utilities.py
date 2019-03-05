@@ -101,7 +101,7 @@ def csv2rec(csv_file, upper_case_field_names=True, **kwargs):
 #     mlab.rec2csv(rec_array, csv_file, formatd=formatd, **kwargs)
 
 
-def df_to_csv(df, csv_file, index=False):
+def df_to_csv(df, csv_file, index=False, n_dec=4):
     """
     Specialization of pd.DataFrame.to_csv for LEMMA options
 
@@ -113,6 +113,8 @@ def df_to_csv(df, csv_file, index=False):
         Output file path
     index : bool, optional
         Flag to specify whether to include the dataframe index on export
+    n_dec : int, optional
+        Number of decimals to include for float formats
     """
     # Fill all missing data with zeros
     df.fillna(0.0, inplace=True)
@@ -125,7 +127,8 @@ def df_to_csv(df, csv_file, index=False):
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
     # Convert to CSV
-    df.to_csv(csv_file, index=index, float_format='%.4f')
+    frmt = '%.{}f'.format(n_dec)
+    df.to_csv(csv_file, index=index, float_format=frmt)
 
 
 # def pyodbc2rec(records, description):

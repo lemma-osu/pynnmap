@@ -9,6 +9,22 @@ from pynnmap.parser import xml_parser
 from pynnmap.parser import parameter_parser
 
 
+# Function to extract neighbor weights
+def get_weights(weights_elem, k):
+    children = weights_elem.getchildren()
+    if children[0].tag == 'keyword':
+        value = children[0]
+        if value == 'INVERSE_DISTANCES':
+            return None
+        elif value == 'EQUAL':
+            return [1.0 / k for _ in range(k)]
+        else:
+            raise ValueError('Weight keyword is not valid')
+    else:
+        w = [float(x) for x in children]
+        return [x / sum(w) for x in w]
+
+
 class XMLParameterParser(
         xml_parser.XMLParser, parameter_parser.ParameterParser):
     """
@@ -555,6 +571,11 @@ class XMLParameterParser(
         return int(self.ip_elem.k)
 
     @property
+    def weights(self):
+        weights_elem = self.ip_elem.weights
+        return get_weights(weights_elem, self.k)
+
+    @property
     def max_neighbors(self):
         return int(self.ip_elem.max_neighbors)
 
@@ -857,7 +878,11 @@ class XMLParameterParser(
     def riemann_k_values(self):
         r_elem = self.riemann_element
         if r_elem is not None:
-            k_values = [int(x) for x in r_elem.k_values.iterchildren()]
+            k_values = []
+            for elem in r_elem.k_values.iterchildren():
+                k = int(elem.k)
+                weights = get_weights(elem.weights, k)
+                k_values.append((k, weights))
             return k_values
         else:
             return []
