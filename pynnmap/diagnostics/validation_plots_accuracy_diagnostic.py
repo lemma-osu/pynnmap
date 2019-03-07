@@ -1,17 +1,20 @@
 import os
 
 import numpy as np
+import pandas as pd
 
-from pynnmap.core import prediction_run
+from pynnmap.core.attribute_predictor import AttributePredictor
+from pynnmap.core.nn_finder import NNFinder
+from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
 from pynnmap.diagnostics import local_accuracy_diagnostic as lad
 from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
-from pynnmap.misc import utilities
+from pynnmap.misc.utilities import df_to_csv
 from pynnmap.parser import parameter_parser as pp
+from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
-
     def __init__(self, **kwargs):
         if 'parameters' in kwargs:
             p = kwargs['parameters']
@@ -57,41 +60,45 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
             raise e
 
     def run_diagnostic(self):
-
         # Shortcut to the parameter parser
         p = self.parameter_parser
 
         # Read in the validation plots file
-        validation_plots = utilities.csv2rec(self.observed_file)
+        val_df = pd.read_csv(self.observed_file)
 
         # Create a dictionary of plot ID to image year for these plots
-        id_x_year = \
-            dict((x[self.id_field], x.IMAGE_YEAR) for x in validation_plots)
+        s = pd.Series(val_df.IMAGE_YEAR.values, index=val_df[self.id_field])
+        id_x_year = dict(s.to_dict())
 
-        # Create a PredictionRun instance
-        pr = prediction_run.PredictionRun(p)
-
-        # Get the neighbors and distances for these IDs
-        pr.calculate_neighbors_at_ids(id_x_year, id_field=self.id_field)
+        # Create a NNFinder object
+        finder = NNFinder(p)
+        neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
 
         # Retrieve the predicted data for these plots.  In essence, we can
         # retrieve the dependent neighbors because these plot IDs are
         # guaranteed not to be in the model
-        prediction_generator = pr.calculate_predictions_at_k(
-            k=p.k, id_field=self.id_field, independent=False)
+        attr_fn = p.stand_attribute_file
+        mp = xsmp.XMLStandMetadataParser(p.stand_metadata_file)
+        attr_data = StandAttributes(attr_fn, mp, id_field=self.id_field)
+        attr_predictor = AttributePredictor(attr_data)
 
-        # Open the predicted file and write out the field names
-        out_fh = open(self.predicted_file, 'w')
-        out_fh.write(self.id_field + ',' + ','.join(pr.attrs) + '\n')
+        # Set weights correctly
+        # TODO: Duplicate code with PredictionOutput.get_weights()
+        w = p.weights
+        if w is not None:
+            if len(w) != p.k:
+                raise ValueError('Length of weights does not equal k')
+            w = np.array(w).reshape(1, len(w)).T
 
-        # Write out the predictions
-        for plot_prediction in prediction_generator:
+        # Calculate the predictions
+        predictions = attr_predictor.calculate_predictions(
+            neighbor_data, k=p.k, weights=w)
 
-            # Write this record to the predicted attribute file
-            pr.write_predicted_record(plot_prediction, out_fh)
+        # Get the predicted attributes
+        df = attr_predictor.get_predicted_attributes_df(
+            predictions, self.id_field)
 
-        # Close this file
-        out_fh.close()
+        df_to_csv(df, self.predicted_file, index=True)
 
         # Run the LocalAccuracyDiagnostic on these files
         d = lad.LocalAccuracyDiagnostic(
