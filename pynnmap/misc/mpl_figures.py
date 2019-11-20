@@ -158,6 +158,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
 
     # Set width of the bars
     width = 0.35
+    half_width = width / 2.0
 
     # Get the number of bins to draw
     ind = np.arange(len(histograms[0]))
@@ -167,7 +168,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
     for i in range(len(histograms)):
         plots.append(
             pl.bar(
-                ind + (width * i),
+                ind + (width * i) + half_width,
                 histograms[i],
                 color=colors[i],
                 width=width,

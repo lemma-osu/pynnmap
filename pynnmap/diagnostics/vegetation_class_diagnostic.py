@@ -8,6 +8,7 @@ from pynnmap.parser import parameter_parser as pp
 
 
 class VegetationClassDiagnostic(diagnostic.Diagnostic):
+    _required = ['observed_file', 'predicted_file']
 
     qmd_breaks = np.array([0.0, 2.5, 25.0, 37.5, 50.0, 75.0])
     qmd_classes = np.array([1, 2, 3, 4, 5, 6])
@@ -15,39 +16,29 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
     cancov_breaks = np.array([0.0, 10.0, 40.0, 70.0])
     cancov_classes = np.array([1, 2, 3, 4])
 
-    def __init__(self, **kwargs):
-        if 'parameters' in kwargs:
-            p = kwargs['parameters']
-            if isinstance(p, pp.ParameterParser):
-                self.observed_file = p.stand_attribute_file
-                self.predicted_file = p.independent_predicted_file
-                self.vegclass_file = p.vegclass_file
-                self.vegclass_kappa_file = p.vegclass_kappa_file
-                self.vegclass_errmatrix_file = p.vegclass_errmatrix_file
-                self.id_field = p.plot_id_field
-            else:
-                err_msg = 'Passed object is not a ParameterParser object'
-                raise ValueError(err_msg)
-        else:
-            try:
-                self.observed_file = kwargs['observed_file']
-                self.predicted_file = kwargs['independent_predicted_file']
-                self.vegclass_file = kwargs['vegclass_file']
-                self.vegclass_kappa_file = kwargs['vegclass_kappa_file']
-                self.vegclass_errmatrix_file = \
-                    kwargs['vegclass_errmatrix_file']
-                self.id_field = kwargs['id_field']
-            except KeyError:
-                err_msg = 'Not all required parameters were passed'
-                raise ValueError(err_msg)
+    def __init__(
+            self, observed_file, predicted_file, id_field, vegclass_file,
+            vegclass_kappa_file, vegclass_errmatrix_file):
+        self.observed_file = observed_file
+        self.predicted_file = predicted_file
+        self.id_field = id_field
+        self.vegclass_file = vegclass_file
+        self.vegclass_kappa_file = vegclass_kappa_file
+        self.vegclass_errmatrix_file = vegclass_errmatrix_file
 
-        # Ensure all input files are present
-        files = [self.observed_file, self.predicted_file]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping VegetationClassDiagnostic\n'
-            raise e
+        self.check_missing_files()
+
+    @classmethod
+    def from_parameter_parser(cls, parameter_parser):
+        p = parameter_parser
+        return cls(
+            p.stand_attribute_file,
+            p.independent_predicted_file,
+            p.plot_id_field,
+            p.vegclass_file,
+            p.vegclass_kappa_file,
+            p.vegclass_errmatrix_file,
+        )
 
     def get_vegclass(self, rec, field_dict):
         """

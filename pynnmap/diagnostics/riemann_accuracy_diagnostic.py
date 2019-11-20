@@ -9,7 +9,6 @@ from pynnmap.core.independence_filter import IndependenceFilter
 from pynnmap.core.nn_finder import NNFinder
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
-from pynnmap.parser import parameter_parser as pp
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 from pynnmap.parser.xml_stand_metadata_parser import Flags
 from pynnmap.misc.utilities import df_to_csv
@@ -119,38 +118,25 @@ class RiemannVariable(object):
 
 
 class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
+    _required = ['hex_attribute_file', 'hex_id_file']
 
-    def __init__(self, **kwargs):
-        if 'parameters' in kwargs:
-            p = kwargs['parameters']
-            if isinstance(p, pp.ParameterParser):
+    def __init__(self, parameter_parser):
+        self.parameter_parser = p = parameter_parser
+        self.id_field = p.plot_id_field
 
-                # We need the parameter parser for many attributes when
-                # running the diagnostic, so just keep a reference to it
-                self.parameter_parser = p
-                self.id_field = p.plot_id_field
+        # We want to check on the existence of the hex attribute
+        # file before running, so make this an instance property
+        self.hex_attribute_file = p.hex_attribute_file
+        self.hex_id_file = p.hex_id_file
 
-                # We want to check on the existence of the hex attribute
-                # file before running, so make this an instance property
-                self.hex_attribute_file = p.hex_attribute_file
-                self.hex_id_file = p.hex_id_file
-            else:
-                err_msg = 'Passed object is not a ParameterParser object'
-                raise ValueError(err_msg)
-        else:
-            err_msg = 'Only ParameterParser objects may be passed.'
-            raise NotImplementedError(err_msg)
-
-        # Ensure all input files are present
-        files = [self.hex_attribute_file, self.hex_id_file]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping RiemannAccuracyDiagnostic\n'
-            raise e
+        self.check_missing_files()
 
         # Read in the hex ID crosswalk file
         self.hex_id_xwalk = pd.read_csv(self.hex_id_file)
+
+    @classmethod
+    def from_parameter_parser(cls, parameter_parser):
+        return cls(parameter_parser)
 
     @staticmethod
     def _create_directory_structure(hex_resolutions, root_dir):

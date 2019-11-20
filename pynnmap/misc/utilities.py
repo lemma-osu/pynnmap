@@ -1,5 +1,6 @@
 # import datetime
 # import decimal
+import os
 
 import numpy
 import pandas as pd
@@ -7,67 +8,6 @@ from lxml import etree
 from lxml import objectify
 from matplotlib import mlab
 from six.moves.urllib.request import urlopen
-
-
-# Exact replicate class of FormatFloat to keep four-decimal precision for
-# CSV output (mlab.rec2csv puts out full precision)
-class FormatDecimal(mlab.FormatFormatStr):
-    def __init__(self, precision=4, scale=1.):
-        mlab.FormatFormatStr.__init__(self, '%%1.%df' % precision)
-        self.precision = precision
-        self.scale = scale
-
-    def __hash__(self):
-        return hash((self.__class__, self.precision, self.scale))
-
-    def toval(self, x):
-        if x is not None:
-            x = x * self.scale
-        return x
-
-    def fromstr(self, s):
-        return float(s)/self.scale
-
-
-def csv2rec(csv_file, upper_case_field_names=True, **kwargs):
-    """
-    Convenience wrapper function on top of mlab.csv2rec to optionally upper
-    case field names
-
-    Parameters
-    ----------
-    csv_file : str
-        CSV file name
-
-    upper_case_field_names: bool
-        Flag whether or not to upper-case the field names which mlab.csv2rec
-        leaves lower-case without an option to change them.  Defaults to True.
-
-    kwargs : dict
-        Keyword arguments to pass through to mlab.csv2rec
-
-    Returns
-    -------
-    records : numpy.recarray
-        The resulting recarray with (possibly) amended field names
-    """
-    try:
-        records = mlab.csv2rec(csv_file, **kwargs)
-
-    except ValueError:
-        if len(open(csv_file, 'r').readlines()) == 1:
-            return None
-        else:
-            raise ValueError
-
-    except IOError:
-        err_msg = 'Can''t open input file: ' + csv_file
-        raise IOError(err_msg)
-
-    if upper_case_field_names:
-        names = [str(x).upper() for x in records.dtype.names]
-        records.dtype.names = names
-    return records
 
 
 # def rec2csv(rec_array, csv_file, formatd=None, **kwargs):
@@ -261,7 +201,6 @@ def validate_xml(xml_tree, xml_schema_file):
     -------
     None
     """
-
     xml_schema_doc = etree.parse(urlopen(xml_schema_file))
     xml_schema = etree.XMLSchema(xml_schema_doc)
     xml_schema.assertValid(xml_tree)
@@ -291,61 +230,153 @@ def pretty_print(node):
 
 def subset_lines_from_regex(
         all_lines, start_re, end_re, skip_lines=0, flush=False):
-        """
-        Read a subset of a list (usually a file held in memory) based on a
-        start and end regular expression.  The function returns all chunks
-        that were bracketed by the two regular expressions.
+    """
+    Read a subset of a list (usually a file held in memory) based on a
+    start and end regular expression.  The function returns all chunks
+    that were bracketed by the two regular expressions.
 
-        Parameters
-        ----------
-        all_lines : list
-            List of lines over which to check for chunks
+    Parameters
+    ----------
+    all_lines : list
+        List of lines over which to check for chunks
 
-        start_re : re.RegexObject
-            The starting regular expression to search for
+    start_re : re.RegexObject
+        The starting regular expression to search for
 
-        end_re : re.RegexObject
-            The ending regular expression to search for (not included)
+    end_re : re.RegexObject
+        The ending regular expression to search for (not included)
 
-        skip_lines : int
-            The number of lines to skip after the start_re has been found.
-            Defaults to 0
+    skip_lines : int
+        The number of lines to skip after the start_re has been found.
+        Defaults to 0
 
-        flush : bool
-            Flag for whether or not to write out the last chunk if the
-            start_re has been found but the end of file has been reached
-            before the chunk was appended to the master list
+    flush : bool
+        Flag for whether or not to write out the last chunk if the
+        start_re has been found but the end of file has been reached
+        before the chunk was appended to the master list
 
-        Returns
-        -------
-        chunks : list of lists
-            The set of all chunks found by the parser
-        """
-        all_lines = list(all_lines)
-        pos = 0
-        chunks = []
-        chunk_lines = []
-        while pos < len(all_lines):
-            line = all_lines[pos]
-            if start_re.match(line):
-                # Skip header lines if requested
-                pos += skip_lines
+    Returns
+    -------
+    chunks : list of lists
+        The set of all chunks found by the parser
+    """
+    all_lines = list(all_lines)
+    pos = 0
+    chunks = []
+    chunk_lines = []
+    while pos < len(all_lines):
+        line = all_lines[pos]
+        if start_re.match(line):
+            # Skip header lines if requested
+            pos += skip_lines
 
-                # Keep pushing lines to the chunk until the end_re is found
-                while pos < len(all_lines):
-                    line = all_lines[pos]
-                    if end_re.match(line):
-                        # Write this chunk and empty the temporary container
-                        chunks.append(chunk_lines)
-                        chunk_lines = []
-                        break
-                    chunk_lines.append(line)
-                    pos += 1
-            pos += 1
+            # Keep pushing lines to the chunk until the end_re is found
+            while pos < len(all_lines):
+                line = all_lines[pos]
+                if end_re.match(line):
+                    # Write this chunk and empty the temporary container
+                    chunks.append(chunk_lines)
+                    chunk_lines = []
+                    break
+                chunk_lines.append(line)
+                pos += 1
+        pos += 1
 
-        # If we have anything in chunk_lines, this means we have met the
-        # start_re and hit the end of the file without hitting the end_re
-        # If flush is True, write this chunk as well
-        if flush and len(chunk_lines):
-            chunks.append(chunk_lines)
-        return chunks
+    # If we have anything in chunk_lines, this means we have met the
+    # start_re and hit the end of the file without hitting the end_re
+    # If flush is True, write this chunk as well
+    if flush and len(chunk_lines):
+        chunks.append(chunk_lines)
+    return chunks
+
+
+class MissingConstraintError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
+def check_missing_files(files):
+    missing_files = []
+    for f in files:
+        if not os.path.exists(f):
+            missing_files.append(f)
+    if len(missing_files) > 0:
+        err_msg = ''
+        for f in missing_files:
+            err_msg += '\n' + f + ' does not exist'
+        raise MissingConstraintError(err_msg)
+
+
+def is_continuous(attr):
+    return (
+        attr.is_continuous_attr() and
+        attr.is_project_attr() and
+        attr.is_accuracy_attr() and
+        not attr.is_species_attr()
+    )
+
+
+def get_continuous_attrs(mp):
+    return [x for x in mp.attributes if is_continuous(x)]
+
+
+def assert_columns_in_df(df, cols):
+    try:
+        assert(set(cols).issubset(df.columns))
+    except AssertionError:
+        msg = 'Columns do not appear in dataframe'
+        raise NameError(msg)
+
+
+def assert_valid_attr_values(df, attr):
+    try:
+        assert df[attr].isnull().sum() == 0
+    except AssertionError:
+        msg = 'Data frame has null attribute values'
+        raise ValueError(msg)
+
+
+def assert_same_len_ids(merged_df, df1, df2):
+    try:
+        merge_num = len(merged_df)
+        assert(merge_num == len(df1) or merge_num == len(df2))
+    except AssertionError:
+        msg = 'Merged data frame does not have same length as originals'
+        raise ValueError(msg)
+
+
+def _list_like(x):
+    return x if type(x) in [list, tuple] else [x]
+
+
+def build_paired_dataframe(obs_df, prd_df, join_field, attr_fields):
+    # Ensure we have the columns we want
+    attr_fields = _list_like(attr_fields)
+    columns = [join_field] + _list_like(attr_fields)
+    assert_columns_in_df(obs_df, columns)
+    assert_columns_in_df(prd_df, columns)
+
+    # Ensure that all attr_fields values are filled in
+    for attr_field in attr_fields:
+        assert_valid_attr_values(obs_df, attr_field)
+        assert_valid_attr_values(prd_df, attr_field)
+
+    # Subset down to just the columns
+    obs_df = obs_df[columns]
+    prd_df = prd_df[columns]
+
+    # Merge the data frames using an inner join.  Observed column will
+    # have an '_O' suffix and predicted column will have a '_P' suffix
+    merged_df = obs_df.merge(prd_df, on=join_field, suffixes=('_O', '_P'))
+
+    # Ensure that the length of the merged dataset matches either the
+    # original observed or predicted dataframes
+    assert_same_len_ids(merged_df, obs_df, prd_df)
+    return merged_df
+
+
+def build_paired_dataframe_from_files(obs_fn, prd_fn, join_field, attr_fields):
+    columns = [join_field] + _list_like(attr_fields)
+    obs_df = pd.read_csv(obs_fn, usecols=columns)
+    prd_df = pd.read_csv(prd_fn, usecols=columns)
+    return build_paired_dataframe(obs_df, prd_df, join_field, attr_fields)

@@ -3,42 +3,33 @@ import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import statistics
-from pynnmap.parser import parameter_parser as pp
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
-    def __init__(self, **kwargs):
-        if 'parameters' in kwargs:
-            p = kwargs['parameters']
-            if isinstance(p, pp.ParameterParser):
-                self.observed_file = p.stand_attribute_file
-                self.predicted_file = p.independent_predicted_file
-                self.stand_metadata_file = p.stand_metadata_file
-                self.statistics_file = p.local_accuracy_file
-                self.id_field = p.plot_id_field
-            else:
-                err_msg = 'Passed object is not a ParameterParser object'
-                raise ValueError(err_msg)
-        else:
-            try:
-                self.observed_file = kwargs['observed_file']
-                self.predicted_file = kwargs['independent_predicted_file']
-                self.stand_metadata_file = kwargs['stand_metadata_file']
-                self.statistics_file = kwargs['local_accuracy_file']
-                self.id_field = kwargs['id_field']
-            except KeyError:
-                err_msg = 'Not all required parameters were passed'
-                raise ValueError(err_msg)
+    _required = ['observed_file', 'predicted_file', 'stand_metadata_file']
 
-        # Ensure all input files are present
-        files = [
-            self.observed_file, self.predicted_file, self.stand_metadata_file]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping LocalAccuracyDiagnostic\n'
-            raise e
+    def __init__(
+            self, observed_file, predicted_file, stand_metadata_file,
+            id_field, statistics_file):
+        self.observed_file = observed_file
+        self.predicted_file = predicted_file
+        self.stand_metadata_file = stand_metadata_file
+        self.id_field = id_field
+        self.statistics_file = statistics_file
+
+        self.check_missing_files()
+
+    @classmethod
+    def from_parameter_parser(cls, parameter_parser):
+        p = parameter_parser
+        return cls(
+            p.stand_attribute_file,
+            p.independent_predicted_file,
+            p.stand_metadata_file,
+            p.plot_id_field,
+            p.local_accuracy_file
+        )
 
     def run_diagnostic(self):
 
@@ -55,7 +46,7 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
         ]
         stats_fh.write(','.join(out_list) + '\n')
 
-        # Read the observed and predicted files into numpy recarrays
+        # Read the observed and predicted files into dataframes
         obs = pd.read_csv(self.observed_file, low_memory=False)
         prd = pd.read_csv(self.predicted_file, low_memory=False)
 
