@@ -195,7 +195,7 @@ def bin_categorical(datasets, class_names=None):
     # enumeration, we can safely add one to the end of the list for this
     # endpoint.  Note that we only add it to the bin and not to the
     # class_mapped dictionary
-    class_values = class_mapped.values()
+    class_values = list(class_mapped.values())
     class_values.sort()
     class_values.append(max(class_values) + 1)
 
@@ -203,7 +203,7 @@ def bin_categorical(datasets, class_names=None):
     # the data themselves.  If coming from the class_names variable, we
     # need to map through the class_mapped keys
     c_names = []
-    class_keys = class_mapped.keys()
+    class_keys = list(class_mapped.keys())
     class_keys.sort()
 
     if len(class_names):

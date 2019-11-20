@@ -316,8 +316,20 @@ def is_continuous(attr):
     )
 
 
+def is_area(attr):
+    return (
+        attr.is_project_attr() and
+        attr.is_accuracy_attr() and
+        not attr.is_species_attr()
+    )
+
+
 def get_continuous_attrs(mp):
     return [x for x in mp.attributes if is_continuous(x)]
+
+
+def get_area_attrs(mp):
+    return [x for x in mp.attributes if is_area(x)]
 
 
 def assert_columns_in_df(df, cols):
