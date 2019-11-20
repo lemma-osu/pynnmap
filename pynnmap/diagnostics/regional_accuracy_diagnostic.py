@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import pandas as pd
 from matplotlib import mlab
 from osgeo import gdal, gdalconst
 
@@ -43,21 +44,21 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
     def get_observed_estimates(self):
         # Read the area estimate file into a recarray
-        obs_data = utilities.csv2rec(self.area_estimate_file)
+        obs_df = pd.read_csv(self.area_estimate_file)
 
         # Get the nonforest hectares (coded as -10001)
-        nf_row = obs_data[getattr(obs_data, self.id_field) == -10001][0]
-        nf_hectares = nf_row.HECTARES
+        nf_row = obs_df[obs_df[self.id_field] == -10001]
+        nf_hectares = nf_row.at[nf_row.index[0], 'HECTARES']
 
         # Get the nonsampled hectares (coded as -10002)
-        ns_row = obs_data[getattr(obs_data, self.id_field) == -10002][0]
-        ns_hectares = ns_row.HECTARES
+        ns_row = obs_df[obs_df[self.id_field] == -10002]
+        ns_hectares = ns_row.at[ns_row.index[0], 'HECTARES']
 
         # Remove these rows from the recarray
-        obs_data = obs_data[getattr(obs_data, self.id_field) > 0]
+        obs_df = obs_df[obs_df[self.id_field] > 0]
 
         # Return this information
-        return obs_data, nf_hectares, ns_hectares
+        return obs_df, nf_hectares, ns_hectares
 
     def get_predicted_estimates(self):
         # Read in the predicted raster
@@ -94,7 +95,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         ids = np.rec.fromrecords(id_recs, names=names)
 
         # Read in the attribute file
-        sad = utilities.csv2rec(self.stand_attribute_file)
+        sad = pd.read_csv(self.stand_attribute_file)
 
         # Ensure that all IDs in the id_count_dict are in the attribute data
         ids_1 = getattr(ids, self.id_field)
