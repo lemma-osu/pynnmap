@@ -42,12 +42,13 @@ class DiagnosticWrapper(object):
 
         # Run each accuracy diagnostic
         for d in p.accuracy_diagnostics:
+            if d not in DIAGNOSTIC_TYPE:
+                print('Key {} is not a diagnostic'.format(d))
+                continue
             try:
                 kls = DIAGNOSTIC_TYPE[d]
                 diagnostic = kls.from_parameter_parser(p)
                 diagnostic.run_diagnostic()
-            except KeyError as e:
-                print('Key {} is not a diagnostic'.format(d))
             except utilities.MissingConstraintError as e:
                 print(e.message)
 
@@ -60,8 +61,12 @@ class DiagnosticWrapper(object):
                 os.makedirs(p.outlier_assessment_folder)
 
         for d in p.outlier_diagnostics:
+            if d not in DIAGNOSTIC_TYPE:
+                print('Key {} is not a diagnostic'.format(d))
+                continue
             try:
-                diagnostic = (DIAGNOSTIC_TYPE[d])(p)
+                kls = DIAGNOSTIC_TYPE[d]
+                diagnostic = kls(p)
                 diagnostic.run_diagnostic()
-            except MissingConstraintError as e:
+            except utilities.MissingConstraintError as e:
                 print(e.message)
