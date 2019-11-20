@@ -1,6 +1,6 @@
 import os
 
-import numpy as np
+import pandas as pd
 from lxml import etree
 from lxml import objectify
 
@@ -618,8 +618,8 @@ class XMLParameterParser(
                 points = \
                     [(point.x, point.y) for point in child_elem.getchildren()]
             else:
-                recs = utilities.csv2rec(str(child_elem))
-                points = [(point.X, point.Y) for point in recs]
+                recs = pd.read_csv(str(child_elem))
+                points = [(point.X, point.Y) for point in recs.itertuples()]
         return points
 
     @property
