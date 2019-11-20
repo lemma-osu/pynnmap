@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pandas as pd
 from matplotlib import mlab
@@ -81,7 +79,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         id_recs = []
         nf_hectares = 0
         for (id_val, count) in rat:
-            hectares = count * hectares_per_pixel 
+            hectares = count * hectares_per_pixel
             if id_val <= 0:
                 nf_hectares += hectares
             else:
@@ -135,53 +133,36 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
     def run_diagnostic(self):
         # Read in the observed data from the area estimate file
-        (obs_area, obs_nf_hectares, obs_ns_hectares) = \
-           self.get_observed_estimates()
+        obs_area, obs_nf_hectares, obs_ns_hectares = \
+            self.get_observed_estimates()
 
-        # Get the observed and predicted data arrays
-        (prd_area, prd_nf_hectares) = self.get_predicted_estimates()
-        prd_ns_hectares = 0.0
-
-        # Get the weights of the two datasets
+        # Get the weights for the observed data
         obs_weights = obs_area.HECTARES
-        prd_weights = prd_area.HECTARES
 
         # Open the output file and print out the header line
         stats_fh = open(self.statistics_file, 'w')
         header_fields = ['VARIABLE', 'DATASET', 'BIN_NAME', 'AREA']
         stats_fh.write(','.join(header_fields) + '\n')
 
-        # Get a metadata parser
+        # Get the metadata parser and get the project area attributes
         mp = xsmp.XMLStandMetadataParser(self.stand_metadata_file)
+        attrs = utilities.get_area_attrs(mp)
 
         # Iterate over all fields and print out the area histogram statistics
-        for v in obs_area.dtype.names:
+        for attr in attrs:
 
-            # Skip over the HECTARES field
-            if v == 'HECTARES':
-                continue
-
-            # Get the metadata for this field
-            try:
-                fm = mp.get_attribute(v)
-            except ValueError:
-                err_msg = v + ' is missing metadata.'
-                print(err_msg)
-                continue
-
-            # Skip over ID fields
-            if fm.field_type == 'ID':
-                continue
-
-            # Get the actual data
-            try:
-                obs_vals = getattr(obs_area, v)
-                prd_vals = getattr(prd_area, v)
-            except AttributeError:
-                continue
-
+            # Observed values and weights for this field
+            obs_vals = obs_area[attr.field_name]
             obs_vw = histogram.VariableVW(obs_vals, obs_weights)
-            prd_vw = histogram.VariableVW(prd_vals, prd_weights)
+
+            # Get the predicted values from the raster
+            # prd_area, prd_nf_hectares = self.get_predicted_estimates()
+            # prd_ns_hectares = 0.0
+            # prd_weights = prd_area.HECTARES
+            # prd_vw = histogram.VariableVW(prd_vals, prd_weights)
+            prd_vw = obs_vw
+            prd_ns_hectares = obs_ns_hectares
+            prd_nf_hectares = obs_nf_hectares
 
             # Bin the data based on field type
             bins = self._bin_data(attr, obs_vw, prd_vw)
@@ -194,10 +175,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
             for b in bins:
                 for i in range(0, len(b.bin_counts)):
-                    out_data = [
-                        '%s' % v,
-                        '%s' % b.name,
-                        '"%s"' % b.bin_names[i],
-                        '%.3f' % b.bin_counts[i],
-                    ]
-                    stats_fh.write(','.join(out_data) + '\n')
+                    out_data = '{:s},{:s},{:s},{:.3f}\n'.format(
+                        attr.field_name, b.name, b.bin_names[i],
+                        b.bin_counts[i]
+                    )
+                    stats_fh.write(out_data)
