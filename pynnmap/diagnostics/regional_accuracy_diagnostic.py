@@ -115,6 +115,24 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         hist.bin_names.insert(0, name)
         return hist
 
+    @staticmethod
+    def _bin_data(attr, obs_vw, prd_vw):
+        if utilities.is_continuous(attr):
+            bins = histogram.bin_continuous([obs_vw, prd_vw], bins=7)
+        else:
+            if attr.codes:
+                class_names = {}
+                for code in attr.codes:
+                    class_names[int(code.code_value)] = code.label
+            else:
+                class_names = None
+            bins = histogram.bin_categorical(
+                [obs_vw, prd_vw], class_names=class_names)
+
+        bins[0].name = 'OBSERVED'
+        bins[1].name = 'PREDICTED'
+        return bins
+
     def run_diagnostic(self):
         # Read in the observed data from the area estimate file
         (obs_area, obs_nf_hectares, obs_ns_hectares) = \
@@ -165,21 +183,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             obs_vw = histogram.VariableVW(obs_vals, obs_weights)
             prd_vw = histogram.VariableVW(prd_vals, prd_weights)
 
-            # Figure out how to bin the data based on field type
-            if fm.field_type == 'CONTINUOUS':
-                bins = histogram.bin_continuous([obs_vw, prd_vw], bins=7)
-            else:
-                if fm.codes:
-                    class_names = {}
-                    for code in fm.codes:
-                        class_names[code.code_value] = code.label
-                else:
-                    class_names = None
-                bins = histogram.bin_categorical(
-                    [obs_vw, prd_vw], class_names=class_names)
-
-            bins[0].name = 'OBSERVED'
-            bins[1].name = 'PREDICTED'
+            # Bin the data based on field type
+            bins = self._bin_data(attr, obs_vw, prd_vw)
 
             # Handle special cases of nonsampled and nonforest area
             self.insert_class(bins[0], 'Unsampled', obs_ns_hectares)
