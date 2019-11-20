@@ -349,3 +349,20 @@ def subset_lines_from_regex(
         if flush and len(chunk_lines):
             chunks.append(chunk_lines)
         return chunks
+class MissingConstraintError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
+def check_missing_files(files):
+    missing_files = []
+    for f in files:
+        if not os.path.exists(f):
+            missing_files.append(f)
+    if len(missing_files) > 0:
+        err_msg = ''
+        for f in missing_files:
+            err_msg += '\n' + f + ' does not exist'
+        raise MissingConstraintError(err_msg)
+
+

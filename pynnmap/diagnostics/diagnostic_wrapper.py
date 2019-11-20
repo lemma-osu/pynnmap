@@ -10,7 +10,7 @@ from pynnmap.diagnostics import variable_deviation_outlier_diagnostic as vdod
 from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
 from pynnmap.diagnostics import vegetation_class_outlier_diagnostic as vcod
 from pynnmap.diagnostics import vegetation_class_variety_diagnostic as vcvd
-from pynnmap.diagnostics.diagnostic import MissingConstraintError
+from pynnmap.misc import utilities
 
 # Dictionary of diagnostic name to diagnostic class
 DIAGNOSTIC_TYPE = {
@@ -43,9 +43,12 @@ class DiagnosticWrapper(object):
         # Run each accuracy diagnostic
         for d in p.accuracy_diagnostics:
             try:
-                diagnostic = (DIAGNOSTIC_TYPE[d])(parameters=p)
+                kls = DIAGNOSTIC_TYPE[d]
+                diagnostic = kls.from_parameter_parser(p)
                 diagnostic.run_diagnostic()
-            except MissingConstraintError as e:
+            except KeyError as e:
+                print('Key {} is not a diagnostic'.format(d))
+            except utilities.MissingConstraintError as e:
                 print(e.message)
 
     def run_outlier_diagnostics(self):

@@ -6,42 +6,40 @@ from osgeo import gdal, gdalconst
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import histogram
-from pynnmap.misc import utilities
-from pynnmap.parser import parameter_parser as pp
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        'predicted_raster', 'area_estimate_file', 'stand_attribute_file',
+        'stand_metadata_file']
 
-    def __init__(self, **kwargs):
-        if 'parameters' in kwargs:
-            p = kwargs['parameters']
-            if isinstance(p, pp.ParameterParser):
-                raster_name = ''.join([
-                    'mr', str(p.model_region), '_nnmsk1'])
-                self.predicted_raster = os.path.join(
-                    p.model_directory, raster_name)
-                self.area_estimate_file = p.area_estimate_file
-                self.stand_attribute_file = p.stand_attribute_file
-                self.stand_metadata_file = p.stand_metadata_file
-                self.id_field = p.plot_id_field
-                self.statistics_file = p.regional_accuracy_file
-            else:
-                err_msg = 'Passed object is not a ParameterParser object'
-                raise ValueError(err_msg)
-        else:
-            err_msg = 'Only ParameterParser objects may be passed.'
-            raise NotImplementedError(err_msg)
+    def __init__(
+            self, predicted_raster, area_estimate_file, stand_attribute_file,
+            stand_metadata_file, id_field, statistics_file):
 
-        # Ensure all input files are present
-        files = [
-            self.predicted_raster, self.area_estimate_file,
-            self.stand_attribute_file, self.stand_metadata_file]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping RegionalAccuracyDiagnostic\n'
-            raise e
+        self.predicted_raster = predicted_raster
+        self.area_estimate_file = area_estimate_file
+        self.stand_attribute_file = stand_attribute_file
+        self.stand_metadata_file = stand_metadata_file
+        self.id_field = id_field
+        self.statistics_file = statistics_file
+
+        self.check_missing_files()
+
+    @classmethod
+    def from_parameter_parser(cls, parameter_parser):
+        p = parameter_parser
+        raster_name = 'mr{}_nnmsk1'.format(p.model_region)
+        predicted_raster = os.path.join(p.model_directory, raster_name)
+        return cls(
+            predicted_raster,
+            p.area_estimate_file,
+            p.stand_attribute_file,
+            p.stand_metadata_file,
+            p.plot_id_field,
+            p.regional_accuracy_file
+        )
 
     def get_observed_estimates(self):
         # Read the area estimate file into a recarray
