@@ -12,6 +12,7 @@ setup(
     description='Python based nearest neighbor mapping',
     install_requires=[
         'click',
+        'click-plugins',
         'gdal',
         'lxml',
         'matplotlib',
