@@ -5,6 +5,7 @@ dist
 *.pyc
 
 # Testing
+env
 .cache
 .coverage
 .tox
