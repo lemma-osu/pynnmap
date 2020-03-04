@@ -1,7 +1,19 @@
+# Build files
 build
 dist
 *.egg-info
 *.pyc
+
+# Testing
+env
+.cache
+.coverage
+.tox
+tox.ini
+
+# Miscellaneous files
+.idea
+*.swp
 
 # For now, ignore docs
 docs
