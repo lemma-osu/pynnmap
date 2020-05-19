@@ -101,13 +101,14 @@ class XMLParameterParser(
             'accuracy_assessment_report',
             'report_metadata_file',
             'local_accuracy_file',
+            'error_matrix_accuracy_file',
+            'error_matrix_bin_file',
             'species_accuracy_file',
             'vegclass_file',
             'vegclass_kappa_file',
             'vegclass_errmatrix_file',
-            'area_estimate_file',
+            'regional_output_folder',
             'riemann_output_folder',
-            'regional_accuracy_file',
             'validation_output_folder',
         ]
         outlier_files = [
@@ -115,6 +116,14 @@ class XMLParameterParser(
             'vegclass_outlier_file',
             'vegclass_variety_file',
             'variable_deviation_file',
+        ]
+        regional_files = [
+            'area_estimate_file',
+            'regional_accuracy_file',
+            'regional_predicted_plot_file',
+            'regional_error_matrix_file',
+            'regional_bin_file',
+            'regional_olofsson_file',
         ]
         riemann_files = [
             'hex_attribute_file',
@@ -130,6 +139,9 @@ class XMLParameterParser(
         elif parameter in outlier_files:
             outlier_dir = self.outlier_assessment_folder
             out_path = os.path.join(outlier_dir, file_name)
+        elif parameter in regional_files:
+            regional_dir = self.regional_output_folder
+            out_path = os.path.join(regional_dir, file_name)
         elif parameter in riemann_files:
             riemann_dir = self.riemann_output_folder
             out_path = os.path.join(riemann_dir, file_name)
@@ -356,32 +368,32 @@ class XMLParameterParser(
         else:
             return []
 
-    @plot_image_crosswalk.setter
-    def plot_image_crosswalk(self, records):
-        if self.model_type in self.imagery_model_types:
-            # Create a new XML tree of these pairs
-            new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
-            for rec in records.itertuples():
-                child = (
-                    etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
-                )
-                try:
-                    child.plot_year = rec.PLOT_YEAR
-                    child.image_year = rec.IMAGE_YEAR
-                except ValueError:
-                    err_msg = (
-                        'Record does not have PLOT_YEAR or IMAGE_YEAR '
-                        'attributes'
-                    )
-                    raise ValueError(err_msg)
-
-            # Replace the old XML tree with the newly created one
-            pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
-            parent = pi_crosswalk_elem.getparent()
-            parent.replace(pi_crosswalk_elem, new_pi_crosswalk_elem)
-
-        else:
-            raise NotImplementedError
+    # @plot_image_crosswalk.setter
+    # def plot_image_crosswalk(self, records):
+    #     if self.model_type in self.imagery_model_types:
+    #         # Create a new XML tree of these pairs
+    #         new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
+    #         for rec in records.itertuples():
+    #             child = (
+    #                 etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
+    #             )
+    #             try:
+    #                 child.plot_year = rec.PLOT_YEAR
+    #                 child.image_year = rec.IMAGE_YEAR
+    #             except ValueError:
+    #                 err_msg = (
+    #                     'Record does not have PLOT_YEAR or IMAGE_YEAR '
+    #                     'attributes'
+    #                 )
+    #                 raise ValueError(err_msg)
+    #
+    #         # Replace the old XML tree with the newly created one
+    #         pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
+    #         parent = pi_crosswalk_elem.getparent()
+    #         parent.replace(pi_crosswalk_elem, new_pi_crosswalk_elem)
+    #
+    #     else:
+    #         raise NotImplementedError
 
     @property
     def image_years(self):
@@ -518,30 +530,30 @@ class XMLParameterParser(
                             (str(v.variable_name), str(v.variable_path)))
             return v_list
 
-    def set_ordination_variables(self, records):
-        # Create a new XML tree of these pairs
-        new_ov_elem = objectify.Element('ordination_variables')
-        for rec in records.itertuples():
-            child = etree.SubElement(new_ov_elem, 'ordination_variable')
-            try:
-                child.variable_name = rec.VARIABLE_NAME
-                child.variable_path = rec.VARIABLE_PATH
-                if rec.MODEL_YEAR == 0:
-                    child.set('variable_type', 'STATIC')
-                else:
-                    child.set('variable_type', 'TEMPORAL')
-                    child.set('model_year', str(rec.MODEL_YEAR))
-            except ValueError:
-                err_msg = (
-                    'Record does not have VARIABLE_NAME, VARIABLE_NAME or '
-                    'MODEL_YEAR attributes'
-                )
-                raise ValueError(err_msg)
-
-        # Replace the old XML tree with the newly created one
-        ov_elem = self.op_elem.ordination_variables
-        parent = ov_elem.getparent()
-        parent.replace(ov_elem, new_ov_elem)
+    # def set_ordination_variables(self, records):
+    #     # Create a new XML tree of these pairs
+    #     new_ov_elem = objectify.Element('ordination_variables')
+    #     for rec in records.itertuples():
+    #         child = etree.SubElement(new_ov_elem, 'ordination_variable')
+    #         try:
+    #             child.variable_name = rec.VARIABLE_NAME
+    #             child.variable_path = rec.VARIABLE_PATH
+    #             if rec.MODEL_YEAR == 0:
+    #                 child.set('variable_type', 'STATIC')
+    #             else:
+    #                 child.set('variable_type', 'TEMPORAL')
+    #                 child.set('model_year', str(rec.MODEL_YEAR))
+    #         except ValueError:
+    #             err_msg = (
+    #                 'Record does not have VARIABLE_NAME, VARIABLE_NAME or '
+    #                 'MODEL_YEAR attributes'
+    #             )
+    #             raise ValueError(err_msg)
+    #
+    #     # Replace the old XML tree with the newly created one
+    #     ov_elem = self.op_elem.ordination_variables
+    #     parent = ov_elem.getparent()
+    #     parent.replace(ov_elem, new_ov_elem)
 
     def get_ordination_variable_names(self, model_year=None):
         ord_vars = self.get_ordination_variables(model_year=model_year)
@@ -742,72 +754,153 @@ class XMLParameterParser(
     def local_accuracy_file(self):
         if self.accuracy_diagnostics:
             ade = self.accuracy_diagnostics_element
-            file_name = str(ade.local_accuracy.output_file)
-            return self._get_path('local_accuracy_file', file_name)
-        else:
-            return None
+            if ade is not None:
+                file_name = str(ade.local_accuracy.output_file)
+                return self._get_path('local_accuracy_file', file_name)
+        return None
+
+    @property
+    def error_matrix_bin_count(self):
+        if self.accuracy_diagnostics:
+            ade = self.accuracy_diagnostics_element
+            if ade is not None:
+                return int(ade.error_matrix_accuracy.bin_count)
+        return None
+
+    @property
+    def error_matrix_bin_method(self):
+        if self.accuracy_diagnostics:
+            ade = self.accuracy_diagnostics_element
+            if ade is not None:
+                return str(ade.error_matrix_accuracy.bin_method)
+        return None
+
+    @property
+    def error_matrix_accuracy_file(self):
+        if self.accuracy_diagnostics:
+            ade = self.accuracy_diagnostics_element
+            if ade is not None:
+                file_name = str(ade.error_matrix_accuracy.error_matrix_file)
+                return self._get_path("error_matrix_accuracy_file", file_name)
+        return None
+
+    @property
+    def error_matrix_bin_file(self):
+        if self.accuracy_diagnostics:
+            ade = self.accuracy_diagnostics_element
+            if ade is not None:
+                file_name = str(
+                    ade.error_matrix_accuracy.classification_bin_file
+                )
+                return self._get_path("error_matrix_bin_file", file_name)
+        return None
 
     @property
     def species_accuracy_file(self):
         if self.accuracy_diagnostics:
             ade = self.accuracy_diagnostics_element
-            file_name = str(ade.species_accuracy.output_file)
-            return self._get_path('species_accuracy_file', file_name)
-        else:
-            return None
-
-    @property
-    def regional_assessment_year(self):
-        if self.accuracy_diagnostics:
-            ade = self.accuracy_diagnostics_element
-            return int(ade.regional_accuracy.assessment_year)
-        else:
-            return None
-
-    @property
-    def area_estimate_file(self):
-        if self.accuracy_diagnostics:
-            ade = self.accuracy_diagnostics_element
-            file_name = str(ade.regional_accuracy.area_estimate_file)
-            return self._get_path('area_estimate_file', file_name)
-        else:
-            return None
-
-    @property
-    def regional_accuracy_file(self):
-        if self.accuracy_diagnostics:
-            ade = self.accuracy_diagnostics_element
-            file_name = str(ade.regional_accuracy.output_file)
-            return self._get_path('regional_accuracy_file', file_name)
-        else:
-            return None
+            if ade is not None:
+                file_name = str(ade.species_accuracy.output_file)
+                return self._get_path('species_accuracy_file', file_name)
+        return None
 
     @property
     def vegclass_file(self):
         if self.accuracy_diagnostics:
             ade = self.accuracy_diagnostics_element
-            file_name = str(ade.vegclass_accuracy.vegclass_file)
-            return self._get_path('vegclass_file', file_name)
-        else:
-            return None
+            if ade is not None:
+                file_name = str(ade.vegclass_accuracy.vegclass_file)
+                return self._get_path('vegclass_file', file_name)
+        return None
 
     @property
     def vegclass_kappa_file(self):
         if self.accuracy_diagnostics:
             ade = self.accuracy_diagnostics_element
-            file_name = str(ade.vegclass_accuracy.vegclass_kappa_file)
-            return self._get_path('vegclass_kappa_file', file_name)
-        else:
-            return None
+            if ade is not None:
+                file_name = str(ade.vegclass_accuracy.vegclass_kappa_file)
+                return self._get_path('vegclass_kappa_file', file_name)
+        return None
 
     @property
     def vegclass_errmatrix_file(self):
         if self.accuracy_diagnostics:
             ade = self.accuracy_diagnostics_element
-            file_name = str(ade.vegclass_accuracy.vegclass_errmatrix_file)
-            return self._get_path('vegclass_errmatrix_file', file_name)
-        else:
-            return None
+            if ade is not None:
+                file_name = str(ade.vegclass_accuracy.vegclass_errmatrix_file)
+                return self._get_path('vegclass_errmatrix_file', file_name)
+        return None
+
+    @property
+    def regional_element(self):
+        ade = self.accuracy_diagnostics_element
+        if ade is not None:
+            if ade.find("regional_accuracy") is not None:
+                return ade.regional_accuracy
+        return None
+
+    @property
+    def regional_assessment_year(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            return int(r_elem.assessment_year)
+        return None
+
+    @property
+    def regional_output_folder(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            folder_name = str(r_elem.output_folder)
+            return self._get_path('regional_output_folder', folder_name)
+        return ''
+
+    @property
+    def area_estimate_file(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            file_name = str(r_elem.area_estimate_file)
+            return self._get_path('area_estimate_file', file_name)
+        return None
+
+    @property
+    def regional_accuracy_file(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            file_name = str(r_elem.output_file)
+            return self._get_path('regional_accuracy_file', file_name)
+        return None
+
+    @property
+    def regional_predicted_plot_file(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            file_name = str(r_elem.predicted_plot_file)
+            return self._get_path('regional_predicted_plot_file', file_name)
+        return None
+
+    @property
+    def regional_error_matrix_file(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            file_name = str(r_elem.error_matrix_file)
+            return self._get_path('regional_error_matrix_file', file_name)
+        return None
+
+    @property
+    def regional_bin_file(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            file_name = str(r_elem.classification_bin_file)
+            return self._get_path('regional_bin_file', file_name)
+        return None
+
+    @property
+    def regional_olofsson_file(self):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            file_name = str(r_elem.olofsson_file)
+            return self._get_path('regional_olofsson_file', file_name)
+        return None
 
     @property
     def riemann_element(self):
