@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 from matplotlib import mlab
@@ -5,6 +7,7 @@ from osgeo import gdal, gdalconst
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import histogram
+from pynnmap.misc import utilities
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
