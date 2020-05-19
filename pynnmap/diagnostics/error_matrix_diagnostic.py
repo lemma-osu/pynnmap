@@ -1,0 +1,175 @@
+import numpy as np
+import pandas as pd
+
+from pynnmap.diagnostics import diagnostic
+from pynnmap.misc import interval_classification as ic
+from pynnmap.misc import utilities
+from pynnmap.parser.xml_stand_metadata_parser import (
+    XMLStandMetadataParser,
+    XMLAttributeField,
+)
+from pynnmap.parser.xml_stand_metadata_parser import Flags
+
+
+def create_existing_bins(bin_file):
+    def get_custom_classifier(group_df):
+        endpoints = np.hstack((group_df.LOW.values, group_df.HIGH.values[-1]))
+        return ic.CustomIntervalClassifier(endpoints)
+
+    # Read in the bins from an existing file
+    clf_dict = {}
+    df = pd.read_csv(bin_file)
+    grouped_df = df.groupby('VARIABLE')
+    for name, group in grouped_df:
+        clf_dict[name] = get_custom_classifier(group)
+    return clf_dict
+
+
+class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
+    _required = ['observed_file', 'predicted_file', 'stand_metadata_file']
+
+    _classifier = {
+        'EQUAL_INTERVAL': ic.EqualIntervalClassifier,
+        'QUANTILE': ic.QuantileClassifier,
+    }
+
+    def __init__(
+        self,
+        observed_file,
+        predicted_file,
+        stand_metadata_file,
+        id_field,
+        error_matrix_file,
+        classifier=None,
+        input_bin_file=None,
+        output_bin_file=None,
+    ):
+        self.observed_file = observed_file
+        self.predicted_file = predicted_file
+        self.id_field = id_field
+        self.stand_metadata_file = stand_metadata_file
+        self.error_matrix_file = error_matrix_file
+
+        if classifier is not None:
+            self.clf = classifier
+
+        if input_bin_file is not None:
+            self.clf = None
+            self.clf_dict = create_existing_bins(input_bin_file)
+
+        self.output_bin_file = None
+        if output_bin_file is not None:
+            self.output_bin_file = output_bin_file
+
+        self.check_missing_files()
+        self.obs_df, self.prd_df = utilities.build_obs_prd_dataframes(
+            self.observed_file, self.predicted_file, self.id_field
+        )
+
+    @classmethod
+    def from_parameter_parser(cls, parameter_parser, **kwargs):
+        # Get the classifier before creating the instance - if a bin_file
+        # is passed in, use defined bins rather than dynamic bins
+        if 'bin_file' in kwargs and kwargs['bin_file'] is not None:
+            clf = None
+            input_bin_file = kwargs['bin_file']
+            output_bin_file = None
+        else:
+            bin_method = parameter_parser.error_matrix_bin_method
+            bin_count = parameter_parser.error_matrix_bin_count
+            clf = cls._classifier[bin_method](bin_count)
+            input_bin_file = None
+            output_bin_file = parameter_parser.error_matrix_bin_file
+
+        return cls(
+            parameter_parser.stand_attribute_file,
+            parameter_parser.independent_predicted_file,
+            parameter_parser.stand_metadata_file,
+            parameter_parser.plot_id_field,
+            parameter_parser.error_matrix_accuracy_file,
+            classifier=clf,
+            input_bin_file=input_bin_file,
+            output_bin_file=output_bin_file,
+        )
+
+    def attr_missing(self, attr):
+        if attr.field_name not in self.obs_df.columns:
+            return True
+        if attr.field_name not in self.prd_df.columns:
+            return True
+        return False
+
+    def run_attr(self, attr, clf, return_bins=True):
+        # Retrieve the observed and predicted values
+        obs_vals = getattr(self.obs_df, attr.field_name)
+        prd_vals = getattr(self.prd_df, attr.field_name)
+
+        # Create the bins and bin these data
+        bins = clf(np.hstack((obs_vals, prd_vals)))
+        if len(bins) == 1:
+            bins = np.repeat(bins, 2)
+        bins[-1] += 0.0001
+        obs_classes = np.digitize(obs_vals, bins)
+        prd_classes = np.digitize(prd_vals, bins)
+        cats = np.arange(1, len(bins))
+        obs = pd.Categorical(obs_classes, categories=cats)
+        prd = pd.Categorical(prd_classes, categories=cats)
+        err_mat = pd.crosstab(index=obs, columns=prd, dropna=False)
+        if return_bins:
+            return err_mat, bins
+        return err_mat
+
+    def run_diagnostic(self):
+        # Open the error matrix file and print out the header line
+        err_matrix_fh = open(self.error_matrix_file, 'w')
+        err_matrix_fh.write(
+            '{},{},{},{}\n'.format(
+                'VARIABLE', 'OBSERVED_CLASS', 'PREDICTED_CLASS', 'COUNT'
+            )
+        )
+
+        # Open the bin file and print out the header line
+        if self.output_bin_file:
+            bin_fh = open(self.output_bin_file, 'w')
+            bin_fh.write(
+                '{},{},{},{}\n'.format('VARIABLE', 'CLASS', 'LOW', 'HIGH')
+            )
+
+        # Read in the stand attribute metadata and get continuous
+        mp = XMLStandMetadataParser(self.stand_metadata_file)
+        attrs = mp.filter(Flags.CONTINUOUS | Flags.ACCURACY)
+
+        # For each attribute, calculate the statistics
+        for attr in attrs:
+            if self.attr_missing(attr):
+                continue
+
+            if self.clf is not None:
+                err_mat, bins = self.run_attr(attr, self.clf, return_bins=True)
+            else:
+                if attr.field_name not in self.clf_dict:
+                    continue
+                clf = self.clf_dict[attr.field_name]
+                err_mat = self.run_attr(attr, clf, return_bins=False)
+
+            rows, cols = err_mat.shape
+            labels = list(err_mat.index)
+            for j in range(cols):
+                for i in range(rows):
+                    out_list = [
+                        attr.field_name,
+                        '{}'.format(labels[i]),
+                        '{}'.format(labels[j]),
+                        '{}'.format(err_mat.iat[i, j]),
+                    ]
+                    err_matrix_fh.write(','.join(out_list) + '\n')
+
+            if self.output_bin_file:
+                for i in range(len(labels)):
+                    out_list = [
+                        attr.field_name,
+                        '{}'.format(labels[i]),
+                        '{:.4f}'.format(bins[i]),
+                        '{:.4f}'.format(bins[i + 1]),
+                    ]
+                    bin_fh.write(','.join(out_list) + '\n')
