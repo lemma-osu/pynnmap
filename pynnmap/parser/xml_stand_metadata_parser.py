@@ -30,6 +30,9 @@ class XMLStandMetadataParser(xml_parser.XMLParser):
             raise ValueError('Missing attribute: {}'.format(field_name))
         return XMLAttributeField(elem[0])
 
+    def get_area_attrs(self):
+        return [x for x in self.attributes if x.is_area_attr()]
+
     @property
     def attributes(self):
         return [XMLAttributeField(x) for x in self.root.iterchildren()]
@@ -117,6 +120,23 @@ class XMLAttributeField(object):
 
     def is_continuous_species_attr(self):
         return self.is_continuous_attr() and self.is_species_attr()
+
+    def is_area_attr(self):
+        """
+        Returns whether or not an attribute should be used in regional
+        accuracy assessment
+
+        :return: True is attribute is an area attribute and False otherwise
+        """
+        # TODO: Like is_continuous, this is doing too much, checking for both
+        #   project attribute, not character attribute, and not species
+        #   attribute.  Refactor to make more clear
+        return (
+            self.is_project_attr()
+            and self.is_accuracy_attr()
+            and not self.is_character_attr()
+            and not self.is_species_attr()
+        )
 
 
 class XMLAttributeCode(object):

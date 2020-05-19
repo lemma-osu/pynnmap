@@ -658,6 +658,11 @@ class XMLParameterParser(
         else:
             return None
 
+    def get_neighbor_file(self, idx):
+        md = self.model_directory
+        fn = "{}{}.tif".format(self.neighbor_file, idx)
+        return os.path.join(md, fn)
+
     @property
     def distance_file(self):
         if self.domain == 'window':
