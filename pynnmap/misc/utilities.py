@@ -22,7 +22,6 @@ def df_to_csv(df, csv_file, index=False, n_dec=4):
     n_dec : int, optional
         Number of decimals to include for float formats
     """
-    # Fill all missing data with zeros
     df.fillna(0.0, inplace=True)
 
     # Convert all boolean fields to integer
@@ -80,8 +79,6 @@ def pretty_print(node):
         The returned formatted string
     """
     tree = node.getroottree()
-
-    # Deannotate the tree
     objectify.deannotate(tree)
     etree.cleanup_namespaces(tree)
     return etree.tostring(node, pretty_print=True)
@@ -145,25 +142,26 @@ def subset_lines_from_regex(
     # If we have anything in chunk_lines, this means we have met the
     # start_re and hit the end of the file without hitting the end_re
     # If flush is True, write this chunk as well
-    if flush and len(chunk_lines):
+    if flush and len(chunk_lines) > 0:
         chunks.append(chunk_lines)
     return chunks
 
 
 class MissingConstraintError(Exception):
     def __init__(self, message):
+        super().__init__()
         self.message = message
 
 
 def check_missing_files(files):
     missing_files = []
-    for f in files:
-        if not os.path.exists(f):
-            missing_files.append(f)
+    for fn in files:
+        if not os.path.exists(fn):
+            missing_files.append(fn)
     if len(missing_files) > 0:
         err_msg = ""
-        for f in missing_files:
-            err_msg += "\n" + f + " does not exist"
+        for fn in missing_files:
+            err_msg += "\n" + fn + " does not exist"
         raise MissingConstraintError(err_msg)
 
 
@@ -218,7 +216,7 @@ def assert_same_len_ids(merged_df, df1, df2):
 
 
 def _list_like(x):
-    return x if type(x) in [list, tuple] else [x]
+    return x if isinstance(x, (list, tuple)) else [x]
 
 
 def build_paired_dataframe(obs_df, prd_df, join_field, attr_fields):

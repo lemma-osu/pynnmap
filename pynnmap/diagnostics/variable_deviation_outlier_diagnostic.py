@@ -6,6 +6,12 @@ from pynnmap.misc.utilities import df_to_csv
 
 
 class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        "observed_file",
+        "dependent_predicted_file",
+        "independent_predicted_file",
+    ]
+
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
         self.vd_output_file = parameters.variable_deviation_file
@@ -13,22 +19,14 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
         self.deviation_variables = parameters.deviation_variables
 
         # Create a list of prediction files - both independent and dependent
+        self.dependent_predicted_file = parameters.dependent_predicted_file
+        self.independent_predicted_file = parameters.independent_predicted_file
         self.predicted_files = [
-            ("dependent", parameters.dependent_predicted_file),
-            ("independent", parameters.independent_predicted_file),
+            ("dependent", self.dependent_predicted_file),
+            ("independent", self.independent_predicted_file),
         ]
 
-        # Ensure all input files are present
-        files = [
-            self.observed_file,
-            parameters.dependent_predicted_file,
-            parameters.independent_predicted_file,
-        ]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += "\nSkipping VariableDeviationOutlierDiagnostic\n"
-            raise e
+        self.check_missing_files()
 
     def run_diagnostic(self):
         # Run this for both independent and dependent predictions

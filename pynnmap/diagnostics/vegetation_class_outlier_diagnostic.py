@@ -62,32 +62,32 @@ def find_vegclass_outlier_class(rec):
 
 
 class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        "observed_file",
+        "dependent_predicted_file",
+        "independent_predicted_file",
+    ]
+
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
         self.vegclass_outlier_file = parameters.vegclass_outlier_file
         self.id_field = parameters.plot_id_field
 
         # Create a list of predicted files - both independent and dependent
+        self.dependent_predicted_file = parameters.dependent_predicted_file
+        self.independent_predicted_file = parameters.independent_predicted_file
         self.predicted_files = [
-            ("dependent", parameters.dependent_predicted_file),
-            ("independent", parameters.independent_predicted_file),
+            ("dependent", self.dependent_predicted_file),
+            ("independent", self.independent_predicted_file),
         ]
 
         # Create a instance of the VegetationClassDiagnostic to calculate
         # vegetation class
-        self.vc_calc = vcd.VegetationClassDiagnostic(parameters=parameters)
+        self.vc_calc = vcd.VegetationClassDiagnostic.from_parameter_parser(
+            parameters
+        )
 
-        # Ensure all input files are present
-        files = [
-            self.observed_file,
-            parameters.dependent_predicted_file,
-            parameters.independent_predicted_file,
-        ]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += "\nSkipping VegetationClassOutlierDiagnostic\n"
-            raise e
+        self.check_missing_files()
 
     def run_diagnostic(self):
         # Run this for both independent and dependent predictions

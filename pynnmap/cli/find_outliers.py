@@ -22,7 +22,7 @@ def find_outliers(parameter_file):
     independent_output = IndependentOutput(p)
 
     # Create the independent predicted data and zonal pixel file
-    independent_output.create_predictions(neighbor_data, "LOC_ID")
+    independent_output.create_predictions(neighbor_data)
 
     # Create a DependentOutput object
     dependent_output = DependentOutput(p)

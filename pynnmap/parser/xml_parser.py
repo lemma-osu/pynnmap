@@ -3,7 +3,7 @@ from lxml import objectify
 from pynnmap.misc import utilities
 
 
-class XMLParser(object):
+class XMLParser:
     def __init__(self, xml_file_name):
         """
         Initialize the XMLParser object by setting a reference to the
@@ -18,8 +18,6 @@ class XMLParser(object):
         -------
         None
         """
-
-        # Read the XML file into an objectified lxml tree
         self.xml_tree = objectify.parse(xml_file_name)
         self.root = self.xml_tree.getroot()
 

@@ -13,7 +13,7 @@ class Flags(object):
     NOT_CHARACTER = 256
 
 
-class XMLAttributeCode(object):
+class XMLAttributeCode:
     def __init__(self, elem):
         self.root = elem
 
@@ -135,7 +135,7 @@ class XMLStandMetadataParser(xml_parser.XMLParser):
         xml_file_name : file
             name and location of XML metadata parameter file
         """
-        super(XMLStandMetadataParser, self).__init__(xml_file_name)
+        super().__init__(xml_file_name)
 
     def get_attribute(self, field_name):
         elem = self.root.xpath('attribute[field_name="' + field_name + '"]')

@@ -15,6 +15,11 @@ from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
 
 class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        "observed_file",
+        "stand_metadata_file",
+    ]
+
     def __init__(self, **kwargs):
         if "parameters" in kwargs:
             p = kwargs["parameters"]
@@ -52,13 +57,7 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
             err_msg = "Only ParameterParser objects may be passed."
             raise NotImplementedError(err_msg)
 
-        # Ensure all input files are present
-        files = [self.observed_file, self.stand_metadata_file]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += "\nSkipping ValidationPlotsAccuracyDiagnostic\n"
-            raise e
+        self.check_missing_files()
 
     def run_diagnostic(self):
         # Shortcut to the parameter parser
@@ -106,20 +105,20 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
         # Run the LocalAccuracyDiagnostic on these files
         d = lad.LocalAccuracyDiagnostic(
             observed_file=self.observed_file,
-            independent_predicted_file=self.predicted_file,
+            predicted_file=self.predicted_file,
             stand_metadata_file=self.stand_metadata_file,
-            local_accuracy_file=self.local_accuracy_file,
             id_field=self.id_field,
+            statistics_file=self.local_accuracy_file,
         )
         d.run_diagnostic()
 
         # Run the VegetationClassDiagnostic on these files
         d = vcd.VegetationClassDiagnostic(
             observed_file=self.observed_file,
-            independent_predicted_file=self.predicted_file,
+            predicted_file=self.predicted_file,
+            id_field=self.id_field,
             vegclass_file=self.vegclass_file,
             vegclass_kappa_file=self.vegclass_kappa_file,
             vegclass_errmatrix_file=self.vegclass_errmatrix_file,
-            id_field=self.id_field,
         )
         d.run_diagnostic()

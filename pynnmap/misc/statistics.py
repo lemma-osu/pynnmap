@@ -7,6 +7,7 @@ import math
 import numpy as np
 import pandas as pd
 from scipy import stats as scipy_stats
+from sklearn.metrics import confusion_matrix
 
 
 class ZeroSizeError(Exception):
@@ -318,6 +319,7 @@ def pearson_r(x, y):
     >>> z
     0.98198050606196585
     """
+
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
@@ -357,6 +359,7 @@ def spearman_r(x, y):
     >>> z
     1.0
     """
+
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
@@ -431,11 +434,19 @@ def gmfr(x, y):
     b : float
         Slope of GMFR relationship
     """
+
     x_mean = x.mean()
     y_mean = y.mean()
     b = np.sqrt(y.var() / x.var())
     a = y_mean - (b * x_mean)
     return a, b
+
+
+def error_matrix(obs, prd):
+    labels = set(np.unique(obs)) | set(np.unique(prd))
+    labels = sorted(list(labels))
+    cm = confusion_matrix(prd, obs, labels=labels)
+    return pd.DataFrame(cm, index=labels, columns=labels)
 
 
 def ac(x, y):

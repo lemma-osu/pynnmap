@@ -33,6 +33,12 @@ def calculate_vc_variety(vc_records):
 
 
 class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        "stand_attr_file",
+        "dependent_zonal_pixel_file",
+        "independent_zonal_pixel_file",
+    ]
+
     def __init__(self, parameters):
         p = parameters
         self.stand_attr_file = p.stand_attribute_file
@@ -40,22 +46,14 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
         self.output_file = p.vegclass_variety_file
 
         # Create a list of zonal_pixel files - both independent and dependent
+        self.dependent_zonal_pixel_file = p.dependent_zonal_pixel_file
+        self.independent_zonal_pixel_file = p.independent_zonal_pixel_file
         self.zonal_pixel_files = [
-            ("dependent", p.dependent_zonal_pixel_file),
-            ("independent", p.independent_zonal_pixel_file),
+            ("dependent", self.dependent_zonal_pixel_file),
+            ("independent", self.independent_zonal_pixel_file),
         ]
 
-        # Ensure all input files are present
-        files = [
-            self.stand_attr_file,
-            parameters.dependent_zonal_pixel_file,
-            parameters.independent_zonal_pixel_file,
-        ]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += "\nSkipping VegetationClassVarietyDiagnostic\n"
-            raise e
+        self.check_missing_files()
 
     def _vc_variety(self, rec, zonal_df):
         cond = zonal_df[self.id_field] == rec[self.id_field]

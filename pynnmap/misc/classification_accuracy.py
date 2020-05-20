@@ -1,5 +1,6 @@
 import itertools
 import re
+from collections import namedtuple
 
 import numpy as np
 import numpy.ma as ma
@@ -106,11 +107,7 @@ def kappa(m):
         return 0.0
 
 
-class Classification:
-    def __init__(self, value, name, fuzzy_values):
-        self.value = value
-        self.name = name
-        self.fuzzy_values = fuzzy_values
+Classification = namedtuple("Classification", ["value", "name", "fuzzy_values"])
 
 
 class Classifier:

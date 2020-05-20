@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from osgeo import gdal, gdalconst
 
+from pynnmap.core import get_id_year_crosswalk
 from pynnmap.core import imputation_model as im
 from pynnmap.misc import footprint
 from pynnmap.ordination_parser import lemma_ordination_parser
@@ -140,21 +141,8 @@ class NNFinder(object):
         # Alias for self.parameter_parser
         p = self.parameter_parser
 
-        # ID field
-        id_field = p.plot_id_field
-
-        # Get the plot/year crosswalk file and read the plot IDs
-        # and image years into a dictionary
-        xwalk_df = pd.read_csv(p.plot_year_crosswalk_file, low_memory=False)
-
-        # Associate each plot with a model year; this is either the year the
-        # model is associated with (for models that use imagery), or the
-        # model_year (for models that don't use imagery)
-        if p.model_type in p.imagery_model_types:
-            s = pd.Series(xwalk_df.IMAGE_YEAR.values, index=xwalk_df[id_field])
-        else:
-            s = pd.Series(p.model_year, index=xwalk_df[id_field])
-        id_x_year = s.to_dict()
+        # Crosswalk of ID to year
+        id_x_year = get_id_year_crosswalk(p)
 
         # Subset the plot ID list down to just those plots that went into
         # imputation.  This may be a subset of the plots that are in the
@@ -289,7 +277,7 @@ class NNFinder(object):
 
             # Extract footprints for any variables that are not common to all
             # years, but specialized for this year
-            for (var, fn) in ord_year_var_dict[year].items():
+            for _, fn in ord_year_var_dict[year].items():
                 ds, processed = raster_dict[fn]
                 if not processed:
                     print(fn)

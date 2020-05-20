@@ -79,7 +79,6 @@ def draw_scatterplot(
     import matplotlib.ticker as ticker
 
     f = ticker.OldScalarFormatter()
-    # f.set_powerlimits((-3, 4))
     pl.gca().xaxis.set_major_formatter(f)
     pl.gca().xaxis.set_minor_formatter(f)
     pl.gca().yaxis.set_major_formatter(f)
