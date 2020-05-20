@@ -1,17 +1,24 @@
 import os
-from collections import OrderedDict
+from collections import namedtuple, OrderedDict
 
 import numpy as np
 import pandas as pd
 
+from pynnmap.core import (
+    get_id_year_crosswalk, get_independence_filter, get_id_list
+)
 from pynnmap.core.attribute_predictor import AttributePredictor
-from pynnmap.core.independence_filter import IndependenceFilter
 from pynnmap.core.nn_finder import NNFinder
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
+from pynnmap.misc.utilities import df_to_csv
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 from pynnmap.parser.xml_stand_metadata_parser import Flags
-from pynnmap.misc.utilities import df_to_csv
+
+
+RiemannComparison = namedtuple(
+    "RiemannComparison", ["prefix", "obs_file", "prd_file", "id_field", "k"]
+)
 
 
 class ECDF:
@@ -26,18 +33,7 @@ class ECDF:
             return (self.observations <= x).mean()
 
 
-class RiemannComparison(object):
-
-    def __init__(self, prefix, obs_file, prd_file, id_field, k):
-        self.prefix = prefix
-        self.obs_file = obs_file
-        self.prd_file = prd_file
-        self.id_field = id_field
-        self.k = k
-
-
 class RiemannVariable(object):
-
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -52,7 +48,7 @@ class RiemannVariable(object):
                 'gmfr_b': 0.0,
                 'ac': 0.0,
                 'ac_sys': 0.0,
-                'ac_uns': 0.0
+                'ac_uns': 0.0,
             }
 
         x_mean = self.x.mean()
@@ -89,7 +85,7 @@ class RiemannVariable(object):
             'gmfr_b': b,
             'ac': ac,
             'ac_sys': ac_sys,
-            'ac_uns': ac_uns
+            'ac_uns': ac_uns,
         }
 
     def ks_statistics(self, num_bins=1000):
@@ -147,26 +143,6 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             if not os.path.exists(sub_dir):
                 os.makedirs(sub_dir)
 
-    @staticmethod
-    def _get_id_year_crosswalk(p):
-        id_field = p.plot_id_field
-        xwalk_df = pd.read_csv(p.plot_year_crosswalk_file, low_memory=False)
-        if p.model_type in p.imagery_model_types:
-            s = pd.Series(xwalk_df.IMAGE_YEAR.values, index=xwalk_df[id_field])
-        else:
-            s = pd.Series(p.model_year, index=xwalk_df[id_field])
-        return dict(s.to_dict())
-
-    @staticmethod
-    def _get_independence_filter(p, no_self_assign_field='LOC_ID'):
-        id_field = p.plot_id_field
-        fn = p.plot_independence_crosswalk_file
-        fields = [id_field, no_self_assign_field]
-        df = pd.read_csv(fn, usecols=fields, index_col=id_field)
-        return IndependenceFilter.from_common_lookup(
-            df.index, df[no_self_assign_field]
-        )
-
     def run_diagnostic(self):
         # Shortcut to the parameter parser and set up often used fields
         p = self.parameter_parser
@@ -193,22 +169,22 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Create a dictionary of plot ID to image year (or model_year for
         # non-imagery models) for these plots
-        id_x_year = self._get_id_year_crosswalk(p)
-        id_x_year = dict(
-            (k, v) for k, v in id_x_year.items() if k in plot_pixel_obs.index)
+        ids = get_id_list(self.hex_attribute_file, self.id_field)
+        id_x_year = get_id_year_crosswalk(p)
+        id_x_year = dict((k, v) for k, v in id_x_year.items() if k in ids)
 
-        # # Create a NNFinder object and calculate neighbors and distances
+        # Create a NNFinder object and calculate neighbors and distances
         finder = NNFinder(p)
         neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
 
         # Create an independence filter based on the relationship of the
         # id_field and the no_self_assign_field
-        fltr = self._get_independence_filter(p)
+        fltr = get_independence_filter(p)
 
         # Create a plot attribute predictor instance
-        prd_attr_fn = p.stand_attribute_file
-        prd_attr_data = StandAttributes(prd_attr_fn, mp, id_field=id_field)
-        plot_attr_predictor = AttributePredictor(prd_attr_data, fltr)
+        model_attr_fn = p.stand_attribute_file
+        model_attr_data = StandAttributes(model_attr_fn, mp, id_field=id_field)
+        plot_attr_predictor = AttributePredictor(model_attr_data, fltr)
 
         # Iterate over values of k to calculate plot-pixel values
         for k, w in k_values:
@@ -225,11 +201,13 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
             # Calculate the predictions
             predictions = plot_attr_predictor.calculate_predictions(
-                neighbor_data, k=k, weights=w)
+                neighbor_data, k=k, weights=w
+            )
 
             # Get the predicted attributes
             df = plot_attr_predictor.get_predicted_attributes_df(
-                predictions, self.id_field)
+                predictions, self.id_field
+            )
 
             # Subset columns down to just columns present in the hex
             # attribute file and write out
@@ -326,7 +304,8 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 prd_file = '{}_predicted_k{}_mean.csv'.format(prefix, k)
                 prd_file = os.path.join(root_dir, prefix, prd_file)
                 r = RiemannComparison(
-                    prefix, obs_file, prd_file, hex_id_field, k)
+                    prefix, obs_file, prd_file, hex_id_field, k
+                )
                 compare_list.append(r)
 
         # Add the plot_pixel comparisons to this list

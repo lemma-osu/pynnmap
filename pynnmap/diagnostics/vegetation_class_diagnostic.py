@@ -4,7 +4,6 @@ import pandas as pd
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import classification_accuracy as ca
 from pynnmap.misc.utilities import df_to_csv
-from pynnmap.parser import parameter_parser as pp
 
 
 class VegetationClassDiagnostic(diagnostic.Diagnostic):

@@ -1,34 +1,57 @@
 import os
 
-from pynnmap.diagnostics import local_accuracy_diagnostic as lad
-from pynnmap.diagnostics import nn_index_outlier_diagnostic as niod
-from pynnmap.diagnostics import regional_accuracy_diagnostic as rad
-from pynnmap.diagnostics import riemann_accuracy_diagnostic as riemann
-from pynnmap.diagnostics import species_accuracy_diagnostic as sad
-from pynnmap.diagnostics import validation_plots_accuracy_diagnostic as vpad
-from pynnmap.diagnostics import variable_deviation_outlier_diagnostic as vdod
-from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
-from pynnmap.diagnostics import vegetation_class_outlier_diagnostic as vcod
-from pynnmap.diagnostics import vegetation_class_variety_diagnostic as vcvd
+from pynnmap.diagnostics.local_accuracy_diagnostic import (
+    LocalAccuracyDiagnostic
+)
+from pynnmap.diagnostics.error_matrix_diagnostic import (
+    ErrorMatrixDiagnostic
+)
+from pynnmap.diagnostics.nn_index_outlier_diagnostic import (
+    NNIndexOutlierDiagnostic
+)
+from pynnmap.diagnostics.regional_accuracy_diagnostic import (
+    RegionalAccuracyDiagnostic
+)
+from pynnmap.diagnostics.riemann_accuracy_diagnostic import (
+    RiemannAccuracyDiagnostic
+)
+from pynnmap.diagnostics.species_accuracy_diagnostic import (
+    SpeciesAccuracyDiagnostic
+)
+from pynnmap.diagnostics.validation_plots_accuracy_diagnostic import (
+    ValidationPlotsAccuracyDiagnostic
+)
+from pynnmap.diagnostics.variable_deviation_outlier_diagnostic import (
+    VariableDeviationOutlierDiagnostic
+)
+from pynnmap.diagnostics.vegetation_class_diagnostic import (
+    VegetationClassDiagnostic
+)
+from pynnmap.diagnostics.vegetation_class_outlier_diagnostic import (
+    VegetationClassOutlierDiagnostic
+)
+from pynnmap.diagnostics.vegetation_class_variety_diagnostic import (
+    VegetationClassVarietyDiagnostic
+)
 from pynnmap.misc import utilities
 
 # Dictionary of diagnostic name to diagnostic class
 DIAGNOSTIC_TYPE = {
-    'local_accuracy': lad.LocalAccuracyDiagnostic,
-    'regional_accuracy': rad.RegionalAccuracyDiagnostic,
-    'riemann_accuracy': riemann.RiemannAccuracyDiagnostic,
-    'species_accuracy': sad.SpeciesAccuracyDiagnostic,
-    'vegclass_accuracy': vcd.VegetationClassDiagnostic,
-    'validation_accuracy': vpad.ValidationPlotsAccuracyDiagnostic,
-    'nn_index_outlier': niod.NNIndexOutlierDiagnostic,
-    'vegclass_outlier': vcod.VegetationClassOutlierDiagnostic,
-    'vegclass_variety': vcvd.VegetationClassVarietyDiagnostic,
-    'variable_deviation_outlier': vdod.VariableDeviationOutlierDiagnostic,
+    'local_accuracy': LocalAccuracyDiagnostic,
+    'error_matrix_accuracy': ErrorMatrixDiagnostic,
+    'regional_accuracy': RegionalAccuracyDiagnostic,
+    'riemann_accuracy': RiemannAccuracyDiagnostic,
+    'species_accuracy': SpeciesAccuracyDiagnostic,
+    'vegclass_accuracy': VegetationClassDiagnostic,
+    'validation_accuracy': ValidationPlotsAccuracyDiagnostic,
+    'nn_index_outlier': NNIndexOutlierDiagnostic,
+    'vegclass_outlier': VegetationClassOutlierDiagnostic,
+    'vegclass_variety': VegetationClassVarietyDiagnostic,
+    'variable_deviation_outlier': VariableDeviationOutlierDiagnostic,
 }
 
 
 class DiagnosticWrapper(object):
-
     def __init__(self, parameter_parser):
         self.parameter_parser = parameter_parser
 
@@ -50,7 +73,7 @@ class DiagnosticWrapper(object):
                 diagnostic = kls.from_parameter_parser(p)
                 diagnostic.run_diagnostic()
             except utilities.MissingConstraintError as e:
-                print(e.message)
+                print(str(e))
 
     def run_outlier_diagnostics(self):
         p = self.parameter_parser
@@ -69,4 +92,4 @@ class DiagnosticWrapper(object):
                 diagnostic = kls(p)
                 diagnostic.run_diagnostic()
             except utilities.MissingConstraintError as e:
-                print(e.message)
+                print(str(e))
