@@ -5,6 +5,7 @@ assessment between observed and predicted data sets.
 import math
 
 import numpy as np
+import pandas as pd
 from scipy import stats as scipy_stats
 
 
@@ -23,7 +24,6 @@ class DataError(Exception):
 # Simple least-squares linear regression class including normal, inverse, and
 # reduced major axis (rma) predictions
 class SimpleLinearRegression:
-
     def __init__(self, x, y):
         """
         Initialize the object
@@ -86,7 +86,6 @@ class SimpleLinearRegression:
 
 # Two-by-two error matrix for presence/absence data
 class BinaryErrorMatrix:
-
     def __init__(self, x, y):
         """
         Initialize the object
@@ -110,16 +109,19 @@ class BinaryErrorMatrix:
         self._counts[0, 0] = np.logical_and(x_float, y_float).sum()
 
         # Observed present and predicted absent
-        self._counts[0, 1] = \
-            np.logical_and(x_float, np.logical_not(y_float)).sum()
+        self._counts[0, 1] = np.logical_and(
+            x_float, np.logical_not(y_float)
+        ).sum()
 
         # Observed absent and predicted present
-        self._counts[1, 0] = \
-            np.logical_and(np.logical_not(x_float), y_float).sum()
+        self._counts[1, 0] = np.logical_and(
+            np.logical_not(x_float), y_float
+        ).sum()
 
         # Observed absent and predicted absent
-        self._counts[1, 1] = \
-            np.logical_not(np.logical_or(x_float, y_float)).sum()
+        self._counts[1, 1] = np.logical_not(
+            np.logical_or(x_float, y_float)
+        ).sum()
 
         # Total number of plots
         self._total = self._counts.sum()
@@ -185,9 +187,9 @@ class BinaryErrorMatrix:
         """
 
         p = self._counts / self._total
-        p_chance = \
-            ((p[0, 0] + p[0, 1]) * (p[0, 0] + p[1, 0])) + \
-            ((p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0]))
+        p_chance = ((p[0, 0] + p[0, 1]) * (p[0, 0] + p[1, 0])) + (
+            (p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0])
+        )
         p_correct = p[0, 0] + p[1, 1]
 
         if p_chance != 1.0:
@@ -251,6 +253,10 @@ def rmse(x, y):
     if x_float.size == 0 or y_float.size == 0:
         raise ZeroSizeError('Input arrays must not have zero elements')
 
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
+
     d = x_float - y_float
     return (np.inner(d, d) / len(d)) ** 0.5
 
@@ -273,13 +279,16 @@ def bias_percentage(x, y):
     out : float
         Bias percentage relative to mean of x
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Throw an exception for zero-sized arrays
     if x_float.size == 0 or y_float.size == 0:
         raise ZeroSizeError('Input arrays must not have zero elements')
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     return (y_float - x_float).sum() / x_float.sum() * 100.0
 
@@ -309,13 +318,16 @@ def pearson_r(x, y):
     >>> z
     0.98198050606196585
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Catch insufficient data
     if x_float.size <= 1 or y_float.size <= 1:
         raise DataError('Input arrays need more than one element')
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     return scipy_stats.pearsonr(x_float, y_float)[0]
 
@@ -345,13 +357,16 @@ def spearman_r(x, y):
     >>> z
     1.0
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Catch insufficient data
     if x_float.size <= 1 or y_float.size <= 1:
         raise DataError('Input arrays need more than one element')
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     return scipy_stats.spearmanr(x_float, y_float)[0]
 
@@ -381,13 +396,16 @@ def r2(x, y):
     >>> z
     0.5
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Catch insufficient data
     if x_float.size == 1 or y_float.size == 1:
         raise DataError('Input arrays need more than one element')
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     x_mean = x_float.mean()
     ss_mean = ((x_float - x_mean) * (x_float - x_mean)).sum()
@@ -413,7 +431,6 @@ def gmfr(x, y):
     b : float
         Slope of GMFR relationship
     """
-
     x_mean = x.mean()
     y_mean = y.mean()
     b = np.sqrt(y.var() / x.var())

@@ -250,3 +250,16 @@ def build_paired_dataframe_from_files(obs_fn, prd_fn, join_field, attr_fields):
     obs_df = pd.read_csv(obs_fn, usecols=columns)
     prd_df = pd.read_csv(prd_fn, usecols=columns)
     return build_paired_dataframe(obs_df, prd_df, join_field, attr_fields)
+
+
+def build_obs_prd_dataframes(obs_fn, prd_fn, common_field):
+    # Read the observed and predicted files into dataframes
+    obs_df = pd.read_csv(obs_fn, low_memory=False)
+    prd_df = pd.read_csv(prd_fn, low_memory=False)
+
+    # Subset the dataframes just to the IDs that are in both data frames
+    obs_ids = getattr(obs_df, common_field)
+    prd_ids = getattr(prd_df, common_field)
+    obs_keep = np.in1d(obs_ids, prd_ids)
+    prd_keep = np.in1d(prd_ids, obs_ids)
+    return obs_df[obs_keep], prd_df[prd_keep]
