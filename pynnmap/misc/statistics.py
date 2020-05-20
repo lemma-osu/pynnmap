@@ -216,7 +216,7 @@ def _convert_to_float_array(x):
         Output numpy array
     """
 
-    x_float = np.array(x, dtype='float64', ndmin=1)
+    x_float = np.array(x, dtype="float64", ndmin=1)
     return x_float
 
 
@@ -251,7 +251,7 @@ def rmse(x, y):
 
     # Throw an exception for zero-sized arrays
     if x_float.size == 0 or y_float.size == 0:
-        raise ZeroSizeError('Input arrays must not have zero elements')
+        raise ZeroSizeError("Input arrays must not have zero elements")
 
     # Special case when either x_float or y_float is all zero
     if np.all(x_float == 0.0) or np.all(y_float == 0.0):
@@ -284,7 +284,7 @@ def bias_percentage(x, y):
 
     # Throw an exception for zero-sized arrays
     if x_float.size == 0 or y_float.size == 0:
-        raise ZeroSizeError('Input arrays must not have zero elements')
+        raise ZeroSizeError("Input arrays must not have zero elements")
 
     # Special case when either x_float or y_float is all zero
     if np.all(x_float == 0.0) or np.all(y_float == 0.0):
@@ -323,7 +323,7 @@ def pearson_r(x, y):
 
     # Catch insufficient data
     if x_float.size <= 1 or y_float.size <= 1:
-        raise DataError('Input arrays need more than one element')
+        raise DataError("Input arrays need more than one element")
 
     # Special case when either x_float or y_float is all zero
     if np.all(x_float == 0.0) or np.all(y_float == 0.0):
@@ -362,7 +362,7 @@ def spearman_r(x, y):
 
     # Catch insufficient data
     if x_float.size <= 1 or y_float.size <= 1:
-        raise DataError('Input arrays need more than one element')
+        raise DataError("Input arrays need more than one element")
 
     # Special case when either x_float or y_float is all zero
     if np.all(x_float == 0.0) or np.all(y_float == 0.0):
@@ -401,7 +401,7 @@ def r2(x, y):
 
     # Catch insufficient data
     if x_float.size == 1 or y_float.size == 1:
-        raise DataError('Input arrays need more than one element')
+        raise DataError("Input arrays need more than one element")
 
     # Special case when either x_float or y_float is all zero
     if np.all(x_float == 0.0) or np.all(y_float == 0.0):
@@ -490,6 +490,7 @@ def ac(x, y):
     return ac_, ac_sys, ac_uns
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

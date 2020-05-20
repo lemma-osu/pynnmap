@@ -5,7 +5,7 @@ from pynnmap.misc.utilities import df_to_csv
 
 
 class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
-    _required = ['nn_index_file']
+    _required = ["nn_index_file"]
 
     def __init__(self, parameters):
         self.nn_index_file = parameters.dependent_nn_index_file

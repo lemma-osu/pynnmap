@@ -13,7 +13,7 @@ def get_id_year_crosswalk(parser):
     return dict(s.to_dict())
 
 
-def get_independence_filter(parser, no_self_assign_field='LOC_ID'):
+def get_independence_filter(parser, no_self_assign_field="LOC_ID"):
     id_field = parser.plot_id_field
     fn = parser.plot_independence_crosswalk_file
     fields = [id_field, no_self_assign_field]
@@ -27,7 +27,7 @@ def get_weights(parser):
     w = parser.weights
     if w is not None:
         if len(w) != parser.k:
-            raise ValueError('Length of weights does not equal k')
+            raise ValueError("Length of weights does not equal k")
         w = np.array(w).reshape(1, len(w)).T
     return w
 

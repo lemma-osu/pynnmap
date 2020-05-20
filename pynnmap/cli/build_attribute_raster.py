@@ -31,37 +31,37 @@ def create_neighbor_rasters(p):
     # TODO: Because we are still calling the C program, we're still
     # TODO: requiring the model filename as input.
     md = p.model_directory
-    model_fn = os.path.join(md, 'model.xml')
+    model_fn = os.path.join(md, "model.xml")
     os.chdir(md)
-    cmd = ' '.join(('gnnrun', model_fn))
+    cmd = " ".join(("gnnrun", model_fn))
     subprocess.call(cmd)
 
 
 def get_attribute_df(csv_fn, attr):
-    return pd.read_csv(csv_fn, usecols=['FCID', attr.upper()])
+    return pd.read_csv(csv_fn, usecols=["FCID", attr.upper()])
 
 
 def get_attribute_array(csv_fn, attr):
     df = get_attribute_df(csv_fn, attr)
-    sparse_df = pd.DataFrame({'FCID': np.arange(1, df.FCID.max() + 1)})
-    sparse_df = sparse_df.merge(df, on='FCID', how='left').fillna(0.0)
+    sparse_df = pd.DataFrame({"FCID": np.arange(1, df.FCID.max() + 1)})
+    sparse_df = sparse_df.merge(df, on="FCID", how="left").fillna(0.0)
     sparse_attr_arr = sparse_df.values
     return np.insert(sparse_attr_arr, 0, [0, 0], axis=0)
 
 
 def open_output_raster(profile, window, scalar, out_fn):
     c, r, w, h = window.flatten()
-    transform = profile['transform'] * Affine.translation(c, r)
+    transform = profile["transform"] * Affine.translation(c, r)
     profile.update(
         dtype=rasterio.int32,
         count=1,
-        compress='lzw',
+        compress="lzw",
         transform=transform,
         nodata=-32768,
         height=h,
         width=w,
     )
-    dst = rasterio.open(out_fn, 'w', **profile)
+    dst = rasterio.open(out_fn, "w", **profile)
     dst.update_tags(SCALAR=scalar)
     return dst
 
@@ -139,11 +139,11 @@ def process_raster(
 
 
 @click.command(
-    name='build-attribute-raster',
-    short_help='Build raster for numerical attributes',
+    name="build-attribute-raster",
+    short_help="Build raster for numerical attributes",
 )
-@click.argument('parameter-file', type=click.Path(exists=True), required=True)
-@click.argument('attribute', type=click.STRING, required=True)
+@click.argument("parameter-file", type=click.Path(exists=True), required=True)
+@click.argument("attribute", type=click.STRING, required=True)
 def main(parameter_file, attribute):
     # Read in the parameters
     p = ppf.get_parameter_parser(parameter_file)
@@ -168,7 +168,7 @@ def main(parameter_file, attribute):
     try:
         _ = [x for x in attrs if x.field_name.lower() == attr_name][0]
     except IndexError:
-        msg = 'Could not find {} in valid area attributes'.format(attr_name)
+        msg = "Could not find {} in valid area attributes".format(attr_name)
         raise ValueError(msg)
 
     # Obtain the weights
@@ -195,7 +195,7 @@ def main(parameter_file, attribute):
     scalar = scalars.get_scalar(attr_name.upper())
 
     # Open the output image for writing
-    out_fn = '{}.tif'.format(attr_name)
+    out_fn = "{}.tif".format(attr_name)
     out_raster = open_output_raster(profile, window, scalar, out_fn)
 
     # Run the process

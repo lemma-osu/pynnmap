@@ -17,11 +17,16 @@ LocalStatistics = namedtuple(
 
 
 class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
-    _required = ['observed_file', 'predicted_file', 'stand_metadata_file']
+    _required = ["observed_file", "predicted_file", "stand_metadata_file"]
 
     def __init__(
-            self, observed_file, predicted_file, stand_metadata_file,
-            id_field, statistics_file):
+        self,
+        observed_file,
+        predicted_file,
+        stand_metadata_file,
+        id_field,
+        statistics_file,
+    ):
         self.observed_file = observed_file
         self.predicted_file = predicted_file
         self.stand_metadata_file = stand_metadata_file
@@ -63,17 +68,17 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
 
     def run_diagnostic(self):
         # Open the stats file and print out the header line
-        stats_fh = open(self.statistics_file, 'w')
+        stats_fh = open(self.statistics_file, "w")
         out_list = [
-            'VARIABLE',
-            'PEARSON_R',
-            'SPEARMAN_R',
-            'RMSE',
-            'NORMALIZED_RMSE',
-            'BIAS_PERCENTAGE',
-            'R_SQUARE',
+            "VARIABLE",
+            "PEARSON_R",
+            "SPEARMAN_R",
+            "RMSE",
+            "NORMALIZED_RMSE",
+            "BIAS_PERCENTAGE",
+            "R_SQUARE",
         ]
-        stats_fh.write(','.join(out_list) + '\n')
+        stats_fh.write(",".join(out_list) + "\n")
 
         # Read in the stand attribute metadata and get continuous attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
@@ -93,5 +98,5 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
                 "{:.6f}".format(stats.bias),
                 "{:.6f}".format(stats.r2),
             ]
-            stats_fh.write(','.join(out_list) + '\n')
+            stats_fh.write(",".join(out_list) + "\n")
         stats_fh.close()

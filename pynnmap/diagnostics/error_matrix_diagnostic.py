@@ -19,18 +19,18 @@ def create_existing_bins(bin_file):
     # Read in the bins from an existing file
     clf_dict = {}
     df = pd.read_csv(bin_file)
-    grouped_df = df.groupby('VARIABLE')
+    grouped_df = df.groupby("VARIABLE")
     for name, group in grouped_df:
         clf_dict[name] = get_custom_classifier(group)
     return clf_dict
 
 
 class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
-    _required = ['observed_file', 'predicted_file', 'stand_metadata_file']
+    _required = ["observed_file", "predicted_file", "stand_metadata_file"]
 
     _classifier = {
-        'EQUAL_INTERVAL': ic.EqualIntervalClassifier,
-        'QUANTILE': ic.QuantileClassifier,
+        "EQUAL_INTERVAL": ic.EqualIntervalClassifier,
+        "QUANTILE": ic.QuantileClassifier,
     }
 
     def __init__(
@@ -70,9 +70,9 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
     def from_parameter_parser(cls, parameter_parser, **kwargs):
         # Get the classifier before creating the instance - if a bin_file
         # is passed in, use defined bins rather than dynamic bins
-        if 'bin_file' in kwargs and kwargs['bin_file'] is not None:
+        if "bin_file" in kwargs and kwargs["bin_file"] is not None:
             clf = None
-            input_bin_file = kwargs['bin_file']
+            input_bin_file = kwargs["bin_file"]
             output_bin_file = None
         else:
             bin_method = parameter_parser.error_matrix_bin_method
@@ -121,18 +121,18 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
 
     def run_diagnostic(self):
         # Open the error matrix file and print out the header line
-        err_matrix_fh = open(self.error_matrix_file, 'w')
+        err_matrix_fh = open(self.error_matrix_file, "w")
         err_matrix_fh.write(
-            '{},{},{},{}\n'.format(
-                'VARIABLE', 'OBSERVED_CLASS', 'PREDICTED_CLASS', 'COUNT'
+            "{},{},{},{}\n".format(
+                "VARIABLE", "OBSERVED_CLASS", "PREDICTED_CLASS", "COUNT"
             )
         )
 
         # Open the bin file and print out the header line
         if self.output_bin_file:
-            bin_fh = open(self.output_bin_file, 'w')
+            bin_fh = open(self.output_bin_file, "w")
             bin_fh.write(
-                '{},{},{},{}\n'.format('VARIABLE', 'CLASS', 'LOW', 'HIGH')
+                "{},{},{},{}\n".format("VARIABLE", "CLASS", "LOW", "HIGH")
             )
 
         # Read in the stand attribute metadata and get continuous
@@ -158,18 +158,18 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
                 for i in range(rows):
                     out_list = [
                         attr.field_name,
-                        '{}'.format(labels[i]),
-                        '{}'.format(labels[j]),
-                        '{}'.format(err_mat.iat[i, j]),
+                        "{}".format(labels[i]),
+                        "{}".format(labels[j]),
+                        "{}".format(err_mat.iat[i, j]),
                     ]
-                    err_matrix_fh.write(','.join(out_list) + '\n')
+                    err_matrix_fh.write(",".join(out_list) + "\n")
 
             if self.output_bin_file:
                 for i in range(len(labels)):
                     out_list = [
                         attr.field_name,
-                        '{}'.format(labels[i]),
-                        '{:.4f}'.format(bins[i]),
-                        '{:.4f}'.format(bins[i + 1]),
+                        "{}".format(labels[i]),
+                        "{:.4f}".format(bins[i]),
+                        "{:.4f}".format(bins[i + 1]),
                     ]
-                    bin_fh.write(','.join(out_list) + '\n')
+                    bin_fh.write(",".join(out_list) + "\n")

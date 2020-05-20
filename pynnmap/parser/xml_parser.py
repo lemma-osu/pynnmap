@@ -4,7 +4,6 @@ from pynnmap.misc import utilities
 
 
 class XMLParser(object):
-
     def __init__(self, xml_file_name):
         """
         Initialize the XMLParser object by setting a reference to the

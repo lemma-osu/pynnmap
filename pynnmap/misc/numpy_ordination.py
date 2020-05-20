@@ -16,6 +16,7 @@ class NumpyCCA(object):
     Note that the variable names are meant to be as consistent as possible
     when compared against vegan
     """
+
     def __init__(self, x, y):
         """
         Initialize the X (species) and Y (environmental variable) matrices
@@ -39,13 +40,13 @@ class NumpyCCA(object):
         # Ensure that all species rows (plots) have values
         row_sums = np.sum(x, axis=1)
         if np.any(row_sums) <= 0.0:
-            err_str = 'There were plots with no tally'
+            err_str = "There were plots with no tally"
             raise ValueError(err_str)
 
         # Ensure that all species columns (species) have values
         col_sums = np.sum(x, axis=0)
         if np.any(col_sums) <= 0.0:
-            err_str = 'There were species with no tally'
+            err_str = "There were species with no tally"
             raise ValueError(err_str)
 
         # Compute the outer product of row and column sums
@@ -58,7 +59,7 @@ class NumpyCCA(object):
         self.y_r, weighted_means = self._weight_center(self.y, row_sums)
 
         # Perform QR decomposition on the weighted Y matrix
-        self.q, self.r = np.linalg.qr(self.y_r, mode='full')
+        self.q, self.r = np.linalg.qr(self.y_r, mode="full")
 
         # Run MLR fitting for Y matrix
         right = np.dot(self.q.T, x_bar)
@@ -76,7 +77,7 @@ class NumpyCCA(object):
             self.rank = rank
 
         # Set instance-level variables for later reporting
-        self.eigenvalues = (s[0:rank] * s[0:rank])
+        self.eigenvalues = s[0:rank] * s[0:rank]
         self.env_means = weighted_means
 
         u_weight = np.expand_dims(1.0 / np.sqrt(row_sums), axis=1)
@@ -105,14 +106,15 @@ class NumpyCCA(object):
         Return biplot scores of environmental variable by axis
         """
         biplot_scores = np.corrcoef(
-            self.y_r, self.u_raw[:, 0:self.rank], rowvar=False)
-        return biplot_scores[0:self.rank, self.rank:]
+            self.y_r, self.u_raw[:, 0 : self.rank], rowvar=False
+        )
+        return biplot_scores[0 : self.rank, self.rank :]
 
     def coefficients(self):
         """
         Return the environmental variable loadings of for each axis
         """
-        right = np.dot(self.q.T, self.u_raw[:, 0:self.rank])
+        right = np.dot(self.q.T, self.u_raw[:, 0 : self.rank])
         (x, residual, rank, s) = np.linalg.lstsq(self.r, right)
         return np.array(x)
 
@@ -130,7 +132,8 @@ class NumpyCCA(object):
         xi = self.site_lc_scores()
         uk = self.species_centroids()
         xiuk = np.zeros(
-            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64)
+            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64
+        )
         for (i, s) in enumerate(uk):
             xiuk[i] = xi - s
         y = self.x.T
@@ -215,7 +218,7 @@ class NumpyRDA(object):
         self.env_means = col_means.flat
 
         # Perform QR decomposition on the weighted Y matrix
-        self.q, self.r = np.linalg.qr(self.y_r, mode='full')
+        self.q, self.r = np.linalg.qr(self.y_r, mode="full")
 
         # Run MLR fitting for Y matrix
         right = np.dot(self.q.T, x_bar)
@@ -236,7 +239,7 @@ class NumpyRDA(object):
         s /= math.sqrt(num_rows)
 
         # Set instance-level variables for later reporting
-        self.eigenvalues = (s[0:rank] * s[0:rank])
+        self.eigenvalues = s[0:rank] * s[0:rank]
 
         self.u = u[:, 0:rank]
         self.v = v[:, 0:rank]
@@ -254,14 +257,15 @@ class NumpyRDA(object):
         Return biplot scores of environmental variable by axis
         """
         biplot_scores = np.corrcoef(
-            self.y_r, self.u[:, 0:self.rank], rowvar=False)
-        return biplot_scores[0:self.rank, self.rank:]
+            self.y_r, self.u[:, 0 : self.rank], rowvar=False
+        )
+        return biplot_scores[0 : self.rank, self.rank :]
 
     def coefficients(self):
         """
         Return the environmental variable loadings of for each axis
         """
-        right = np.dot(self.q.T, self.u[:, 0:self.rank])
+        right = np.dot(self.q.T, self.u[:, 0 : self.rank])
         (x, residual, rank, s) = np.linalg.lstsq(self.r, right)
         return np.array(x)
 
@@ -283,7 +287,8 @@ class NumpyRDA(object):
         xi = self.site_lc_scores()
         uk = self.species_centroids()
         xiuk = np.zeros(
-            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64)
+            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64
+        )
         for (i, s) in enumerate(uk):
             xiuk[i] = xi - s
         y = self.x.T

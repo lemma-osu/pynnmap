@@ -26,20 +26,21 @@ def df_to_csv(df, csv_file, index=False, n_dec=4):
     df.fillna(0.0, inplace=True)
 
     # Convert all boolean fields to integer
-    bool_cols = df.select_dtypes(include='bool').columns
-    df[bool_cols] = df[bool_cols].astype('int')
+    bool_cols = df.select_dtypes(include="bool").columns
+    df[bool_cols] = df[bool_cols].astype("int")
 
     # Strip any whitespace from character fields
     def strip_ws(x):
         return (
             x.str.strip()
-            if x.dtype == 'object' and isinstance(x.iloc[0], str)
+            if x.dtype == "object" and isinstance(x.iloc[0], str)
             else x
         )
+
     df = df.apply(strip_ws)
 
     # Convert to CSV
-    frmt = '%.{}f'.format(n_dec)
+    frmt = "%.{}f".format(n_dec)
     df.to_csv(csv_file, index=index, float_format=frmt)
 
 
@@ -87,7 +88,8 @@ def pretty_print(node):
 
 
 def subset_lines_from_regex(
-        all_lines, start_re, end_re, skip_lines=0, flush=False):
+    all_lines, start_re, end_re, skip_lines=0, flush=False
+):
     """
     Read a subset of a list (usually a file held in memory) based on a
     start and end regular expression.  The function returns all chunks
@@ -159,26 +161,26 @@ def check_missing_files(files):
         if not os.path.exists(f):
             missing_files.append(f)
     if len(missing_files) > 0:
-        err_msg = ''
+        err_msg = ""
         for f in missing_files:
-            err_msg += '\n' + f + ' does not exist'
+            err_msg += "\n" + f + " does not exist"
         raise MissingConstraintError(err_msg)
 
 
 def is_continuous(attr):
     return (
-        attr.is_continuous_attr() and
-        attr.is_project_attr() and
-        attr.is_accuracy_attr() and
-        not attr.is_species_attr()
+        attr.is_continuous_attr()
+        and attr.is_project_attr()
+        and attr.is_accuracy_attr()
+        and not attr.is_species_attr()
     )
 
 
 def is_area(attr):
     return (
-        attr.is_project_attr() and
-        attr.is_accuracy_attr() and
-        not attr.is_species_attr()
+        attr.is_project_attr()
+        and attr.is_accuracy_attr()
+        and not attr.is_species_attr()
     )
 
 
@@ -192,9 +194,9 @@ def get_area_attrs(mp):
 
 def assert_columns_in_df(df, cols):
     try:
-        assert(set(cols).issubset(df.columns))
+        assert set(cols).issubset(df.columns)
     except AssertionError:
-        msg = 'Columns do not appear in dataframe'
+        msg = "Columns do not appear in dataframe"
         raise NameError(msg)
 
 
@@ -202,16 +204,16 @@ def assert_valid_attr_values(df, attr):
     try:
         assert df[attr].isnull().sum() == 0
     except AssertionError:
-        msg = 'Data frame has null attribute values'
+        msg = "Data frame has null attribute values"
         raise ValueError(msg)
 
 
 def assert_same_len_ids(merged_df, df1, df2):
     try:
         merge_num = len(merged_df)
-        assert(merge_num == len(df1) or merge_num == len(df2))
+        assert merge_num == len(df1) or merge_num == len(df2)
     except AssertionError:
-        msg = 'Merged data frame does not have same length as originals'
+        msg = "Merged data frame does not have same length as originals"
         raise ValueError(msg)
 
 
@@ -237,7 +239,7 @@ def build_paired_dataframe(obs_df, prd_df, join_field, attr_fields):
 
     # Merge the data frames using an inner join.  Observed column will
     # have an '_O' suffix and predicted column will have a '_P' suffix
-    merged_df = obs_df.merge(prd_df, on=join_field, suffixes=('_O', '_P'))
+    merged_df = obs_df.merge(prd_df, on=join_field, suffixes=("_O", "_P"))
 
     # Ensure that the length of the merged dataset matches either the
     # original observed or predicted dataframes

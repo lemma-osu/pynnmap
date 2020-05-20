@@ -2,7 +2,6 @@ from pynnmap.parser import xml_parser
 
 
 class XMLReportMetadataParser(xml_parser.XMLParser):
-
     def __init__(self, xml_file_name):
         """
         Initialize the XMLReportMetadataParser object by setting a
@@ -48,8 +47,9 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def plot_data_sources(self):
         try:
             data_sources_elem = self.root.plot_data_sources
-            return [XMLPlotDataSource(x) for x in
-                    data_sources_elem.iterchildren()]
+            return [
+                XMLPlotDataSource(x) for x in data_sources_elem.iterchildren()
+            ]
         except AttributeError:
             return []
 
@@ -57,8 +57,9 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def species_names(self):
         try:
             species_names_elem = self.root.species_names
-            return [XMLSpeciesName(x) for x in
-                    species_names_elem.iterchildren()]
+            return [
+                XMLSpeciesName(x) for x in species_names_elem.iterchildren()
+            ]
         except AttributeError:
             return []
 
@@ -71,14 +72,14 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def ordination_variables(self):
         try:
             ord_var_elem = self.root.ordination_variables
-            return [XMLOrdinationVariable(x) for x in
-                    ord_var_elem.iterchildren()]
+            return [
+                XMLOrdinationVariable(x) for x in ord_var_elem.iterchildren()
+            ]
         except AttributeError:
             return []
 
 
 class XMLContact(object):
-
     def __init__(self, elem):
         self.root = elem
 
@@ -104,7 +105,6 @@ class XMLContact(object):
 
 
 class XMLPlotDataSource(object):
-
     def __init__(self, elem):
         self.root = elem
 
@@ -120,14 +120,12 @@ class XMLPlotDataSource(object):
     def assessment_years(self):
         try:
             years_elem = self.root.assessment_years
-            return [XMLAssessmentYear(x) for x in
-                    years_elem.iterchildren()]
+            return [XMLAssessmentYear(x) for x in years_elem.iterchildren()]
         except AttributeError:
-            return[]
+            return []
 
 
 class XMLAssessmentYear(object):
-
     def __init__(self, elem):
         self.root = elem
 
@@ -141,7 +139,6 @@ class XMLAssessmentYear(object):
 
 
 class XMLSpeciesName(object):
-
     def __init__(self, elem):
         self.root = elem
 
@@ -159,7 +156,6 @@ class XMLSpeciesName(object):
 
 
 class XMLOrdinationVariable(object):
-
     def __init__(self, elem):
         self.root = elem
 

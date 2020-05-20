@@ -13,5 +13,5 @@ class Diagnostic(object):
             utilities.check_missing_files(files)
         except utilities.MissingConstraintError as e:
             raise utilities.MissingConstraintError(
-                'Skipping {}'.format(self.__class__.__name__)
+                "Skipping {}".format(self.__class__.__name__)
             ) from e

@@ -10,7 +10,7 @@ from pynnmap.parser.xml_stand_metadata_parser import Flags
 
 def standardize_by_axis(arr, axis=0):
     axis_sums = arr.sum(axis=axis, keepdims=True)
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         n_ij = arr / axis_sums
         n_ij[~np.isfinite(n_ij)] = 0.0
     return n_ij
@@ -40,10 +40,10 @@ class ErrorAdjustment(object):
 
 class OlofssonDiagnostic(diagnostic.Diagnostic):
     _required = [
-        'error_matrix_file',
-        'bin_file',
-        'regional_accuracy_file',
-        'stand_metadata_file',
+        "error_matrix_file",
+        "bin_file",
+        "regional_accuracy_file",
+        "stand_metadata_file",
     ]
 
     def __init__(
@@ -83,7 +83,7 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         for record in zip(
             cycle([attr_name]), bin_names, mapped, adjusted, se_adjusted
         ):
-            fh.write('{:s},{:s},{:.4f},{:.4f},{:.4f}\n'.format(*record))
+            fh.write("{:s},{:s},{:.4f},{:.4f},{:.4f}\n".format(*record))
 
     def run_attr(self, attr, fh):
         fn = attr.field_name
@@ -93,11 +93,11 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         em_data = em_df[em_df.VARIABLE == fn]
         err_matrix = pd.pivot_table(
             em_data,
-            index='PREDICTED_CLASS',
-            columns='OBSERVED_CLASS',
-            values='COUNT',
+            index="PREDICTED_CLASS",
+            columns="OBSERVED_CLASS",
+            values="COUNT",
         )
-        conds = (area_df.VARIABLE == fn) & (area_df.DATASET == 'PREDICTED')
+        conds = (area_df.VARIABLE == fn) & (area_df.DATASET == "PREDICTED")
         bin_names = np.array(area_df[conds].BIN_NAME[2:])
         mapped = np.array(area_df[conds].AREA[2:])
         olofsson = ErrorAdjustment(err_matrix, mapped)
@@ -121,8 +121,8 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         )
 
         # Write header line
-        olofsson_fh = open(self.olofsson_file, 'w')
-        olofsson_fh.write('VARIABLE,CLASS,MAPPED,ADJUSTED,CI_ADJUSTED\n')
+        olofsson_fh = open(self.olofsson_file, "w")
+        olofsson_fh.write("VARIABLE,CLASS,MAPPED,ADJUSTED,CI_ADJUSTED\n")
 
         # For each attribute, calculate the statistics
         for attr in attrs:

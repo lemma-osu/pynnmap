@@ -75,19 +75,19 @@ class XMLAttributeField(object):
         return bool(self.root.accuracy_attr)
 
     def is_continuous_attr(self):
-        return self.field_type == 'CONTINUOUS'
+        return self.field_type == "CONTINUOUS"
 
     def is_categorical_attr(self):
-        return self.field_type == 'CATEGORICAL'
+        return self.field_type == "CATEGORICAL"
 
     def is_character_attr(self):
-        return self.field_type == 'CHARACTER'
+        return self.field_type == "CHARACTER"
 
     def is_not_character_attr(self):
         return not self.is_character_attr()
 
     def is_id_attr(self):
-        return self.field_type == 'ID'
+        return self.field_type == "ID"
 
     def is_continuous_accuracy_attr(self):
         return self.is_continuous_attr() and self.is_accuracy_attr()
@@ -140,7 +140,7 @@ class XMLStandMetadataParser(xml_parser.XMLParser):
     def get_attribute(self, field_name):
         elem = self.root.xpath('attribute[field_name="' + field_name + '"]')
         if not elem:
-            raise ValueError('Missing attribute: {}'.format(field_name))
+            raise ValueError("Missing attribute: {}".format(field_name))
         return XMLAttributeField(elem[0])
 
     def get_area_attrs(self):

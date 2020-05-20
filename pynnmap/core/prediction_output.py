@@ -10,7 +10,6 @@ from pynnmap.parser.xml_stand_metadata_parser import Flags
 
 
 class PredictionOutput(object):
-
     def __init__(self, parameters):
         self.parameter_parser = parameters
         self.id_field = self.parameter_parser.plot_id_field
@@ -32,9 +31,9 @@ class PredictionOutput(object):
             Name of the nn_index_file
         """
         # Open the nn_index file and print the header line
-        nn_index_fh = open(nn_index_file, 'w')
-        header_fields = (id_field, 'AVERAGE_POSITION')
-        nn_index_fh.write(','.join(header_fields) + '\n')
+        nn_index_fh = open(nn_index_file, "w")
+        header_fields = (id_field, "AVERAGE_POSITION")
+        nn_index_fh.write(",".join(header_fields) + "\n")
 
         # For each ID, find how far a plot had to go for self assignment
         for id_val, fp in sorted(neighbor_data.items()):
@@ -52,7 +51,7 @@ class PredictionOutput(object):
 
             # Get the average index position across pixels
             average_position = float(np.mean(self_assign_indexes))
-            nn_index_fh.write('%d,%.4f\n' % (id_val, average_position))
+            nn_index_fh.write("%d,%.4f\n" % (id_val, average_position))
 
         # Clean up
         nn_index_fh.close()
@@ -61,7 +60,7 @@ class PredictionOutput(object):
         w = self.parameter_parser.weights
         if w is not None:
             if len(w) != self.parameter_parser.k:
-                raise ValueError('Length of weights does not equal k')
+                raise ValueError("Length of weights does not equal k")
             w = np.array(w).reshape(1, len(w)).T
         return w
 
@@ -70,7 +69,7 @@ class IndependentOutput(PredictionOutput):
     def __init__(self, parameters):
         super(IndependentOutput, self).__init__(parameters)
 
-    def create_predictions(self, neighbor_data, no_self_assign_field='LOC_ID'):
+    def create_predictions(self, neighbor_data, no_self_assign_field="LOC_ID"):
         """
         Creates model predictions and zonal pixel files from independent
         predictions, ie. plots are not able to use themselves (or other
@@ -107,7 +106,8 @@ class IndependentOutput(PredictionOutput):
         # Calculate the predictions for each plot
         w = self.get_weights()
         predictions = plot_attr_predictor.calculate_predictions(
-            neighbor_data, k=p.k, weights=w)
+            neighbor_data, k=p.k, weights=w
+        )
 
         # Write out zonal pixel file
         zp_df = plot_attr_predictor.get_zonal_pixel_df(predictions)
@@ -115,7 +115,8 @@ class IndependentOutput(PredictionOutput):
 
         # Write out predicted attribute file
         prd_df = plot_attr_predictor.get_predicted_attributes_df(
-            predictions, self.id_field)
+            predictions, self.id_field
+        )
         df_to_csv(prd_df, p.independent_predicted_file, index=True)
 
 
@@ -152,7 +153,8 @@ class DependentOutput(PredictionOutput):
         # Calculate the predictions for each plot
         w = self.get_weights()
         predictions = plot_attr_predictor.calculate_predictions(
-            neighbor_data, k=p.k, weights=w)
+            neighbor_data, k=p.k, weights=w
+        )
 
         # Write out zonal pixel file
         zp_df = plot_attr_predictor.get_zonal_pixel_df(predictions)
@@ -160,5 +162,6 @@ class DependentOutput(PredictionOutput):
 
         # Write out predicted attribute file
         prd_df = plot_attr_predictor.get_predicted_attributes_df(
-            predictions, self.id_field)
+            predictions, self.id_field
+        )
         df_to_csv(prd_df, p.dependent_predicted_file, index=True)

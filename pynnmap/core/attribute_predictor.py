@@ -52,7 +52,7 @@ class AttributePredictor(object):
         for prd in predictions:
             values = np.mean([x.get_predicted_attrs() for x in prd], axis=0)
             d[prd[0].id] = values
-        prd_df = pd.DataFrame.from_dict(d, orient='index', columns=col_names)
+        prd_df = pd.DataFrame.from_dict(d, orient="index", columns=col_names)
         prd_df.sort_index(inplace=True)
         prd_df.index.rename(id_field, inplace=True)
         return prd_df
@@ -63,13 +63,15 @@ class AttributePredictor(object):
         k = len(pp[0].neighbors)
         n = [pp[i].neighbors[j] for i in range(n_pixels) for j in range(k)]
         d = [pp[i].distances[j] for i in range(n_pixels) for j in range(k)]
-        return pd.DataFrame({
-            'FCID': np.repeat(pp[0].id, k * n_pixels),
-            'PIXEL_NUMBER': np.repeat(np.arange(n_pixels) + 1, k),
-            'NEIGHBOR': np.tile(np.arange(k) + 1, n_pixels),
-            'NEIGHBOR_ID': n,
-            'DISTANCE': d
-        })
+        return pd.DataFrame(
+            {
+                "FCID": np.repeat(pp[0].id, k * n_pixels),
+                "PIXEL_NUMBER": np.repeat(np.arange(n_pixels) + 1, k),
+                "NEIGHBOR": np.tile(np.arange(k) + 1, n_pixels),
+                "NEIGHBOR_ID": n,
+                "DISTANCE": d,
+            }
+        )
 
     def calculate_predictions_at_id(self, fp, k, weights):
         """
@@ -109,8 +111,7 @@ class AttributePredictor(object):
                 pp.distances = pixel.distances[0:k]
 
             # Fix distance array for 0.0 values
-            distances = np.where(
-                pp.distances == 0.0, MIN_DIST, pp.distances)
+            distances = np.where(pp.distances == 0.0, MIN_DIST, pp.distances)
 
             # Calculate the normalized weight array as the
             # inverse distance

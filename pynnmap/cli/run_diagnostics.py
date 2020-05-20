@@ -4,8 +4,8 @@ from pynnmap.diagnostics import diagnostic_wrapper as dw
 from pynnmap.parser import parameter_parser_factory as ppf
 
 
-@click.command(short_help='Run diagnostics only')
-@click.argument('parameter-file', type=click.Path(exists=True), required=True)
+@click.command(short_help="Run diagnostics only")
+@click.argument("parameter-file", type=click.Path(exists=True), required=True)
 def run_diagnostics(parameter_file):
     # Get the model parameters
     p = ppf.get_parameter_parser(parameter_file)

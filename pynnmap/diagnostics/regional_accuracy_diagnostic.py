@@ -48,9 +48,9 @@ def get_predicted_raster(attr):
 
 class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
     _required = [
-        'area_estimate_file',
-        'stand_attribute_file',
-        'stand_metadata_file'
+        "area_estimate_file",
+        "stand_attribute_file",
+        "stand_metadata_file",
     ]
 
     def __init__(self, parameter_parser):
@@ -75,11 +75,11 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Get the nonforest hectares (coded as -10001)
         nf_row = obs_df[obs_df[self.id_field] == -10001]
-        nf_hectares = nf_row.at[nf_row.index[0], 'HECTARES']
+        nf_hectares = nf_row.at[nf_row.index[0], "HECTARES"]
 
         # Get the nonsampled hectares (coded as -10002)
         ns_row = obs_df[obs_df[self.id_field] == -10002]
-        ns_hectares = ns_row.at[ns_row.index[0], 'HECTARES']
+        ns_hectares = ns_row.at[ns_row.index[0], "HECTARES"]
 
         # Remove these rows from the recarray
         obs_df = obs_df[obs_df[self.id_field] > 0]
@@ -118,7 +118,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         del ds
 
         # Convert this to a recarray
-        names = (self.id_field, 'HECTARES')
+        names = (self.id_field, "HECTARES")
         ids = np.rec.fromrecords(id_recs, names=names)
 
         # Read in the attribute file
@@ -128,8 +128,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         ids_1 = getattr(ids, self.id_field)
         ids_2 = getattr(sad, self.id_field)
         if not np.all(np.in1d(ids_1, ids_2)):
-            err_msg = 'Not all values in the raster are present in the '
-            err_msg += 'attribute data'
+            err_msg = "Not all values in the raster are present in the "
+            err_msg += "attribute data"
             raise ValueError(err_msg)
 
         # Join the two recarrays together
@@ -143,7 +143,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         return hist
 
     @staticmethod
-    def _bin_data(attr, obs, prd, bin_type='EQUAL_INTERVAL', bin_count=7):
+    def _bin_data(attr, obs, prd, bin_type="EQUAL_INTERVAL", bin_count=7):
         if attr.is_continuous():
             # The obs and prd parameters are either arrays or WeightedArrays.
             # For the purpose of getting the classifier, first convert to
@@ -155,14 +155,14 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             # both observed and predicted to determine the full range of values.
             # For quantile classification, use only the observed values to
             # set the bins
-            if bin_type == 'EQUAL_INTERVAL':
+            if bin_type == "EQUAL_INTERVAL":
                 clf = ic.EqualIntervalClassifier(bin_count=bin_count)
                 bins = clf(np.hstack((obs_arr, prd_arr)))
-            elif bin_type == 'QUANTILE':
+            elif bin_type == "QUANTILE":
                 clf = ic.QuantileClassifier(bin_count=bin_count)
                 bins = clf(obs_arr)
             else:
-                msg = 'Bin type {} not supported'.format(bin_type)
+                msg = "Bin type {} not supported".format(bin_type)
                 raise ValueError(msg)
 
             # For getting the histograms, use the actual obs and prd objects
@@ -178,8 +178,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 *(obs, prd), class_names=class_names
             )
 
-        histograms[0].name = 'OBSERVED'
-        histograms[1].name = 'PREDICTED'
+        histograms[0].name = "OBSERVED"
+        histograms[1].name = "PREDICTED"
         return histograms
 
     def create_paired_area_file(self):
@@ -191,14 +191,14 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Open the output file and print out the header line
         statistics_file = self.parameter_parser.regional_accuracy_file
-        stats_fh = open(statistics_file, 'w')
-        header_fields = ['VARIABLE', 'DATASET', 'BIN_NAME', 'AREA']
-        stats_fh.write(','.join(header_fields) + '\n')
+        stats_fh = open(statistics_file, "w")
+        header_fields = ["VARIABLE", "DATASET", "BIN_NAME", "AREA"]
+        stats_fh.write(",".join(header_fields) + "\n")
 
         # Open the classification bin file and print out the header line
         bin_file = self.parameter_parser.regional_bin_file
-        bin_fh = open(bin_file, 'w')
-        bin_fh.write('{},{},{},{}\n'.format('VARIABLE', 'CLASS', 'LOW', 'HIGH'))
+        bin_fh = open(bin_file, "w")
+        bin_fh.write("{},{},{},{}\n".format("VARIABLE", "CLASS", "LOW", "HIGH"))
 
         # Get the metadata parser and get the project area attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
@@ -263,11 +263,11 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             for i in range(len(obs_bins.bin_endpoints) - 1):
                 out_list = [
                     attr.field_name,
-                    '{:d}'.format(i + 1),
-                    '{:.4f}'.format(obs_bins.bin_endpoints[i]),
-                    '{:.4f}'.format(obs_bins.bin_endpoints[i + 1]),
+                    "{:d}".format(i + 1),
+                    "{:.4f}".format(obs_bins.bin_endpoints[i]),
+                    "{:.4f}".format(obs_bins.bin_endpoints[i + 1]),
                 ]
-                bin_fh.write(','.join(out_list) + '\n')
+                bin_fh.write(",".join(out_list) + "\n")
 
             # If bins need to be converted to hectares, do that here
             for d, convert_flag in zip(bins, needs_conversion):
@@ -289,7 +289,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
     def exclude_forest_minority(self, current_ids):
         ae_df = pd.read_csv(
-            self.area_estimate_file, usecols=[self.id_field, 'PNT_COUNT']
+            self.area_estimate_file, usecols=[self.id_field, "PNT_COUNT"]
         )
         forest_majority = ae_df[ae_df.PNT_COUNT >= 2.0]
         return list(set(current_ids) & set(forest_majority[self.id_field]))
@@ -331,7 +331,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Write out predicted attribute file
         prd_df = plot_attr_predictor.get_predicted_attributes_df(
-            predictions, self.id_field)
+            predictions, self.id_field
+        )
         df_to_csv(prd_df, parser.regional_predicted_plot_file, index=True)
 
     def create_error_matrix_file(self):

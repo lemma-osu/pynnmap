@@ -56,16 +56,16 @@ class ContinuousHistogramBC(HistogramBC):
         # Create class labels from the endpoints of the bins
         self.bin_names = []
         if self.bin_endpoints[-1] < 1e5:
-            fmt_str = '%.1f'
+            fmt_str = "%.1f"
         else:
-            fmt_str = '%.1e'
+            fmt_str = "%.1e"
         for i in range(self.bin_endpoints.size - 1):
             first = fmt_str % (self.bin_endpoints[i])
             second = fmt_str % (self.bin_endpoints[i + 1])
             if float(first) == 0.0:
-                first = '0.0'
-            bn = '-'.join((first, second))
-            bn = ''.join(re.split(r'\+0+', bn))
+                first = "0.0"
+            bn = "-".join((first, second))
+            bn = "".join(re.split(r"\+0+", bn))
             self.bin_names.append(bn)
 
 

@@ -6,7 +6,6 @@ from pynnmap.misc.utilities import df_to_csv
 
 
 class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
-
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
         self.vd_output_file = parameters.variable_deviation_file
@@ -15,8 +14,8 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
 
         # Create a list of prediction files - both independent and dependent
         self.predicted_files = [
-            ('dependent', parameters.dependent_predicted_file),
-            ('independent', parameters.independent_predicted_file),
+            ("dependent", parameters.dependent_predicted_file),
+            ("independent", parameters.independent_predicted_file),
         ]
 
         # Ensure all input files are present
@@ -28,7 +27,7 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
         try:
             self.check_missing_files(files)
         except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping VariableDeviationOutlierDiagnostic\n'
+            e.message += "\nSkipping VariableDeviationOutlierDiagnostic\n"
             raise e
 
     def run_diagnostic(self):
@@ -46,18 +45,25 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
             # Iterate over the list of deviation variables, capturing the plots
             # that exceed the minimum threshold specified
             columns = [
-                self.id_field, 'PREDICTION_TYPE', 'VARIABLE', 'OBSERVED_VALUE',
-                'PREDICTED_VALUE', 'DEVIATION'
+                self.id_field,
+                "PREDICTION_TYPE",
+                "VARIABLE",
+                "OBSERVED_VALUE",
+                "PREDICTED_VALUE",
+                "DEVIATION",
             ]
             for (variable, min_deviation) in self.deviation_variables:
-                df = pd.DataFrame({
-                    self.id_field: obs_df.index,
-                    'PREDICTION_TYPE': prd_type.upper(),
-                    'VARIABLE': variable,
-                    'OBSERVED_VALUE': obs_df[variable],
-                    'PREDICTED_VALUE': prd_df[variable],
-                    'DEVIATION': obs_df[variable] - prd_df[variable]
-                }, columns=columns)
+                df = pd.DataFrame(
+                    {
+                        self.id_field: obs_df.index,
+                        "PREDICTION_TYPE": prd_type.upper(),
+                        "VARIABLE": variable,
+                        "OBSERVED_VALUE": obs_df[variable],
+                        "PREDICTED_VALUE": prd_df[variable],
+                        "DEVIATION": obs_df[variable] - prd_df[variable],
+                    },
+                    columns=columns,
+                )
 
                 # Subset to just those deviations over the min_deviation
                 df = df[np.abs(df.DEVIATION) >= min_deviation]

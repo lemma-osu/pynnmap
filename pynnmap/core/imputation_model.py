@@ -3,9 +3,9 @@ from sklearn.neighbors import NearestNeighbors
 
 
 class ImputationModel(object):
-
-    def __init__(self, ord_model, n_axes=8, use_weightings=True,
-                 max_neighbors=100):
+    def __init__(
+        self, ord_model, n_axes=8, use_weightings=True, max_neighbors=100
+    ):
 
         # Ensure that n_axes isn't larger than the number of axes in our
         # ordination model
@@ -21,16 +21,16 @@ class ImputationModel(object):
 
         # Create weightings based on use_weightings flag
         if use_weightings:
-            self.ax_weights = \
-                np.diag(np.sqrt(ord_model.axis_weights[0:n_axes]))
+            self.ax_weights = np.diag(np.sqrt(ord_model.axis_weights[0:n_axes]))
         else:
             self.ax_weights = np.diag(np.ones(n_axes, dtype=np.float))
 
         # Set up the ANN model
         # Use the parameter 'max_neighbors' to determine how many neighbors
         # to return
-        plot_scores = \
-            np.dot(ord_model.plot_scores[:, 0:n_axes], self.ax_weights)
+        plot_scores = np.dot(
+            ord_model.plot_scores[:, 0:n_axes], self.ax_weights
+        )
         self.nn_finder = NearestNeighbors(max_neighbors)
         self.nn_finder.fit(plot_scores)
 
@@ -70,7 +70,7 @@ class ImputationModel(object):
         # Transform raw environmental scores to ANN space by multiplying by
         # the coefficient matrix and then the ax_weight matrix
         axis_scores = np.dot(env_values, self.var_coeff) - self.axis_intercepts
-        axis_scores = axis_scores[:, 0:self.n_axes]
+        axis_scores = axis_scores[:, 0 : self.n_axes]
         axis_scores = np.dot(axis_scores, self.ax_weights)
 
         # Run the imputation

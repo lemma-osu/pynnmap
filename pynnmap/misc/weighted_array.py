@@ -6,7 +6,7 @@ class WeightedArray:
         values = np.asanyarray(values)
         weights = np.asanyarray(weights)
         if values.shape != weights.shape:
-            raise ValueError('Length of values and weights differ')
+            raise ValueError("Length of values and weights differ")
         self.values = values
         self.weights = weights
 
