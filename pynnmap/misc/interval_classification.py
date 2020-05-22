@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 from pynnmap.misc.weighted_array import WeightedArray
 
 
@@ -33,22 +35,16 @@ def get_global_range(*datasets):
     return np.array(min_list).min(), np.array(max_list).max()
 
 
-# class IntervalClassifier:
-#     """
-#     Base class for all interval classifiers
-#     """
-#     def __init__(self):
-#         self.edges = np.array([])
-#
-#     def __repr__(self):
-#         out_str = ''
-#         e = self.edges
-#         for i in range(e.size - 1):
-#             out_str += '({:.4f} - {:.4f})\n'.format(e[i], e[i+1])
-#         return out_str
+class RangeIntervals:
+    """
+    Base class where bin endpoints should represent endpoints used with
+    continuous data
+    """
+
+    pass
 
 
-class DynamicClassifier:
+class DynamicIntervals(RangeIntervals):
     """
     Base class for classifiers where endpoints are to be determined.  Only
     the number of bins is specified
@@ -65,7 +61,7 @@ class DynamicClassifier:
         self.bin_count = bin_count
 
 
-class EqualIntervalClassifier(DynamicClassifier):
+class EqualIntervals(DynamicIntervals):
     """
     Classifier to find class endpoints based on equal interval splits
     of the range of all datasets
@@ -94,7 +90,7 @@ def approx_quantiles(arr, bin_count):
     return bins
 
 
-class QuantileClassifier(DynamicClassifier):
+class QuantileIntervals(DynamicIntervals):
     """
     Classifier to find class endpoints based on equal bin counts among
     classes
@@ -107,7 +103,7 @@ class QuantileClassifier(DynamicClassifier):
         return approx_quantiles(arr, self.bin_count)
 
 
-class CustomIntervalClassifier:
+class CustomIntervals(RangeIntervals):
     """
     Classifier to set class endpoints based on user-supplied values
     """
@@ -132,3 +128,34 @@ class CustomIntervalClassifier:
 
     def __call__(self, arr):
         return self.bins
+
+
+class UniqueValues:
+    def __call__(self, *arrays):
+        uniq = set()
+        for arr in arrays:
+            uniq |= set(np.unique(arr))
+        return np.array(sorted(uniq))
+
+
+class Classifier:
+    PRECISION = 0.0001
+
+    def __init__(self, clf):
+        self.clf = clf
+        self.bins = None
+
+    def set_bins(self, arr):
+        self.bins = self.clf(arr)
+        if len(self.bins) == 1:
+            self.bins = np.repeat(self.bins, 2)
+
+    def bin_data(self, arr):
+        bins_copy = np.array(self.bins, copy=True, dtype=np.float)
+        if issubclass(self.clf.__class__, RangeIntervals):
+            bins_copy[-1] += self.PRECISION
+        else:
+            bins_copy = np.append(bins_copy, bins_copy[-1] + self.PRECISION)
+        klasses = np.digitize(arr, bins_copy)
+        cats = np.arange(1, len(bins_copy))
+        return pd.Categorical(klasses, categories=cats)

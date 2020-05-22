@@ -156,10 +156,10 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             # For quantile classification, use only the observed values to
             # set the bins
             if bin_type == "EQUAL_INTERVAL":
-                clf = ic.EqualIntervalClassifier(bin_count=bin_count)
+                clf = ic.EqualIntervals(bin_count=bin_count)
                 bins = clf(np.hstack((obs_arr, prd_arr)))
             elif bin_type == "QUANTILE":
-                clf = ic.QuantileClassifier(bin_count=bin_count)
+                clf = ic.QuantileIntervals(bin_count=bin_count)
                 bins = clf(obs_arr)
             else:
                 msg = "Bin type {} not supported".format(bin_type)

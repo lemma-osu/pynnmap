@@ -14,7 +14,7 @@ from pynnmap.parser.xml_stand_metadata_parser import Flags
 def create_existing_bins(bin_file):
     def get_custom_classifier(group_df):
         endpoints = np.hstack((group_df.LOW.values, group_df.HIGH.values[-1]))
-        return ic.CustomIntervalClassifier(endpoints)
+        return ic.CustomIntervals(endpoints)
 
     # Read in the bins from an existing file
     clf_dict = {}
@@ -25,12 +25,22 @@ def create_existing_bins(bin_file):
     return clf_dict
 
 
+def get_error_matrix(obs_vals, prd_vals, intervals, return_bins=True):
+    digitizer = ic.DataDigitizer(intervals)
+    digitizer.set_bins(np.hstack((obs_vals, prd_vals)))
+    obs, prd = map(digitizer.bin_data, (obs_vals, prd_vals))
+    err_mat = pd.crosstab(index=obs, columns=prd, dropna=False)
+    if return_bins:
+        return err_mat, digitizer.bins
+    return err_mat
+
+
 class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
     _required = ["observed_file", "predicted_file", "stand_metadata_file"]
 
     _classifier = {
-        "EQUAL_INTERVAL": ic.EqualIntervalClassifier,
-        "QUANTILE": ic.QuantileClassifier,
+        "EQUAL_INTERVAL": ic.EqualIntervals,
+        "QUANTILE": ic.QuantileIntervals,
     }
 
     def __init__(
@@ -100,24 +110,11 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
         return False
 
     def run_attr(self, attr, clf, return_bins=True):
-        # Retrieve the observed and predicted values
         obs_vals = getattr(self.obs_df, attr.field_name)
         prd_vals = getattr(self.prd_df, attr.field_name)
-
-        # Create the bins and bin these data
-        bins = clf(np.hstack((obs_vals, prd_vals)))
-        if len(bins) == 1:
-            bins = np.repeat(bins, 2)
-        bins[-1] += 0.0001
-        obs_classes = np.digitize(obs_vals, bins)
-        prd_classes = np.digitize(prd_vals, bins)
-        cats = np.arange(1, len(bins))
-        obs = pd.Categorical(obs_classes, categories=cats)
-        prd = pd.Categorical(prd_classes, categories=cats)
-        err_mat = pd.crosstab(index=obs, columns=prd, dropna=False)
-        if return_bins:
-            return err_mat, bins
-        return err_mat
+        return get_error_matrix(
+            obs_vals, prd_vals, clf, return_bins=return_bins
+        )
 
     def run_diagnostic(self):
         # Open the error matrix file and print out the header line

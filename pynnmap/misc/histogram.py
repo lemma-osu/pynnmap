@@ -93,8 +93,8 @@ def get_dynamic_bins(arr, bin_type="EQUAL_INTERVAL", bins=10):
     """
     # Create the bin endpoints based on the bin_type requested
     classifier_dict = {
-        "EQUAL_INTERVAL": ic.EqualIntervalClassifier,
-        "QUANTILE": ic.QuantileClassifier,
+        "EQUAL_INTERVAL": ic.EqualIntervals,
+        "QUANTILE": ic.QuantileIntervals,
     }
     classifier = classifier_dict[bin_type](bins)
     return classifier(arr)
