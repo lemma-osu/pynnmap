@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from osgeo import gdal, gdalconst
 
+from pynnmap.core import get_id_year_crosswalk
 from pynnmap.core import imputation_model as im
 from pynnmap.misc import footprint
 from pynnmap.ordination_parser import lemma_ordination_parser
@@ -16,10 +17,10 @@ class NNPixel(object):
         self.distances = np.copy(distances)
 
     def __repr__(self):
-        return '{kls}(\n neighbors={n}\n distances={d}\n)'.format(
+        return "{kls}(\n neighbors={n}\n distances={d}\n)".format(
             kls=self.__class__.__name__,
             n=self.neighbors[0:5],
-            d=self.distances[0:5]
+            d=self.distances[0:5],
         )
 
 
@@ -29,7 +30,7 @@ class NNFootprint(object):
         self.pixels = []
 
     def __repr__(self):
-        return '\n'.join([repr(x) for x in self.pixels])
+        return "\n".join([repr(x) for x in self.pixels])
 
     def append(self, pixel):
         self.pixels.append(pixel)
@@ -44,14 +45,14 @@ class NNFinder(object):
         self.neighbor_data = {}
 
         # Ensure the parameter parser is not a PROTOTYPE
-        if p.parameter_set not in ('FULL', 'MINIMUM'):
+        if p.parameter_set not in ("FULL", "MINIMUM"):
             err_msg = 'Parameter set must be "FULL" or "MINIMUM"'
             raise ValueError(err_msg)
 
         # Check ID field
-        if p.plot_id_field not in ('FCID', 'PLTID'):
-            err_msg = p.id_field + ' accuracy assessment is not currently '
-            err_msg += 'supported'
+        if p.plot_id_field not in ("FCID", "PLTID"):
+            err_msg = p.id_field + " accuracy assessment is not currently "
+            err_msg += "supported"
             raise NotImplementedError(err_msg)
 
         # Get footprint file
@@ -80,25 +81,29 @@ class NNFinder(object):
 
         # Retrieve coordinates from the model plots
         coord_list = self._get_model_plots(
-            p.coordinate_file, id_vals, p.plot_id_field)
+            p.coordinate_file, id_vals, p.plot_id_field
+        )
 
         # Retrieve the footprint configurations.  Footprint offsets store the
         # row and column tuples of each pixel within a given footprint.
         # Footprint windows store the upper left coordinate and window size for
         # extraction from GDAL datasets
         fp_offsets, fp_windows = self._parse_footprints(
-            coord_list, p.footprint_file, p.plot_id_field)
+            coord_list, p.footprint_file, p.plot_id_field
+        )
 
         # Get the ordination model and read it in
         ord_file = p.get_ordination_file()
-        lop = lemma_ordination_parser.LemmaOrdinationParser(delimiter=',')
+        lop = lemma_ordination_parser.LemmaOrdinationParser(delimiter=",")
         ord_model = lop.parse(ord_file)
 
         # Create the imputation model based on the ordination model and the
         # imputation parameters
         imp_model = im.ImputationModel(
-            ord_model, n_axes=p.number_axes,
-            use_weightings=p.use_axis_weighting, max_neighbors=p.max_neighbors
+            ord_model,
+            n_axes=p.number_axes,
+            use_weightings=p.use_axis_weighting,
+            max_neighbors=p.max_neighbors,
         )
 
         # Get information about environmental variables by year
@@ -108,13 +113,25 @@ class NNFinder(object):
 
         # Extract environmental variable footprint data
         fp_value_dict = self._extract_footprints(
-            raster_counts, raster_dict, years, fp_windows, year_ids,
-            ord_year_var_dict)
+            raster_counts,
+            raster_dict,
+            years,
+            fp_windows,
+            year_ids,
+            ord_year_var_dict,
+        )
 
         # Get neighbors for all plots
         return self._get_neighbors(
-            years, fp_windows, fp_offsets, year_ids, ord_model,
-            ord_year_var_dict, fp_value_dict, imp_model)
+            years,
+            fp_windows,
+            fp_offsets,
+            year_ids,
+            ord_model,
+            ord_year_var_dict,
+            fp_value_dict,
+            imp_model,
+        )
 
     def calculate_neighbors_cross_validation(self):
         """
@@ -124,32 +141,20 @@ class NNFinder(object):
         # Alias for self.parameter_parser
         p = self.parameter_parser
 
-        # ID field
-        id_field = p.plot_id_field
-
-        # Get the plot/year crosswalk file and read the plot IDs
-        # and image years into a dictionary
-        xwalk_df = pd.read_csv(p.plot_year_crosswalk_file, low_memory=False)
-
-        # Associate each plot with a model year; this is either the year the
-        # model is associated with (for models that use imagery), or the
-        # model_year (for models that don't use imagery)
-        if p.model_type in p.imagery_model_types:
-            s = pd.Series(xwalk_df.IMAGE_YEAR.values, index=xwalk_df[id_field])
-        else:
-            s = pd.Series(p.model_year, index=xwalk_df[id_field])
-        id_x_year = s.to_dict()
+        # Crosswalk of ID to year
+        id_x_year = get_id_year_crosswalk(p)
 
         # Subset the plot ID list down to just those plots that went into
         # imputation.  This may be a subset of the plots that are in the
         # environmental matrix file based on running GNN in a unique way.
         # This requires parsing the model and extracting just the plot IDs
         ord_file = p.get_ordination_file()
-        lop = lemma_ordination_parser.LemmaOrdinationParser(delimiter=',')
+        lop = lemma_ordination_parser.LemmaOrdinationParser(delimiter=",")
         ord_model = lop.parse(ord_file)
         plot_ids = ord_model.plot_ids
         id_x_year = dict(
-            (i, id_x_year[i]) for i in id_x_year.keys() if i in plot_ids)
+            (i, id_x_year[i]) for i in id_x_year.keys() if i in plot_ids
+        )
 
         # Call the main function
         return self.calculate_neighbors_at_ids(id_x_year)
@@ -227,8 +232,15 @@ class NNFinder(object):
                     raster_counts[path] = 1
         return ord_year_var_dict, raster_counts, raster_dict
 
-    def _extract_footprints(self, raster_counts, raster_dict, years, fp_windows,
-                            year_ids, ord_year_var_dict):
+    def _extract_footprints(
+        self,
+        raster_counts,
+        raster_dict,
+        years,
+        fp_windows,
+        year_ids,
+        ord_year_var_dict,
+    ):
         # Extract footprint information for every ordination variable that is
         # common to all years and store in a dict keyed by ID and raster
         # file name
@@ -265,7 +277,7 @@ class NNFinder(object):
 
             # Extract footprints for any variables that are not common to all
             # years, but specialized for this year
-            for (var, fn) in ord_year_var_dict[year].items():
+            for _, fn in ord_year_var_dict[year].items():
                 ds, processed = raster_dict[fn]
                 if not processed:
                     print(fn)
@@ -289,8 +301,17 @@ class NNFinder(object):
 
         return fp_value_dict
 
-    def _get_neighbors(self, years, fp_windows, fp_offsets, year_ids,
-                       ord_model, ord_year_var_dict, fp_value_dict, imp_model):
+    def _get_neighbors(
+        self,
+        years,
+        fp_windows,
+        fp_offsets,
+        year_ids,
+        ord_model,
+        ord_year_var_dict,
+        fp_value_dict,
+        imp_model,
+    ):
         neighbor_data = {}
         for year in years:
             print(year)

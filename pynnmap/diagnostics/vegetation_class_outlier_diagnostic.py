@@ -51,17 +51,22 @@ YELLOW_OUTLIERS = {
 
 
 def find_vegclass_outlier_class(rec):
-    observed, predicted = rec['OBSERVED'], rec['PREDICTED']
+    observed, predicted = rec["OBSERVED"], rec["PREDICTED"]
     if predicted in YELLOW_OUTLIERS[observed]:
-        return 'yellow'
+        return "yellow"
     elif predicted in ORANGE_OUTLIERS[observed]:
-        return 'orange'
+        return "orange"
     elif predicted in RED_OUTLIERS[observed]:
-        return 'red'
-    return 'green'
+        return "red"
+    return "green"
 
 
 class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        "observed_file",
+        "dependent_predicted_file",
+        "independent_predicted_file",
+    ]
 
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
@@ -69,26 +74,20 @@ class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
         self.id_field = parameters.plot_id_field
 
         # Create a list of predicted files - both independent and dependent
+        self.dependent_predicted_file = parameters.dependent_predicted_file
+        self.independent_predicted_file = parameters.independent_predicted_file
         self.predicted_files = [
-            ('dependent', parameters.dependent_predicted_file),
-            ('independent', parameters.independent_predicted_file),
+            ("dependent", self.dependent_predicted_file),
+            ("independent", self.independent_predicted_file),
         ]
 
         # Create a instance of the VegetationClassDiagnostic to calculate
         # vegetation class
-        self.vc_calc = vcd.VegetationClassDiagnostic(parameters=parameters)
+        self.vc_calc = vcd.VegetationClassDiagnostic.from_parameter_parser(
+            parameters
+        )
 
-        # Ensure all input files are present
-        files = [
-            self.observed_file,
-            parameters.dependent_predicted_file,
-            parameters.independent_predicted_file,
-        ]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping VegetationClassOutlierDiagnostic\n'
-            raise e
+        self.check_missing_files()
 
     def run_diagnostic(self):
         # Run this for both independent and dependent predictions
@@ -107,22 +106,26 @@ class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
 
             # Calculate VEGCLASS for both the observed and predicted data
             vc_df = self.vc_calc.vegclass_aa(
-                obs_df, prd_df, id_field=self.id_field)
-            vc_df.columns = [self.id_field, 'OBSERVED', 'PREDICTED']
+                obs_df, prd_df, id_field=self.id_field
+            )
+            vc_df.columns = [self.id_field, "OBSERVED", "PREDICTED"]
 
             # Find the outliers
-            vc_df['CLASS'] = vc_df.apply(find_vegclass_outlier_class, axis=1)
+            vc_df["CLASS"] = vc_df.apply(find_vegclass_outlier_class, axis=1)
 
             # Only keep yellow, orange, and red outliers
-            vc_df = vc_df[vc_df.CLASS != 'green']
+            vc_df = vc_df[vc_df.CLASS != "green"]
 
             # Format this dataframe for export and append it to the out_df list
-            vc_df.insert(1, 'PREDICTION_TYPE', prd_type.upper())
-            vc_df.rename(columns={
-                'OBSERVED': 'OBSERVED_VEGCLASS',
-                'PREDICTED': 'PREDICTED_VEGCLASS',
-                'CLASS': 'OUTLIER_TYPE'
-            }, inplace=True)
+            vc_df.insert(1, "PREDICTION_TYPE", prd_type.upper())
+            vc_df.rename(
+                columns={
+                    "OBSERVED": "OBSERVED_VEGCLASS",
+                    "PREDICTED": "PREDICTED_VEGCLASS",
+                    "CLASS": "OUTLIER_TYPE",
+                },
+                inplace=True,
+            )
             out_dfs.append(vc_df)
 
         # Merge together the dfs and export

@@ -11,6 +11,7 @@ setup(
     packages=find_packages(),
     description='Python based nearest neighbor mapping',
     install_requires=[
+        'affine',
         'click',
         'click-plugins',
         'gdal',
@@ -18,6 +19,7 @@ setup(
         'matplotlib',
         'numpy',
         'pandas',
+        'rasterio',
         'rpy2',
         'scikit-learn',
         'scipy',

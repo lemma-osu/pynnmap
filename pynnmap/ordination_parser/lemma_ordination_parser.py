@@ -8,8 +8,7 @@ from pynnmap.misc import parser
 
 
 class LemmaOrdinationParser(parser.Parser):
-
-    def __init__(self, delimiter=','):
+    def __init__(self, delimiter=","):
         """
         Parameters
         ----------
@@ -35,7 +34,7 @@ class LemmaOrdinationParser(parser.Parser):
         model : OrdinationModel instance
         """
         # Read the ordination file into a list
-        ordination_fh = open(ordination_file, 'r')
+        ordination_fh = open(ordination_file, "r")
         all_lines = ordination_fh.readlines()
         ordination_fh.close()
 
@@ -52,8 +51,9 @@ class LemmaOrdinationParser(parser.Parser):
         var_names_1, means = self._get_means(all_lines)
 
         # Species centroids and names
-        model.species_names, model.species_scores = \
-            self._get_species_scores(all_lines)
+        model.species_names, model.species_scores = self._get_species_scores(
+            all_lines
+        )
 
         # Plot scores and IDs
         model.plot_ids, model.plot_scores = self._get_plots(all_lines)
@@ -66,29 +66,28 @@ class LemmaOrdinationParser(parser.Parser):
             parser.assert_same_set(var_names_1, model.var_names)
             parser.assert_same_set(var_names_2, model.var_names)
         except parser.ParserError:
-            err_msg = 'Variable names are not the same in all sections'
+            err_msg = "Variable names are not the same in all sections"
             raise parser.ParserError(err_msg)
 
         try:
             parser.assert_same_size(model.axis_weights, model.var_coeff[0])
         except parser.ParserError:
-            err_msg = 'Number of axes differ between eigenvalues '
-            err_msg += 'and coefficients'
+            err_msg = "Number of axes differ between eigenvalues "
+            err_msg += "and coefficients"
             raise parser.ParserError(err_msg)
 
         try:
             parser.assert_same_size(model.axis_weights, model.plot_scores[0])
         except parser.ParserError:
-            err_msg = 'Number of axes differ between eigenvalues '
-            err_msg += 'and plot scores'
+            err_msg = "Number of axes differ between eigenvalues "
+            err_msg += "and plot scores"
             raise parser.ParserError(err_msg)
 
         try:
-            parser.assert_same_size(
-                model.axis_weights, model.biplot_scores[0])
+            parser.assert_same_size(model.axis_weights, model.biplot_scores[0])
         except parser.ParserError:
-            err_msg = 'Number of axes differ between eigenvalues and '
-            err_msg += 'biplot scores'
+            err_msg = "Number of axes differ between eigenvalues and "
+            err_msg += "biplot scores"
             raise parser.ParserError(err_msg)
 
         # Set model parameter counts
@@ -131,9 +130,10 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the model eigenvalues
-        eig_re = re.compile(r'^###\s+Eigenvalues\s+###.*')
+        eig_re = re.compile(r"^###\s+Eigenvalues\s+###.*")
         chunks = self.read_chunks(
-            all_lines, eig_re, self.blank_re, skip_lines=1, flush=True)
+            all_lines, eig_re, self.blank_re, skip_lines=1, flush=True
+        )
 
         # Extract the axis weights
         axis_weights = []
@@ -165,9 +165,10 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the model coefficients
-        coeff_re = re.compile(r'^###\s+Coefficient\s+Loadings\s+###')
+        coeff_re = re.compile(r"^###\s+Coefficient\s+Loadings\s+###")
         chunks = self.read_chunks(
-            all_lines, coeff_re, self.blank_re, skip_lines=2, flush=True)
+            all_lines, coeff_re, self.blank_re, skip_lines=2, flush=True
+        )
 
         # Extract the variable names and coefficients
         var_names = []
@@ -199,9 +200,10 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the ordination variable means
-        mean_re = re.compile(r'^###\s+Variable\s+Means\s+###.*')
+        mean_re = re.compile(r"^###\s+Variable\s+Means\s+###.*")
         chunks = self.read_chunks(
-            all_lines, mean_re, self.blank_re, skip_lines=1, flush=True)
+            all_lines, mean_re, self.blank_re, skip_lines=1, flush=True
+        )
 
         # Extract the variable names and means
         var_names = []
@@ -234,9 +236,10 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the species scores
-        species_re = re.compile(r'^###\s+Species\s+Centroids\s+###.*')
+        species_re = re.compile(r"^###\s+Species\s+Centroids\s+###.*")
         chunks = self.read_chunks(
-            all_lines, species_re, self.blank_re, skip_lines=2, flush=True)
+            all_lines, species_re, self.blank_re, skip_lines=2, flush=True
+        )
 
         # Extract the species names and species scores
         species_names = []
@@ -269,9 +272,10 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the ordination variable means
-        plot_re = re.compile(r'^###\s+Site\s+LC\s+Scores\s+###.*')
+        plot_re = re.compile(r"^###\s+Site\s+LC\s+Scores\s+###.*")
         chunks = self.read_chunks(
-            all_lines, plot_re, self.blank_re, skip_lines=2, flush=True)
+            all_lines, plot_re, self.blank_re, skip_lines=2, flush=True
+        )
 
         # Extract the plot IDs and scores
         plot_ids = []
@@ -311,9 +315,10 @@ class LemmaOrdinationParser(parser.Parser):
         """
 
         # Get the lines associated with the biplot section
-        biplot_re = re.compile(r'^###\s+Biplot\s+Scores\s+###.*')
+        biplot_re = re.compile(r"^###\s+Biplot\s+Scores\s+###.*")
         chunks = self.read_chunks(
-            all_lines, biplot_re, self.blank_re, skip_lines=2, flush=True)
+            all_lines, biplot_re, self.blank_re, skip_lines=2, flush=True
+        )
 
         # Extract the variable names and biplot scores
         var_names = []
@@ -326,7 +331,7 @@ class LemmaOrdinationParser(parser.Parser):
         return np.array(var_names), np.array(biplot_scores)
 
 
-if __name__ == '__main__':
-    lop = LemmaOrdinationParser(delimiter=',')
+if __name__ == "__main__":
+    lop = LemmaOrdinationParser(delimiter=",")
     m = lop.parse(sys.argv[1])
     print(m)

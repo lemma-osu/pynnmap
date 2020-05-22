@@ -1,8 +1,100 @@
 from pynnmap.parser import xml_parser
 
 
-class XMLReportMetadataParser(xml_parser.XMLParser):
+class XMLContact:
+    def __init__(self, elem):
+        self.root = elem
 
+    @property
+    def name(self) -> str:
+        return str(self.root.name)
+
+    @property
+    def position_title(self):
+        return str(self.root.position_title)
+
+    @property
+    def affiliation(self):
+        return str(self.root.affiliation)
+
+    @property
+    def phone_number(self):
+        return str(self.root.phone_number)
+
+    @property
+    def email_address(self):
+        return str(self.root.email_address)
+
+
+class XMLAssessmentYear:
+    def __init__(self, elem):
+        self.root = elem
+
+    @property
+    def assessment_year(self):
+        return str(self.root.assessment_year)
+
+    @property
+    def plot_count(self):
+        return int(self.root.plot_count)
+
+
+class XMLPlotDataSource:
+    def __init__(self, elem):
+        self.root = elem
+
+    @property
+    def data_source(self):
+        return str(self.root.data_source)
+
+    @property
+    def description(self):
+        return str(self.root.description)
+
+    @property
+    def assessment_years(self):
+        try:
+            years_elem = self.root.assessment_years
+            return [XMLAssessmentYear(x) for x in years_elem.iterchildren()]
+        except AttributeError:
+            return []
+
+
+class XMLSpeciesName:
+    def __init__(self, elem):
+        self.root = elem
+
+    @property
+    def spp_symbol(self):
+        return str(self.root.spp_symbol)
+
+    @property
+    def scientific_name(self):
+        return str(self.root.scientific_name)
+
+    @property
+    def common_name(self):
+        return str(self.root.common_name)
+
+
+class XMLOrdinationVariable:
+    def __init__(self, elem):
+        self.root = elem
+
+    @property
+    def field_name(self):
+        return str(self.root.field_name)
+
+    @property
+    def description(self):
+        return str(self.root.description)
+
+    @property
+    def source(self):
+        return str(self.root.source)
+
+
+class XMLReportMetadataParser(xml_parser.XMLParser):
     def __init__(self, xml_file_name):
         """
         Initialize the XMLReportMetadataParser object by setting a
@@ -48,8 +140,9 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def plot_data_sources(self):
         try:
             data_sources_elem = self.root.plot_data_sources
-            return [XMLPlotDataSource(x) for x in
-                    data_sources_elem.iterchildren()]
+            return [
+                XMLPlotDataSource(x) for x in data_sources_elem.iterchildren()
+            ]
         except AttributeError:
             return []
 
@@ -57,8 +150,9 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def species_names(self):
         try:
             species_names_elem = self.root.species_names
-            return [XMLSpeciesName(x) for x in
-                    species_names_elem.iterchildren()]
+            return [
+                XMLSpeciesName(x) for x in species_names_elem.iterchildren()
+            ]
         except AttributeError:
             return []
 
@@ -71,106 +165,8 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def ordination_variables(self):
         try:
             ord_var_elem = self.root.ordination_variables
-            return [XMLOrdinationVariable(x) for x in
-                    ord_var_elem.iterchildren()]
+            return [
+                XMLOrdinationVariable(x) for x in ord_var_elem.iterchildren()
+            ]
         except AttributeError:
             return []
-
-
-class XMLContact(object):
-
-    def __init__(self, elem):
-        self.root = elem
-
-    @property
-    def name(self):
-        return str(self.root.name)
-
-    @property
-    def position_title(self):
-        return str(self.root.position_title)
-
-    @property
-    def affiliation(self):
-        return str(self.root.affiliation)
-
-    @property
-    def phone_number(self):
-        return str(self.root.phone_number)
-
-    @property
-    def email_address(self):
-        return str(self.root.email_address)
-
-
-class XMLPlotDataSource(object):
-
-    def __init__(self, elem):
-        self.root = elem
-
-    @property
-    def data_source(self):
-        return str(self.root.data_source)
-
-    @property
-    def description(self):
-        return str(self.root.description)
-
-    @property
-    def assessment_years(self):
-        try:
-            years_elem = self.root.assessment_years
-            return [XMLAssessmentYear(x) for x in
-                    years_elem.iterchildren()]
-        except AttributeError:
-            return[]
-
-
-class XMLAssessmentYear(object):
-
-    def __init__(self, elem):
-        self.root = elem
-
-    @property
-    def assessment_year(self):
-        return str(self.root.assessment_year)
-
-    @property
-    def plot_count(self):
-        return int(self.root.plot_count)
-
-
-class XMLSpeciesName(object):
-
-    def __init__(self, elem):
-        self.root = elem
-
-    @property
-    def spp_symbol(self):
-        return str(self.root.spp_symbol)
-
-    @property
-    def scientific_name(self):
-        return str(self.root.scientific_name)
-
-    @property
-    def common_name(self):
-        return str(self.root.common_name)
-
-
-class XMLOrdinationVariable(object):
-
-    def __init__(self, elem):
-        self.root = elem
-
-    @property
-    def field_name(self):
-        return str(self.root.field_name)
-
-    @property
-    def description(self):
-        return str(self.root.description)
-
-    @property
-    def source(self):
-        return str(self.root.source)

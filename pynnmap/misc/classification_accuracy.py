@@ -1,5 +1,6 @@
 import itertools
 import re
+from collections import namedtuple
 
 import numpy as np
 import numpy.ma as ma
@@ -11,11 +12,13 @@ def natural_sort(l):
     """
     Sorts a list based on natural sorting
     """
+
     def convert(text):
         return int(text) if text.isdigit() else text.lower()
 
     def alphanum_key(key):
-        return [convert(c) for c in re.split('([0-9]+)', str(key))]
+        return [convert(c) for c in re.split("([0-9]+)", str(key))]
+
     return sorted(l, key=alphanum_key)
 
 
@@ -68,9 +71,9 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
     # http://stackoverflow.com/questions/10958702/
     # python-one-liner-for-a-confusion-contingency-matrix-needed
     paired = list(zip(obs_data, prd_data))
-    err_mat = np.array([
-        paired.count(x) for x
-        in itertools.product(classes, repeat=2)]).reshape(n, n)
+    err_mat = np.array(
+        [paired.count(x) for x in itertools.product(classes, repeat=2)]
+    ).reshape(n, n)
 
     # Create the dictionary of class value to row/column number
     class_xwalk = dict((c, i) for (c, i) in zip(classes, range(n)))
@@ -104,12 +107,7 @@ def kappa(m):
         return 0.0
 
 
-class Classification:
-
-    def __init__(self, value, name, fuzzy_values):
-        self.value = value
-        self.name = name
-        self.fuzzy_values = fuzzy_values
+Classification = namedtuple("Classification", ["value", "name", "fuzzy_values"])
 
 
 class Classifier:
@@ -123,7 +121,7 @@ class Classifier:
         # in this dict
         for v in d.values():
             if not isinstance(v, Classification):
-                err_str = 'Classifier contains non-Classification information'
+                err_str = "Classifier contains non-Classification information"
                 raise ValueError(err_str)
         self.d = d
 
@@ -172,7 +170,7 @@ class Classifier:
         classifiers = {}
         for i in values:
             value = i
-            name = 'Class ' + str(i)
+            name = "Class " + str(i)
             f_values = [i]
             classifiers[value] = Classification(value, name, f_values)
         return cls(classifiers)
@@ -232,19 +230,19 @@ class KappaCalculator(object):
         Create a string representation of this error matrix
         """
 
-        out_str = ''
-        out_str += 'CLASS,KAPPA,FUZZY_KAPPA\n'
+        out_str = ""
+        out_str += "CLASS,KAPPA,FUZZY_KAPPA\n"
 
         # Iterate over classes printing out kappa and fuzzy kappa
         for key in natural_sort(self.kappa_values.keys()):
-            if key == 'all':
+            if key == "all":
                 continue
             v = self.kappa_values[key]
-            out_str += '%s,%.4f,%.4f\n' % (str(key), v['kappa'], v['fuzzy'])
+            out_str += "%s,%.4f,%.4f\n" % (str(key), v["kappa"], v["fuzzy"])
 
         # Print the values for all classes
-        v = self.kappa_values['all']
-        out_str += '%s,%.4f,%.4f\n' % ('ALL', v['kappa'], v['fuzzy'])
+        v = self.kappa_values["all"]
+        out_str += "%s,%.4f,%.4f\n" % ("ALL", v["kappa"], v["fuzzy"])
 
         return out_str
 
@@ -271,7 +269,8 @@ class KappaCalculator(object):
         # Create an error matrix from the observed and predicted data
         classes = self.classifier.values()
         err_mat, class_xwalk = create_error_matrix(
-            obs_data, prd_data, compact=False, classes=classes)
+            obs_data, prd_data, compact=False, classes=classes
+        )
 
         # Get the number of classes
         n_classes = len(class_xwalk)
@@ -298,17 +297,21 @@ class KappaCalculator(object):
         for i in range(n_classes):
             j = rev_class_xwalk[i]
             self.kappa_values[j] = {}
-            self.kappa_values[j]['kappa'] = \
-                self._get_masked_kappa(err_mat, mask, c=i)
-            self.kappa_values[j]['fuzzy'] = \
-                self._get_masked_kappa(err_mat, f_mask, c=i)
+            self.kappa_values[j]["kappa"] = self._get_masked_kappa(
+                err_mat, mask, c=i
+            )
+            self.kappa_values[j]["fuzzy"] = self._get_masked_kappa(
+                err_mat, f_mask, c=i
+            )
 
         # Calculate kappa for the entire matrix
-        self.kappa_values['all'] = {}
-        self.kappa_values['all']['kappa'] = \
-            self._get_masked_kappa(err_mat, mask)
-        self.kappa_values['all']['fuzzy'] = \
-            self._get_masked_kappa(err_mat, f_mask)
+        self.kappa_values["all"] = {}
+        self.kappa_values["all"]["kappa"] = self._get_masked_kappa(
+            err_mat, mask
+        )
+        self.kappa_values["all"]["fuzzy"] = self._get_masked_kappa(
+            err_mat, f_mask
+        )
 
     @staticmethod
     def _get_masked_kappa(err_mat, mask, c=None):
@@ -392,7 +395,7 @@ class KappaCalculator(object):
         -------
         None
         """
-        kappa_fh = open(kappa_file, 'w')
+        kappa_fh = open(kappa_file, "w")
         kappa_fh.write(self.__repr__())
         kappa_fh.close()
 
@@ -442,44 +445,44 @@ class ErrorMatrix(object):
         # Short circuit the condition where the error matrix has not been
         # calculated
         if self.err_mat is None:
-            return ''
+            return ""
 
         # Labels for x and y axes
         class_labels = [repr(x) for x in natural_sort(self.class_xwalk.keys())]
-        class_labels.extend(['Total', '% Correct', '% FCorrect'])
+        class_labels.extend(["Total", "% Correct", "% FCorrect"])
 
         # Print out these stats
         # Column labels
-        out_str = ''
-        out_str += ',' + ','.join(class_labels) + '\n'
+        out_str = ""
+        out_str += "," + ",".join(class_labels) + "\n"
         num_classes = len(self.class_xwalk)
 
         # Row labels, values, totals, percent correct and percent fuzzy correct
         for i in range(num_classes):
             out_list = [class_labels[i]]
-            out_list.extend(['%d' % x for x in self.err_mat[i, :]])
-            out_list.append('%d' % self.r_totals[i])
-            out_list.append('%.3f' % self.r_percent_correct[i])
-            out_list.append('%.3f' % self.r_percent_f_correct[i])
-            out_str += ','.join(out_list) + '\n'
+            out_list.extend(["%d" % x for x in self.err_mat[i, :]])
+            out_list.append("%d" % self.r_totals[i])
+            out_list.append("%.3f" % self.r_percent_correct[i])
+            out_list.append("%.3f" % self.r_percent_f_correct[i])
+            out_str += ",".join(out_list) + "\n"
 
         # Column totals
         out_list = [class_labels[num_classes]]
-        out_list.extend(['%d' % x for x in self.c_totals])
-        out_list.extend(['%d' % self.m_total, '', ''])
-        out_str += ','.join(out_list) + '\n'
+        out_list.extend(["%d" % x for x in self.c_totals])
+        out_list.extend(["%d" % self.m_total, "", ""])
+        out_str += ",".join(out_list) + "\n"
 
         # Column correct
         out_list = [class_labels[num_classes + 1]]
-        out_list.extend(['%.3f' % x for x in self.c_percent_correct])
-        out_list.extend(['', '%.3f' % self.m_percent_correct, ''])
-        out_str += ','.join(out_list) + '\n'
+        out_list.extend(["%.3f" % x for x in self.c_percent_correct])
+        out_list.extend(["", "%.3f" % self.m_percent_correct, ""])
+        out_str += ",".join(out_list) + "\n"
 
         # Column fuzzy correct
         out_list = [class_labels[num_classes + 2]]
-        out_list.extend(['%.3f' % x for x in self.c_percent_f_correct])
-        out_list.extend(['', '', '%.3f' % self.m_percent_f_correct])
-        out_str += ','.join(out_list) + '\n'
+        out_list.extend(["%.3f" % x for x in self.c_percent_f_correct])
+        out_list.extend(["", "", "%.3f" % self.m_percent_f_correct])
+        out_str += ",".join(out_list) + "\n"
 
         return out_str
 
@@ -505,7 +508,8 @@ class ErrorMatrix(object):
         # Create an error matrix from the observed and predicted data
         classes = self.classifier.values()
         self.err_mat, self.class_xwalk = create_error_matrix(
-            obs_data, prd_data, compact=False, classes=classes)
+            obs_data, prd_data, compact=False, classes=classes
+        )
 
         # Number of classes
         num_classes = len(self.class_xwalk)
@@ -541,7 +545,7 @@ class ErrorMatrix(object):
 
         # Calculate the percentages used in the printed error matrix
         # Temporarily suspend warnings
-        old_settings = np.seterr(all='ignore')
+        old_settings = np.seterr(all="ignore")
 
         def calc_percent(n, d):
             return np.where(d, n / d * 100.0, 0.0)
@@ -550,10 +554,8 @@ class ErrorMatrix(object):
         self.c_percent_correct = calc_percent(self.correct, self.c_totals)
         self.m_percent_correct = calc_percent(self.correct.sum(), self.m_total)
 
-        self.r_percent_f_correct = calc_percent(
-            self.r_f_correct, self.r_totals)
-        self.c_percent_f_correct = calc_percent(
-            self.c_f_correct, self.c_totals)
+        self.r_percent_f_correct = calc_percent(self.r_f_correct, self.r_totals)
+        self.c_percent_f_correct = calc_percent(self.c_f_correct, self.c_totals)
         m_f_correct = self.m_total - self.m_f_incorrect
         self.m_percent_f_correct = calc_percent(m_f_correct, self.m_total)
         np.seterr(**old_settings)
@@ -572,7 +574,7 @@ class ErrorMatrix(object):
         -------
         None
         """
-        err_matrix_fh = open(err_matrix_fn, 'w')
+        err_matrix_fh = open(err_matrix_fn, "w")
         err_matrix_fh.write(self.__repr__())
         err_matrix_fh.close()
 
@@ -645,8 +647,13 @@ def print_error_matrix_file(obs_data, prd_data, classifier, err_matrix_fn):
 
 
 def classification_accuracy(
-        input_fn, classifier_fn, kappa_fn=None, err_matrix_fn=None,
-        observed_column='OBSERVED', predicted_column='PREDICTED'):
+    input_fn,
+    classifier_fn,
+    kappa_fn=None,
+    err_matrix_fn=None,
+    observed_column="OBSERVED",
+    predicted_column="PREDICTED",
+):
     """
     Wrapper function to read in a plot-by-classification file
     of observed and predicted values and a classifier XML file

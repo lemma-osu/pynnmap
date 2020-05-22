@@ -1,17 +1,32 @@
+from collections import namedtuple
+
 import numpy as np
-import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import statistics
-from pynnmap.parser import xml_stand_metadata_parser as xsmp
+from pynnmap.misc import utilities
+from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
+from pynnmap.parser.xml_stand_metadata_parser import Flags
+
+
+# Namedtuple to capture the local statistics
+LocalStatistics = namedtuple(
+    "LocalStatistics",
+    ["pearson_r", "spearman_r", "rmse", "std_rmse", "bias", "r2"],
+)
 
 
 class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
-    _required = ['observed_file', 'predicted_file', 'stand_metadata_file']
+    _required = ["observed_file", "predicted_file", "stand_metadata_file"]
 
     def __init__(
-            self, observed_file, predicted_file, stand_metadata_file,
-            id_field, statistics_file):
+        self,
+        observed_file,
+        predicted_file,
+        stand_metadata_file,
+        id_field,
+        statistics_file,
+    ):
         self.observed_file = observed_file
         self.predicted_file = predicted_file
         self.stand_metadata_file = stand_metadata_file
@@ -19,6 +34,9 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
         self.statistics_file = statistics_file
 
         self.check_missing_files()
+        self.obs_df, self.prd_df = utilities.build_obs_prd_dataframes(
+            self.observed_file, self.predicted_file, self.id_field
+        )
 
     @classmethod
     def from_parameter_parser(cls, parameter_parser):
@@ -28,84 +46,57 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
             p.independent_predicted_file,
             p.stand_metadata_file,
             p.plot_id_field,
-            p.local_accuracy_file
+            p.local_accuracy_file,
+        )
+
+    def run_attr(self, attr):
+        # Retrieve the observed and predicted values
+        obs_vals = getattr(self.obs_df, attr.field_name)
+        prd_vals = getattr(self.prd_df, attr.field_name)
+
+        # Get the statistics
+        rmse = statistics.rmse(obs_vals, prd_vals)
+        n_rmse = rmse / obs_vals.mean() if np.any(obs_vals != 0.0) else 0.0
+        return LocalStatistics(
+            statistics.pearson_r(obs_vals, prd_vals),
+            statistics.spearman_r(obs_vals, prd_vals),
+            rmse,
+            n_rmse,
+            statistics.bias_percentage(obs_vals, prd_vals),
+            statistics.r2(obs_vals, prd_vals),
         )
 
     def run_diagnostic(self):
-
         # Open the stats file and print out the header line
-        stats_fh = open(self.statistics_file, 'w')
+        stats_fh = open(self.statistics_file, "w")
         out_list = [
-            'VARIABLE',
-            'PEARSON_R',
-            'SPEARMAN_R',
-            'RMSE',
-            'NORMALIZED_RMSE',
-            'BIAS_PERCENTAGE',
-            'R_SQUARE',
+            "VARIABLE",
+            "PEARSON_R",
+            "SPEARMAN_R",
+            "RMSE",
+            "NORMALIZED_RMSE",
+            "BIAS_PERCENTAGE",
+            "R_SQUARE",
         ]
-        stats_fh.write(','.join(out_list) + '\n')
+        stats_fh.write(",".join(out_list) + "\n")
 
-        # Read the observed and predicted files into dataframes
-        obs = pd.read_csv(self.observed_file, low_memory=False)
-        prd = pd.read_csv(self.predicted_file, low_memory=False)
+        # Read in the stand attribute metadata and get continuous attributes
+        mp = XMLStandMetadataParser(self.stand_metadata_file)
+        attrs = mp.filter(Flags.CONTINUOUS | Flags.ACCURACY)
 
-        # Subset the observed data just to the IDs that are in the
-        # predicted file
-        obs_keep = np.in1d(
-            getattr(obs, self.id_field), getattr(prd, self.id_field))
-        obs = obs[obs_keep]
-
-        # Read in the stand attribute metadata
-        mp = xsmp.XMLStandMetadataParser(self.stand_metadata_file)
-
-        # For each variable, calculate the statistics
-        for v in obs.columns:
-
-            # Get the metadata for this field
-            try:
-                fm = mp.get_attribute(v)
-            except ValueError:
-                err_msg = 'Missing metadata for {}'.format(v)
-                # TODO: log this as warning instead
-                print(err_msg)
-                continue
-
-            # Only continue if this is a continuous accuracy variable
-            if not fm.is_continuous_accuracy_attr():
-                continue
-
-            obs_vals = getattr(obs, v)
-            prd_vals = getattr(prd, v)
-
-            if np.all(obs_vals == 0.0):
-                pearson_r = 0.0
-                spearman_r = 0.0
-                rmse = 0.0
-                std_rmse = 0.0
-                bias = 0.0
-                r2 = 0.0
-            else:
-                if np.all(prd_vals == 0.0):
-                    pearson_r = 0.0
-                    spearman_r = 0.0
-                else:
-                    pearson_r = statistics.pearson_r(obs_vals, prd_vals)
-                    spearman_r = statistics.spearman_r(obs_vals, prd_vals)
-                rmse = statistics.rmse(obs_vals, prd_vals)
-                std_rmse = rmse / obs_vals.mean()
-                bias = statistics.bias_percentage(obs_vals, prd_vals)
-                r2 = statistics.r2(obs_vals, prd_vals)
+        # For each attribute, calculate the statistics
+        for attr in attrs:
+            stats = self.run_attr(attr)
 
             # Print this out to the stats file
             out_list = [
-                v,
-                '%.6f' % pearson_r,
-                '%.6f' % spearman_r,
-                '%.6f' % rmse,
-                '%.6f' % std_rmse,
-                '%.6f' % bias,
-                '%.6f' % r2,
+                attr.field_name,
+                "{:.6f}".format(stats.pearson_r),
+                "{:.6f}".format(stats.spearman_r),
+                "{:.6f}".format(stats.rmse),
+                "{:.6f}".format(stats.std_rmse),
+                "{:.6f}".format(stats.bias),
+                "{:.6f}".format(stats.r2),
             ]
-            stats_fh.write(','.join(out_list) + '\n')
+            stats_fh.write(",".join(out_list) + "\n")
         stats_fh.close()

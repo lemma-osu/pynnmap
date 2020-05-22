@@ -33,6 +33,11 @@ def calculate_vc_variety(vc_records):
 
 
 class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        "stand_attr_file",
+        "dependent_zonal_pixel_file",
+        "independent_zonal_pixel_file",
+    ]
 
     def __init__(self, parameters):
         p = parameters
@@ -41,22 +46,14 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
         self.output_file = p.vegclass_variety_file
 
         # Create a list of zonal_pixel files - both independent and dependent
+        self.dependent_zonal_pixel_file = p.dependent_zonal_pixel_file
+        self.independent_zonal_pixel_file = p.independent_zonal_pixel_file
         self.zonal_pixel_files = [
-            ('dependent', p.dependent_zonal_pixel_file),
-            ('independent', p.independent_zonal_pixel_file),
+            ("dependent", self.dependent_zonal_pixel_file),
+            ("independent", self.independent_zonal_pixel_file),
         ]
 
-        # Ensure all input files are present
-        files = [
-            self.stand_attr_file,
-            parameters.dependent_zonal_pixel_file,
-            parameters.independent_zonal_pixel_file,
-        ]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping VegetationClassVarietyDiagnostic\n'
-            raise e
+        self.check_missing_files()
 
     def _vc_variety(self, rec, zonal_df):
         cond = zonal_df[self.id_field] == rec[self.id_field]
@@ -65,7 +62,7 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
 
     def run_diagnostic(self):
         # Open the stand attribute file and subset to just positive IDs
-        columns = [self.id_field, 'VEGCLASS']
+        columns = [self.id_field, "VEGCLASS"]
         attr_df = pd.read_csv(self.stand_attr_file, usecols=columns)
         attr_df = attr_df[attr_df[self.id_field] > 0]
 
@@ -75,20 +72,23 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
             # Create a copy of the attr_df for this prd_type and insert a
             # column for this
             df = attr_df.copy()
-            df.insert(1, 'PREDICTION_TYPE', prd_type.upper())
+            df.insert(1, "PREDICTION_TYPE", prd_type.upper())
 
             # Open the zonal pixel file and join vegclass to it
             zonal_df = pd.read_csv(zp_file)
             zonal_df = zonal_df.merge(
-                df, left_on='NEIGHBOR_ID', right_on=self.id_field,
-                suffixes=['', '_DUP'])
+                df,
+                left_on="NEIGHBOR_ID",
+                right_on=self.id_field,
+                suffixes=["", "_DUP"],
+            )
 
             # Calculate the vc_variety
-            df['OUTLIER'] = df.apply(self._vc_variety, axis=1, args=(zonal_df,))
+            df["OUTLIER"] = df.apply(self._vc_variety, axis=1, args=(zonal_df,))
 
             # Save out the records that are True
             df = df[df.OUTLIER]
-            dfs.append(df[[self.id_field, 'PREDICTION_TYPE']])
+            dfs.append(df[[self.id_field, "PREDICTION_TYPE"]])
 
         # Merge together the dfs and export
         out_df = pd.concat(dfs)

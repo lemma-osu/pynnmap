@@ -3,6 +3,7 @@ class PixelPrediction(object):
     Class to hold a given pixel's prediction including neighbor IDs, distances
     and predicted values for each continuous attribute.
     """
+
     def __init__(self, id_val, pixel_number, k):
         self.id = id_val
         self.pixel_number = pixel_number
@@ -12,11 +13,11 @@ class PixelPrediction(object):
         self._distances = None
 
     def __repr__(self):
-        return '{kls}(\n id={id},\n neighbors={n},\n distances={d}\n)'.format(
+        return "{kls}(\n id={id},\n neighbors={n},\n distances={d}\n)".format(
             kls=self.__class__.__name__,
             id=self.id,
             n=self.neighbors,
-            d=self.distances
+            d=self.distances,
         )
 
     @property
