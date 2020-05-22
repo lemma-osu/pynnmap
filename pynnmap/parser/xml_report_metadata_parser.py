@@ -2,7 +2,7 @@ from pynnmap.parser import xml_parser
 
 
 class XMLContact:
-    def __init__(self, elem: Element):
+    def __init__(self, elem):
         self.root = elem
 
     @property
@@ -10,49 +10,49 @@ class XMLContact:
         return str(self.root.name)
 
     @property
-    def position_title(self) -> str:
+    def position_title(self):
         return str(self.root.position_title)
 
     @property
-    def affiliation(self) -> str:
+    def affiliation(self):
         return str(self.root.affiliation)
 
     @property
-    def phone_number(self) -> str:
+    def phone_number(self):
         return str(self.root.phone_number)
 
     @property
-    def email_address(self) -> str:
+    def email_address(self):
         return str(self.root.email_address)
 
 
 class XMLAssessmentYear:
-    def __init__(self, elem: Element):
+    def __init__(self, elem):
         self.root = elem
 
     @property
-    def assessment_year(self) -> str:
+    def assessment_year(self):
         return str(self.root.assessment_year)
 
     @property
-    def plot_count(self) -> int:
+    def plot_count(self):
         return int(self.root.plot_count)
 
 
 class XMLPlotDataSource:
-    def __init__(self, elem: Element):
+    def __init__(self, elem):
         self.root = elem
 
     @property
-    def data_source(self) -> str:
+    def data_source(self):
         return str(self.root.data_source)
 
     @property
-    def description(self) -> str:
+    def description(self):
         return str(self.root.description)
 
     @property
-    def assessment_years(self) -> List[XMLAssessmentYear]:
+    def assessment_years(self):
         try:
             years_elem = self.root.assessment_years
             return [XMLAssessmentYear(x) for x in years_elem.iterchildren()]
@@ -61,36 +61,36 @@ class XMLPlotDataSource:
 
 
 class XMLSpeciesName:
-    def __init__(self, elem: Element):
+    def __init__(self, elem):
         self.root = elem
 
     @property
-    def spp_symbol(self) -> str:
+    def spp_symbol(self):
         return str(self.root.spp_symbol)
 
     @property
-    def scientific_name(self) -> str:
+    def scientific_name(self):
         return str(self.root.scientific_name)
 
     @property
-    def common_name(self) -> str:
+    def common_name(self):
         return str(self.root.common_name)
 
 
 class XMLOrdinationVariable:
-    def __init__(self, elem: Element):
+    def __init__(self, elem):
         self.root = elem
 
     @property
-    def field_name(self) -> str:
+    def field_name(self):
         return str(self.root.field_name)
 
     @property
-    def description(self) -> str:
+    def description(self):
         return str(self.root.description)
 
     @property
-    def source(self) -> str:
+    def source(self):
         return str(self.root.source)
 
 
