@@ -133,8 +133,10 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
             )
 
         # Read in the stand attribute metadata and get continuous
+        # and categorical attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
         attrs = mp.filter(Flags.CONTINUOUS | Flags.ACCURACY)
+        attrs.extend(mp.filter(Flags.CATEGORICAL | Flags.ACCURACY))
 
         # For each attribute, calculate the statistics
         for attr in attrs:

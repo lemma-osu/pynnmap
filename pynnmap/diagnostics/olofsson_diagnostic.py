@@ -85,10 +85,16 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         ):
             fh.write("{:s},{:s},{:.4f},{:.4f},{:.4f}\n".format(*record))
 
+    def attr_missing(self, attr):
+        if attr.field_name not in self.error_matrix_df.VARIABLE.values:
+            return True
+        if attr.field_name not in self.regional_df.VARIABLE.values:
+            return True
+        return False
+
     def run_attr(self, attr, fh):
         fn = attr.field_name
         em_df = self.error_matrix_df
-        bin_df = self.bin_df
         area_df = self.regional_df
         em_data = em_df[em_df.VARIABLE == fn]
         err_matrix = pd.pivot_table(
@@ -112,12 +118,16 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
 
     def run_diagnostic(self):
         # Read in the stand attribute metadata and get continuous
+        # and categorical attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
         attrs = mp.filter(
             Flags.CONTINUOUS
             | Flags.ACCURACY
             | Flags.PROJECT
             | Flags.NOT_SPECIES
+        )
+        attrs.extend(
+            mp.filter(Flags.CATEGORICAL | Flags.ACCURACY | Flags.PROJECT)
         )
 
         # Write header line
@@ -126,4 +136,6 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
 
         # For each attribute, calculate the statistics
         for attr in attrs:
+            if self.attr_missing(attr):
+                continue
             self.run_attr(attr, olofsson_fh)
