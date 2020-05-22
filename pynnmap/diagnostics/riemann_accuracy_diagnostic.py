@@ -9,7 +9,7 @@ from pynnmap.core import (
     get_independence_filter,
     get_id_list,
 )
-from pynnmap.core.attribute_predictor import AttributePredictor
+from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
 from pynnmap.core.nn_finder import NNFinder
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
@@ -183,7 +183,9 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         # Create a plot attribute predictor instance
         model_attr_fn = p.stand_attribute_file
         model_attr_data = StandAttributes(model_attr_fn, mp, id_field=id_field)
-        plot_attr_predictor = AttributePredictor(model_attr_data, fltr)
+        plot_attr_predictor = ContinuousAttributePredictor(
+            model_attr_data, fltr
+        )
 
         # Iterate over values of k to calculate plot-pixel values
         for k, w in k_values:

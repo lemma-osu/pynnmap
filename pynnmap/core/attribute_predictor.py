@@ -1,3 +1,6 @@
+from abc import ABC, abstractmethod
+from functools import partial
+
 import numpy as np
 import pandas as pd
 
@@ -9,7 +12,17 @@ from pynnmap.parser.xml_stand_metadata_parser import Flags
 MIN_DIST = 0.000000000001
 
 
-class AttributePredictor(object):
+class AttributePredictor(ABC):
+    @property
+    @abstractmethod
+    def flags(self):
+        pass
+
+    @property
+    @abstractmethod
+    def stat_func(self):
+        pass
+
     def __init__(self, stand_attributes, independence_filter=None):
         """
         TODO: Flesh this out
@@ -20,8 +33,7 @@ class AttributePredictor(object):
         independence_filter : IndependenceFilter, optional
             Instance that defines non-independence for IDs in the model.
         """
-        flags = Flags.CONTINUOUS | Flags.ACCURACY
-        self.stand_attr_df = stand_attributes.get_attr_df(flags=flags)
+        self.stand_attr_df = stand_attributes.get_attr_df(flags=self.flags)
 
         # For speed, create a lookup of id_field to row index and convert
         # attribute data to a numpy array
@@ -40,6 +52,7 @@ class AttributePredictor(object):
             predictions.append(self.calculate_predictions_at_id(fp, k, weights))
         return predictions
 
+    # TODO: This doesn't belong here - it is attribute independent
     def get_zonal_pixel_df(self, predictions):
         zps = []
         for prd in predictions:
@@ -50,7 +63,7 @@ class AttributePredictor(object):
         d = {}
         col_names = self.stand_attr_df.columns
         for prd in predictions:
-            values = np.mean([x.get_predicted_attrs() for x in prd], axis=0)
+            values = self.stat_func([x.get_predicted_attrs() for x in prd])
             d[prd[0].id] = values
         prd_df = pd.DataFrame.from_dict(d, orient="index", columns=col_names)
         prd_df.sort_index(inplace=True)
@@ -133,3 +146,13 @@ class AttributePredictor(object):
 
         # Return the plot_predictions dict
         return plot_prediction
+
+
+class ContinuousAttributePredictor(AttributePredictor):
+    flags = Flags.CONTINUOUS | Flags.ACCURACY
+    stat_func = partial(np.mean, axis=0)
+
+
+class CategoricalAttributePredictor(AttributePredictor):
+    flags = Flags.CATEGORICAL | Flags.ACCURACY
+    stat_func = partial(np.median, axis=0)

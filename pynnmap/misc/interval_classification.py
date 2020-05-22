@@ -138,7 +138,7 @@ class UniqueValues:
         return np.array(sorted(uniq))
 
 
-class Classifier:
+class DataDigitizer:
     PRECISION = 0.0001
 
     def __init__(self, clf):

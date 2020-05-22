@@ -12,7 +12,10 @@ from pynnmap.core import (
 )
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.core.nn_finder import NNFinder
-from pynnmap.core.attribute_predictor import AttributePredictor
+from pynnmap.core.attribute_predictor import (
+    ContinuousAttributePredictor,
+    CategoricalAttributePredictor,
+)
 from pynnmap.diagnostics import diagnostic
 from pynnmap.diagnostics.error_matrix_diagnostic import ErrorMatrixDiagnostic
 from pynnmap.diagnostics.olofsson_diagnostic import OlofssonDiagnostic
@@ -237,14 +240,11 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 # prd_area, prd_nf_ha = self.get_predicted_estimates()
                 # prd_weights = prd_area.HECTARES
                 # prd_wa = histogram.WeightedArray(prd_vals, prd_weights)
-                # datasets = (obs_wa, prd_wa)
                 # prd_f_arr = None
-                # datasets = (obs_wa, prd)
                 # needs_conversion = (False,)
                 pass
             else:
                 prd_f_arr, prd_nf_ha, ha_per_px = get_predicted_raster(attr)
-                # datasets = (obs_wa, prd_f_arr)
                 needs_conversion = (False, True)
 
             # Bin the data based on field type
@@ -322,17 +322,28 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         model_attr_data = StandAttributes(
             model_attr_fn, mp, id_field=self.id_field
         )
-        plot_attr_predictor = AttributePredictor(model_attr_data, fltr)
+        cont_predictor = ContinuousAttributePredictor(model_attr_data, fltr)
+        cat_predictor = CategoricalAttributePredictor(model_attr_data, fltr)
 
         # Calculate the predictions for each plot
-        predictions = plot_attr_predictor.calculate_predictions(
+        # TODO: No need to create local predictions variable here, do it within
+        #  AttributePredictor class
+        cont_predictions = cont_predictor.calculate_predictions(
             neighbor_data, k=parser.k, weights=get_weights(parser)
+        )
+        cat_predictions = cat_predictor.calculate_predictions(
+            neighbor_data, k=1
         )
 
         # Write out predicted attribute file
-        prd_df = plot_attr_predictor.get_predicted_attributes_df(
-            predictions, self.id_field
+        cont_prd_df = cont_predictor.get_predicted_attributes_df(
+            cont_predictions, self.id_field
         )
+        cat_prd_df = cat_predictor.get_predicted_attributes_df(
+            cat_predictions, self.id_field
+        )
+
+        prd_df = cont_prd_df.merge(cat_prd_df, on=self.id_field)
         df_to_csv(prd_df, parser.regional_predicted_plot_file, index=True)
 
     def create_error_matrix_file(self):

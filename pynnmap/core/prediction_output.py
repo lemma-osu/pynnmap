@@ -2,7 +2,7 @@ import numpy as np
 
 from pynnmap.core import get_independence_filter, get_weights
 from pynnmap.core.stand_attributes import StandAttributes
-from pynnmap.core.attribute_predictor import AttributePredictor
+from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
 from pynnmap.misc.utilities import df_to_csv
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 
@@ -83,7 +83,7 @@ class IndependentOutput(PredictionOutput):
         fltr = get_independence_filter(p)
 
         # Create a plot attribute predictor instance
-        plot_attr_predictor = AttributePredictor(attr_data, fltr)
+        plot_attr_predictor = ContinuousAttributePredictor(attr_data, fltr)
 
         # Calculate the predictions for each plot
         predictions = plot_attr_predictor.calculate_predictions(
@@ -129,7 +129,7 @@ class DependentOutput(PredictionOutput):
         self.write_nn_index_file(neighbor_data, self.id_field, nn_index_file)
 
         # Create a plot attribute predictor instance
-        plot_attr_predictor = AttributePredictor(attr_data)
+        plot_attr_predictor = ContinuousAttributePredictor(attr_data)
 
         # Calculate the predictions for each plot
         predictions = plot_attr_predictor.calculate_predictions(

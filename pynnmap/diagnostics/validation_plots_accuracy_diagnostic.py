@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from pynnmap.core.attribute_predictor import AttributePredictor
+from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
 from pynnmap.core.nn_finder import NNFinder
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
@@ -80,7 +80,7 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
         attr_fn = p.stand_attribute_file
         mp = xsmp.XMLStandMetadataParser(p.stand_metadata_file)
         attr_data = StandAttributes(attr_fn, mp, id_field=self.id_field)
-        attr_predictor = AttributePredictor(attr_data)
+        attr_predictor = ContinuousAttributePredictor(attr_data)
 
         # Set weights correctly
         # TODO: Duplicate code with PredictionOutput.get_weights()
