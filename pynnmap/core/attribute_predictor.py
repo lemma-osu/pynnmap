@@ -148,6 +148,12 @@ class AttributePredictor(ABC):
         return plot_prediction
 
 
+def majority(a):
+    v, c = np.unique(a, return_counts=True)
+    ind = np.argmax(c)
+    return v[ind]
+
+
 class ContinuousAttributePredictor(AttributePredictor):
     flags = Flags.CONTINUOUS | Flags.ACCURACY
     stat_func = partial(np.mean, axis=0)
@@ -155,4 +161,4 @@ class ContinuousAttributePredictor(AttributePredictor):
 
 class CategoricalAttributePredictor(AttributePredictor):
     flags = Flags.CATEGORICAL | Flags.ACCURACY
-    stat_func = partial(np.median, axis=0)
+    stat_func = partial(np.apply_along_axis, majority, 0)
