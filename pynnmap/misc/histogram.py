@@ -129,7 +129,7 @@ def bin_continuous(*datasets, bins):
     return histogram_data
 
 
-def bin_categorical(*datasets, class_names=None):
+def bin_categorical(*datasets, code_dict=None):
     """
     Given multiple datasets, create histogram bins and counts based on
     unique classes present in the data.  Note that this is only currently
@@ -139,83 +139,61 @@ def bin_categorical(*datasets, class_names=None):
     ----------
     datasets : sequence of lists, nd-arrays, WeightedArray instances
         The set of datasets to bin
-    class_names : list, optional
+    code_dict : list, optional
         A list of labels to be matched to the names
 
     Returns
     -------
     histogram_data : list of CategoricalHistogramBC instances
     """
-    if class_names is None:
-        class_names = []
+    # Two paths for finding the creating the bins.  If code_dict is passed
+    # in, use a crosswalk of the keys to an enumeration to create the
+    # binning.  This is necessary because there may be gaps in the codes.
+    # If no code_dict is specified, create the lookup directly from the
+    # unique values in the data.
+    if code_dict is None:
+        code_dict = []
+        # Figure out the unique values in these datasets
+        all_unique = []
+        for ds in datasets:
+            if isinstance(ds, WeightedArray):
+                a = np.unique(ds.values)
+            else:
+                a = np.unique(ds)
+            all_unique.extend([i for i in a])
+        codes = np.unique([int(x) for x in all_unique])
+        code_dict = dict((i, str(i)) for i in codes)
 
-    # Figure out the unique values in these datasets
-    all_unique = []
-    for ds in datasets:
-        if isinstance(ds, WeightedArray):
-            a = np.unique(ds.values)
-        else:
-            a = np.unique(ds)
-        all_unique.extend([i for i in a])
-    unique = np.unique([int(x) for x in all_unique])
-
-    # Create a mapping between these unique values and an enumeration.
-    # The enumeration is needed to do a histogram on the data
-    class_mapped = {}
-    for (i, value) in enumerate(unique):
-        class_mapped[value] = i
+    # Create a mapping between these codes and an enumeration.
+    # The enumeration is needed to do a histogram (using bins) on the data
+    code_mapping = {}
+    for i, code in enumerate(sorted(code_dict.keys())):
+        code_mapping[code] = i
 
     # We need to create an ending edge for the last bin.  Because this is an
     # enumeration, we can safely add one to the end of the list for this
     # endpoint.  Note that we only add it to the bin and not to the
-    # class_mapped dictionary
-    class_values = list(class_mapped.values())
-    class_values.sort()
-    class_values.append(max(class_values) + 1)
+    # code_mapping dictionary
+    bins = list(sorted(code_mapping.values()))
+    bins.append(bins[-1] + 1)
 
-    # Create the class names either from the class_names variable or from
-    # the data themselves.  If coming from the class_names variable, we
-    # need to map through the class_mapped keys
-    c_names = []
-    class_keys = list(class_mapped.keys())
-    class_keys.sort()
-
-    if len(class_names):
-        for key in class_keys:
-            if key is not None:
-                key = str(key)
-
-                # Find the key in the class_names dict
-                try:
-                    value = str(class_names[int(key)])
-                except KeyError:
-                    value = "Unknown"
-
-                # Add this value to the c_names list
-                c_names.append(value)
-    else:
-        for key in class_keys:
-            c_names.append(str(key))
-
+    # Bin into histograms
     histogram_data = []
     for ds in datasets:
-        # Calculate the histogram through use of a lookup table (class_values)
+        # Calculate the histogram through use of a lookup table (bins)
         if isinstance(ds, WeightedArray):
-            mapped = np.array([class_mapped[x] for x in ds.values])
+            mapped = np.array([code_mapping[x] for x in ds.values])
             mapped_ds = WeightedArray(mapped, ds.weights)
-            counts, endpoints = mapped_ds.histogram(bins=class_values)
+            counts, endpoints = mapped_ds.histogram(bins=bins)
         else:
-            mapped = np.array([class_mapped[x] for x in ds])
-            counts, endpoints = np.histogram(mapped, bins=class_values)
-
-        # counts, endpoints = np.histogramdd(
-        #     enum_data, bins=[class_values], weights=ds.weights)
-        # endpoints = list(endpoints)
+            mapped = np.array([code_mapping[x] for x in ds])
+            counts, endpoints = np.histogram(mapped, bins=bins)
 
         # Create a new CategoricalHistogramBC instance and append
         # to histogram_data
+        code_names = [code_dict[k] for k in sorted(code_dict.keys())]
         histogram_data.append(
-            CategoricalHistogramBC(counts, endpoints, c_names)
+            CategoricalHistogramBC(counts, endpoints, code_names)
         )
 
     return histogram_data

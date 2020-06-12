@@ -172,13 +172,13 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             histograms = histogram.bin_continuous(*(obs, prd), bins=bins)
         else:
             if attr.codes:
-                class_names = {}
+                code_dict = {}
                 for code in attr.codes:
-                    class_names[int(code.code_value)] = code.label
+                    code_dict[int(code.code_value)] = code.label
             else:
-                class_names = None
+                code_dict = None
             histograms = histogram.bin_categorical(
-                *(obs, prd), class_names=class_names
+                *(obs, prd), code_dict=code_dict
             )
 
         histograms[0].name = "OBSERVED"
