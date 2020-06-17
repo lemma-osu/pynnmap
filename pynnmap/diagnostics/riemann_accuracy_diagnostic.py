@@ -11,6 +11,7 @@ from pynnmap.core import (
 )
 from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
 from pynnmap.core.nn_finder import NNFinder
+from pynnmap.core.prediction_output import subset_neighbors
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc.utilities import df_to_csv
@@ -200,9 +201,12 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             file_name = "plot_pixel_predicted_k{k}.csv".format(k=k)
             output_file = os.path.join(root_dir, "plot_pixel", file_name)
 
+            # Subset neighbors to just this k
+            plot_predictions = subset_neighbors(neighbor_data, k, fltr)
+
             # Calculate the predictions
             predictions = plot_attr_predictor.calculate_predictions(
-                neighbor_data, k=k, weights=w
+                plot_predictions, k=k, weights=w
             )
 
             # Get the predicted attributes
