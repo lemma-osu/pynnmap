@@ -197,6 +197,8 @@ def main(parameter_file, attribute):
     scalar = scalars.get_scalar(attr_name.upper())
 
     # Open the output image for writing
+    if not os.path.exists("attribute_rasters"):
+        os.makedirs("attribute_rasters")
     out_fn = "attribute_rasters/{}.tif".format(attr_name)
     out_raster = open_output_raster(profile, window, scalar, out_fn)
 
