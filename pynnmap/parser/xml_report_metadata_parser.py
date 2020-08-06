@@ -117,6 +117,10 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
         return float(self.root.overview.model_region_area)
 
     @property
+    def forest_area(self):
+        return float(self.root.overview.forest_area)
+
+    @property
     def model_region_name(self):
         return str(self.root.overview.model_region_name)
 
