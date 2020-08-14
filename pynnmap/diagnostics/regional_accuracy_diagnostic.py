@@ -101,6 +101,18 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             if bin_type == "EQUAL_INTERVAL":
                 clf = ic.EqualIntervals(bin_count=bin_count)
                 bins = clf(np.hstack((obs_arr, prd_arr)))
+            elif bin_type == "NATURAL_BREAKS":
+                # This is a hack to make this method tractable.  First,
+                # stack the observed and predicted arrays, sort it, and
+                # then subset to subset_size elements, making sure to include
+                # the min and max of the array.
+                subset_size = 40000
+                a = np.hstack((obs_arr, prd_arr))
+                a.sort()
+                step = max(1, int(a.size / subset_size))
+                arr = np.hstack((a.min(), a[step // 2 :: step], a.max()))
+                clf = ic.NaturalBreaksIntervals(bin_count=bin_count)
+                bins = clf(arr)
             elif bin_type == "QUANTILE":
                 clf = ic.QuantileIntervals(bin_count=bin_count)
                 bins = clf(obs_arr)

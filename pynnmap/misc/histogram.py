@@ -95,6 +95,7 @@ def get_dynamic_bins(arr, bin_type="EQUAL_INTERVAL", bins=10):
     classifier_dict = {
         "EQUAL_INTERVAL": ic.EqualIntervals,
         "QUANTILE": ic.QuantileIntervals,
+        "NATURAL_BREAKS": ic.NaturalBreaksIntervals,
     }
     classifier = classifier_dict[bin_type](bins)
     return classifier(arr)

@@ -41,6 +41,7 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
     _classifier = {
         "EQUAL_INTERVAL": ic.EqualIntervals,
         "QUANTILE": ic.QuantileIntervals,
+        "NATURAL_BREAKS": ic.NaturalBreaksIntervals,
     }
 
     def __init__(

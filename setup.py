@@ -15,6 +15,7 @@ setup(
         "click",
         "click-plugins",
         "gdal",
+        "jenkspy",
         "lxml",
         "matplotlib",
         "numpy",
