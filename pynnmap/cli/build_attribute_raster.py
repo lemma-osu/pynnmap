@@ -153,7 +153,7 @@ def main(parameter_file, attribute):
 
     # Get the value of k
     attr_name = attribute.lower()
-    k = scalars.get_k(attr_name.upper())
+    k = min(p.k, scalars.get_k(attr_name.upper()))
 
     # Build the neighbor rasters if not present
     nn_files = [p.get_neighbor_file(idx) for idx in range(1, k + 1)]
