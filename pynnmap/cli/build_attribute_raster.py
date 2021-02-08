@@ -67,7 +67,7 @@ def open_output_raster(profile, window, scalar, out_fn):
 
 
 def get_nn_arrays(rasters, window):
-    return [x.read(1, window=window) for x in rasters]
+    return [x.read(1, window=window, masked=True) for x in rasters]
 
 
 def get_raster(fn):
@@ -130,7 +130,10 @@ def process_raster(
         out_arr = np.where(nf_arr, out_arr, -1)
 
         # Mask and fill
-        out_arr = np.ma.masked_array(out_arr, mask=mask_arr.mask)
+        nn_mask = np.any([x.mask for x in nn_arrs], axis=0)
+        mask = np.logical_and(nf_arr, nn_mask)
+        mask = np.logical_or(mask, mask_arr.mask)
+        out_arr = np.ma.masked_array(out_arr, mask=mask)
 
         # Write out array
         out_raster.write(
@@ -150,8 +153,7 @@ def main(parameter_file, attribute):
 
     # Get the value of k
     attr_name = attribute.lower()
-    k = scalars.get_k(attr_name.upper())
-    k = 7
+    k = min(p.k, scalars.get_k(attr_name.upper()))
 
     # Build the neighbor rasters if not present
     nn_files = [p.get_neighbor_file(idx) for idx in range(1, k + 1)]
@@ -195,7 +197,9 @@ def main(parameter_file, attribute):
     scalar = scalars.get_scalar(attr_name.upper())
 
     # Open the output image for writing
-    out_fn = "{}.tif".format(attr_name)
+    if not os.path.exists("attribute_rasters"):
+        os.makedirs("attribute_rasters")
+    out_fn = "attribute_rasters/{}.tif".format(attr_name)
     out_raster = open_output_raster(profile, window, scalar, out_fn)
 
     # Run the process

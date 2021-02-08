@@ -1,3 +1,4 @@
+import jenkspy
 import numpy as np
 import pandas as pd
 
@@ -101,6 +102,23 @@ class QuantileIntervals(DynamicIntervals):
 
     def __call__(self, arr: np.ndarray):
         return approx_quantiles(arr, self.bin_count)
+
+
+def jenks_natural_breaks(arr, bin_count):
+    return jenkspy.jenks_breaks(arr, bin_count)
+
+
+class NaturalBreaksIntervals(DynamicIntervals):
+    """
+    Classifier to find class endpoints based on Jenks' natural breaks
+    classification
+    """
+
+    def __init__(self, bin_count: int = 10):
+        super().__init__(bin_count)
+
+    def __call__(self, arr: np.ndarray):
+        return jenks_natural_breaks(arr, self.bin_count)
 
 
 class CustomIntervals(RangeIntervals):

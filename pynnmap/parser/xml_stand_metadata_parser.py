@@ -30,6 +30,19 @@ class XMLAttributeCode:
         return str(self.root.label)
 
 
+class XMLFuzzyClass:
+    def __init__(self, elem):
+        self.root = elem
+
+    @property
+    def original_class(self):
+        return getattr(self.root, "class")
+
+    @property
+    def fuzzy_class(self):
+        return self.root.fuzzy_class
+
+
 class XMLAttributeField(object):
     def __init__(self, elem):
         self.root = elem
@@ -59,6 +72,14 @@ class XMLAttributeField(object):
         try:
             codes_elem = self.root.codes
             return [XMLAttributeCode(x) for x in codes_elem.iterchildren()]
+        except AttributeError:
+            return []
+
+    @property
+    def fuzzy_classes(self):
+        try:
+            fuzzy_classes_elem = self.root.fuzzy_classes
+            return [XMLFuzzyClass(x) for x in fuzzy_classes_elem.iterchildren()]
         except AttributeError:
             return []
 

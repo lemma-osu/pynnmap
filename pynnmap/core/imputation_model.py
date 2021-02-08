@@ -31,7 +31,7 @@ class ImputationModel(object):
         plot_scores = np.dot(
             ord_model.plot_scores[:, 0:n_axes], self.ax_weights
         )
-        self.nn_finder = NearestNeighbors(max_neighbors)
+        self.nn_finder = NearestNeighbors(n_neighbors=max_neighbors)
         self.nn_finder.fit(plot_scores)
 
         # Create arrays of the ord_model's var_coeff and axis_intercepts

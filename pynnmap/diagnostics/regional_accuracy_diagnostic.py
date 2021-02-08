@@ -1,30 +1,19 @@
 import numpy as np
 import pandas as pd
 import rasterio
-from matplotlib import mlab
-from osgeo import gdal, gdalconst
 
 from pynnmap.core import (
     get_id_year_crosswalk,
-    get_independence_filter,
-    get_weights,
     get_id_list,
 )
-from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.core.nn_finder import NNFinder
-from pynnmap.core.attribute_predictor import (
-    ContinuousAttributePredictor,
-    CategoricalAttributePredictor,
-)
+from pynnmap.core.prediction_output import IndependentOutput
 from pynnmap.diagnostics import diagnostic
 from pynnmap.diagnostics.error_matrix_diagnostic import ErrorMatrixDiagnostic
 from pynnmap.diagnostics.olofsson_diagnostic import OlofssonDiagnostic
 from pynnmap.misc import histogram
 from pynnmap.misc import interval_classification as ic
-from pynnmap.misc import utilities
-from pynnmap.misc.utilities import df_to_csv
 from pynnmap.misc.weighted_array import WeightedArray
-from pynnmap.parser.xml_parameter_parser import XMLParameterParser
 from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
 from pynnmap.parser.xml_stand_metadata_parser import Flags
 
@@ -90,55 +79,6 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         # Return this information
         return obs_df, nf_hectares, ns_hectares
 
-    def get_predicted_estimates(self):
-        # Read in the predicted raster
-        ds = gdal.Open(self.predicted_raster, gdalconst.GA_ReadOnly)
-        rb = ds.GetRasterBand(1)
-
-        # Get the cell area for converting from pixel counts to hectares
-        gt = ds.GetGeoTransform()
-        cell_area = gt[1] * gt[1]
-        hectares_per_pixel = cell_area / 10000.0
-
-        # Calculate statistics directly on the raster
-        z_min, z_max = int(rb.GetMinimum()), int(rb.GetMaximum())
-        z_range = z_max - z_min + 1
-        hist = rb.GetHistogram(z_min - 0.5, z_max + 0.5, z_range, False, False)
-        bins = list(range(z_min, z_max + 1))
-        rat = [(x, y) for x, y in zip(bins, hist) if y != 0]
-
-        # Get the IDs and counts (converted to hectares)
-        id_recs = []
-        nf_hectares = 0
-        for (id_val, count) in rat:
-            hectares = count * hectares_per_pixel
-            if id_val <= 0:
-                nf_hectares += hectares
-            else:
-                id_recs.append((id_val, hectares))
-
-        # Release the dataset
-        del ds
-
-        # Convert this to a recarray
-        names = (self.id_field, "HECTARES")
-        ids = np.rec.fromrecords(id_recs, names=names)
-
-        # Read in the attribute file
-        sad = pd.read_csv(self.stand_attribute_file)
-
-        # Ensure that all IDs in the id_count_dict are in the attribute data
-        ids_1 = getattr(ids, self.id_field)
-        ids_2 = getattr(sad, self.id_field)
-        if not np.all(np.in1d(ids_1, ids_2)):
-            err_msg = "Not all values in the raster are present in the "
-            err_msg += "attribute data"
-            raise ValueError(err_msg)
-
-        # Join the two recarrays together
-        predicted_data = mlab.rec_join(self.id_field, ids, sad)
-        return predicted_data, nf_hectares
-
     @staticmethod
     def insert_class(hist, name, count):
         hist.bin_counts = np.insert(hist.bin_counts, [0], count)
@@ -161,6 +101,18 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             if bin_type == "EQUAL_INTERVAL":
                 clf = ic.EqualIntervals(bin_count=bin_count)
                 bins = clf(np.hstack((obs_arr, prd_arr)))
+            elif bin_type == "NATURAL_BREAKS":
+                # This is a hack to make this method tractable.  First,
+                # stack the observed and predicted arrays, sort it, and
+                # then subset to subset_size elements, making sure to include
+                # the min and max of the array.
+                subset_size = 40000
+                a = np.hstack((obs_arr, prd_arr))
+                a.sort()
+                step = max(1, int(a.size / subset_size))
+                arr = np.hstack((a.min(), a[step // 2 :: step], a.max()))
+                clf = ic.NaturalBreaksIntervals(bin_count=bin_count)
+                bins = clf(arr)
             elif bin_type == "QUANTILE":
                 clf = ic.QuantileIntervals(bin_count=bin_count)
                 bins = clf(obs_arr)
@@ -172,13 +124,13 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             histograms = histogram.bin_continuous(*(obs, prd), bins=bins)
         else:
             if attr.codes:
-                class_names = {}
+                code_dict = {}
                 for code in attr.codes:
-                    class_names[int(code.code_value)] = code.label
+                    code_dict[int(code.code_value)] = code.label
             else:
-                class_names = None
+                code_dict = None
             histograms = histogram.bin_categorical(
-                *(obs, prd), class_names=class_names
+                *(obs, prd), code_dict=code_dict
             )
 
         histograms[0].name = "OBSERVED"
@@ -228,24 +180,11 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             obs_vals = obs_area[attr.field_name]
             obs_wa = WeightedArray(obs_vals, obs_weights)
 
-            # Getting predicted areas differ based on how many neighbors are
-            # used.  If using k=1, we can use a lookup table to get pixel
-            # areas for imputed plots and crosswalk to attributes; otherwise
-            # we need to pre-calculate the attribute raster and obtain values
-            # from it
+            # Get predicted areas from predicted rasters that should be
+            # pre-generated
             prd_ns_ha = 0.0
-            prd_nf_ha = 0.0
-            ha_per_px = 0.0
-            if self.parameter_parser.k == 1:
-                # prd_area, prd_nf_ha = self.get_predicted_estimates()
-                # prd_weights = prd_area.HECTARES
-                # prd_wa = histogram.WeightedArray(prd_vals, prd_weights)
-                # prd_f_arr = None
-                # needs_conversion = (False,)
-                pass
-            else:
-                prd_f_arr, prd_nf_ha, ha_per_px = get_predicted_raster(attr)
-                needs_conversion = (False, True)
+            prd_f_arr, prd_nf_ha, ha_per_px = get_predicted_raster(attr)
+            needs_conversion = (False, True)
 
             # Bin the data based on field type
             bins = self._bin_data(
@@ -312,39 +251,9 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         finder = NNFinder(parser)
         neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
 
-        # Create an independence filter based on the relationship of the
-        # id_field and the no_self_assign_field
-        fltr = get_independence_filter(parser)
-
-        # Get the stand attributes and filter to continuous accuracy fields
-        mp = XMLStandMetadataParser(self.stand_metadata_file)
-        model_attr_fn = parser.stand_attribute_file
-        model_attr_data = StandAttributes(
-            model_attr_fn, mp, id_field=self.id_field
-        )
-        cont_predictor = ContinuousAttributePredictor(model_attr_data, fltr)
-        cat_predictor = CategoricalAttributePredictor(model_attr_data, fltr)
-
-        # Calculate the predictions for each plot
-        # TODO: No need to create local predictions variable here, do it within
-        #  AttributePredictor class
-        cont_predictions = cont_predictor.calculate_predictions(
-            neighbor_data, k=parser.k, weights=get_weights(parser)
-        )
-        cat_predictions = cat_predictor.calculate_predictions(
-            neighbor_data, k=1
-        )
-
-        # Write out predicted attribute file
-        cont_prd_df = cont_predictor.get_predicted_attributes_df(
-            cont_predictions, self.id_field
-        )
-        cat_prd_df = cat_predictor.get_predicted_attributes_df(
-            cat_predictions, self.id_field
-        )
-
-        prd_df = cont_prd_df.merge(cat_prd_df, on=self.id_field)
-        df_to_csv(prd_df, parser.regional_predicted_plot_file, index=True)
+        # Get predicted attributes
+        output = IndependentOutput(parser, neighbor_data)
+        output.write_attribute_predictions(parser.regional_predicted_plot_file)
 
     def create_error_matrix_file(self):
         parser = self.parameter_parser

@@ -10,25 +10,24 @@ from pynnmap.parser import parameter_parser_factory as ppf
 @click.argument("parameter-file", type=click.Path(exists=True), required=True)
 def cross_validate(parameter_file):
     # Get the model parameters
-    p = ppf.get_parameter_parser(parameter_file)
+    parser = ppf.get_parameter_parser(parameter_file)
 
     # Create a NNFinder object
-    finder = NNFinder(p)
+    finder = NNFinder(parser)
 
     # Run cross-validation to create the neighbor/distance information
     neighbor_data = finder.calculate_neighbors_cross_validation()
 
-    # Create an IndependentOutput object
-    independent_output = IndependentOutput(p)
+    # Calculate independent and dependent predictive accuracy
+    output = IndependentOutput(parser, neighbor_data)
+    output.write_zonal_records(parser.independent_zonal_pixel_file)
+    output.write_attribute_predictions(parser.independent_predicted_file)
 
-    # Create the independent predicted data and zonal pixel file
-    independent_output.create_predictions(neighbor_data)
+    output = DependentOutput(parser, neighbor_data)
+    output.write_zonal_records(parser.dependent_zonal_pixel_file)
+    output.write_attribute_predictions(parser.dependent_predicted_file)
+    output.write_nn_index_file(neighbor_data, parser.dependent_nn_index_file)
 
-    # Create a DependentOutput object
-    dependent_output = DependentOutput(p)
-
-    # Create the dependent predicted data, zonal pixel file and nn index file
-    dependent_output.create_predictions(neighbor_data)
-
-    diagnostic_wrapper = dw.DiagnosticWrapper(p)
+    # Calculate all accuracy diagnostics
+    diagnostic_wrapper = dw.DiagnosticWrapper(parser)
     diagnostic_wrapper.run_accuracy_diagnostics()

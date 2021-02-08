@@ -2,6 +2,7 @@ affine>=2.3.0
 click>=6.7
 click-plugins>=1.1.1
 gdal>=2.2.3
+jenkspy>=0.1.5
 lxml>=3.7.3
 matplotlib>=2.0.0
 numpy>=1.12.1

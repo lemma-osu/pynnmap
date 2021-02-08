@@ -41,6 +41,7 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
     _classifier = {
         "EQUAL_INTERVAL": ic.EqualIntervals,
         "QUANTILE": ic.QuantileIntervals,
+        "NATURAL_BREAKS": ic.NaturalBreaksIntervals,
     }
 
     def __init__(
@@ -143,7 +144,12 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
             if self.attr_missing(attr):
                 continue
 
-            if self.clf is not None:
+            if attr.field_type == "CATEGORICAL":
+                bins = sorted([int(x.code_value) for x in attr.codes])
+                bins.append(bins[-1] + 1)
+                clf = ic.CustomIntervals(bins)
+                err_mat, bins = self.run_attr(attr, clf, return_bins=True)
+            elif self.clf is not None:
                 err_mat, bins = self.run_attr(attr, self.clf, return_bins=True)
             else:
                 if attr.field_name not in self.clf_dict:
@@ -165,10 +171,14 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
 
             if self.output_bin_file:
                 for i in range(len(labels)):
+                    try:
+                        start, end = bins[i], bins[i + 1]
+                    except IndexError:
+                        start, end = bins[i], bins[i] + 1
                     out_list = [
                         attr.field_name,
                         "{}".format(labels[i]),
-                        "{:.4f}".format(bins[i]),
-                        "{:.4f}".format(bins[i + 1]),
+                        "{:.4f}".format(start),
+                        "{:.4f}".format(end),
                     ]
                     bin_fh.write(",".join(out_list) + "\n")
