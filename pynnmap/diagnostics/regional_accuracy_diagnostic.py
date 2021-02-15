@@ -6,7 +6,7 @@ from pynnmap.core import (
     get_id_year_crosswalk,
     get_id_list,
 )
-from pynnmap.core.nn_finder import NNFinder
+from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.core.prediction_output import IndependentOutput
 from pynnmap.diagnostics import diagnostic
 from pynnmap.diagnostics.error_matrix_diagnostic import ErrorMatrixDiagnostic
@@ -243,13 +243,9 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         # condition (< 2.0)
         ids = self.exclude_forest_minority(ids)
 
-        # Get the crosswalk to assessment year
-        id_x_year = get_id_year_crosswalk(parser)
-        id_x_year = dict((k, v) for k, v in id_x_year.items() if k in ids)
-
-        # Create a NNFinder object and calculate neighbors and distances
-        finder = NNFinder(parser)
-        neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
+        # Create a PixelNNFinder object and calculate neighbors and distances
+        finder = PixelNNFinder(parser)
+        neighbor_data = finder.calculate_neighbors_at_ids(ids)
 
         # Get predicted attributes
         output = IndependentOutput(parser, neighbor_data)

@@ -1,7 +1,7 @@
 import click
 
 from pynnmap.core.prediction_output import DependentOutput, IndependentOutput
-from pynnmap.core.nn_finder import NNFinder
+from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.diagnostics import diagnostic_wrapper as dw
 from pynnmap.parser import parameter_parser_factory as ppf
 
@@ -12,8 +12,8 @@ def find_outliers(parameter_file):
     # Get the model parameters
     p = ppf.get_parameter_parser(parameter_file)
 
-    # Create a NNFinder object
-    finder = NNFinder(p)
+    # Create a PixelNNFinder object
+    finder = PixelNNFinder(p)
 
     # Run cross-validation to create the neighbor/distance information
     neighbor_data = finder.calculate_neighbors_cross_validation()

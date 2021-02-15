@@ -8,7 +8,7 @@ matplotlib>=2.0.0
 numpy>=1.12.1
 pandas>=0.20.1
 rasterio>=1.1.0
-rpy2>=2.7.8,<=2.9.5
+rpy2>=2.7.8
 scikit-learn>=0.20.2
 scipy>=0.19.0
 six>=1.10.0
