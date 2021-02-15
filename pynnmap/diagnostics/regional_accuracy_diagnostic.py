@@ -2,10 +2,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 
-from pynnmap.core import (
-    get_id_year_crosswalk,
-    get_id_list,
-)
+from pynnmap.core import get_id_list
 from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.core.prediction_output import IndependentOutput
 from pynnmap.diagnostics import diagnostic

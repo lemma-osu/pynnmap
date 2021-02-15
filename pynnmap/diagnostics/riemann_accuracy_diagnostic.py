@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 from pynnmap.core import (
-    get_id_year_crosswalk,
     get_independence_filter,
     get_id_list,
 )

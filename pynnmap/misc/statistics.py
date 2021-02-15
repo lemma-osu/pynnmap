@@ -237,16 +237,7 @@ def rmse(x, y):
     -------
     out : float
         Root mean square error of x and y
-
-    Example
-    --------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = rmse(x,y)
-    >>> z
-    0.57735026918962573
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
@@ -310,16 +301,7 @@ def pearson_r(x, y):
     -------
     out : float
         Pearson's correlation coefficient between x and y
-
-    Example
-    --------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = pearson_r(x,y)
-    >>> z
-    0.98198050606196585
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
@@ -351,15 +333,7 @@ def spearman_r(x, y):
     out : float
         Spearman's rank correlation coefficient between x and y
 
-    Example
-    -------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = spearman_r(x,y)
-    >>> z
-    1.0
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
@@ -390,14 +364,6 @@ def r2(x, y):
     -------
     out : float
         Coefficient of determination (r2) between x and y
-
-    Example
-    --------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = r2(x,y)
-    >>> z
-    0.5
     """
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)

@@ -153,7 +153,6 @@ def bin_categorical(*datasets, code_dict=None):
     # If no code_dict is specified, create the lookup directly from the
     # unique values in the data.
     if code_dict is None:
-        code_dict = []
         # Figure out the unique values in these datasets
         all_unique = []
         for ds in datasets:

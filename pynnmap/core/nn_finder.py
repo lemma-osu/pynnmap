@@ -102,12 +102,7 @@ def get_footprint_value(window, band, gt):
 
 
 def extract_footprints(
-    raster_counts,
-    raster_dict,
-    years,
-    fp_windows,
-    year_ids,
-    ord_year_var_dict,
+    raster_counts, raster_dict, years, fp_windows, year_ids, ord_year_var_dict,
 ):
     # Create a reverse dictionary of path name to variable name
     # There will be multiple identical entries for non-temporally varying
@@ -282,9 +277,7 @@ class NNFinder(ABC):
 
     @staticmethod
     def get_neighbors(
-        env_data,
-        ord_model,
-        imp_model,
+        env_data, ord_model, imp_model,
     ):
         var_names = ord_model.var_names
         neighbor_data = {}

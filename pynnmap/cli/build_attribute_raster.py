@@ -8,14 +8,13 @@ import rasterio
 from affine import Affine
 from rasterio.windows import Window
 
-from pynnmap.misc import utilities
 from pynnmap.parser import parameter_parser_factory as ppf
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 from . import scalars
 
 
 # Weights
-K7_WEIGHTS = np.array([0.6321, 0.2325, 0.0855, 0.0315, 0.0116, 0.0043, 0.0016,])
+K7_WEIGHTS = np.array([0.6321, 0.2325, 0.0855, 0.0315, 0.0116, 0.0043, 0.0016])
 K7_WEIGHTS /= K7_WEIGHTS.sum()
 
 WEIGHTS = {1: np.array([1.0]), 7: K7_WEIGHTS}

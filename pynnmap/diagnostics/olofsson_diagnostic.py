@@ -77,9 +77,8 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
             p.olofsson_file,
         )
 
-    def write_records(
-        self, fh, attr_name, bin_names, mapped, adjusted, se_adjusted
-    ):
+    @staticmethod
+    def write_records(fh, attr_name, bin_names, mapped, adjusted, se_adjusted):
         for record in zip(
             cycle([attr_name]), bin_names, mapped, adjusted, se_adjusted
         ):
