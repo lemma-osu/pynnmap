@@ -9,6 +9,7 @@ setup(
     author="LEMMA group @ Oregon State University",
     author_email="matt.gregory@oregonstate.edu",
     packages=find_packages(),
+    include_package_data=True,
     description="Python based nearest neighbor mapping",
     install_requires=[
         "affine",
