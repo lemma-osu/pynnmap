@@ -1,10 +1,13 @@
+import os
+
 import numpy as np
 import pandas as pd
 
 from pynnmap.misc import numpy_ordination
 from pynnmap.parser import parameter_parser as pp
 
-VEGAN_SCRIPT = "L:/resources/code/models/pre_process/gnn_vegan.r"
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+VEGAN_SCRIPT = os.path.join(BASEDIR, "gnn_vegan.r")
 
 
 class Ordination(object):
