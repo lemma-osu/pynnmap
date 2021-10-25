@@ -39,5 +39,6 @@ setup(
         find-outliers=pynnmap.cli.find_outliers:find_outliers
         impute=pynnmap.cli.impute:impute
         new-targets=pynnmap.cli.new_targets:new_targets
+        run-diagnostics=pynnmap.cli.run_diagnostics:main
     """,
 )
