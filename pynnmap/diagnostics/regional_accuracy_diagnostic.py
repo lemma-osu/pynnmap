@@ -1,7 +1,10 @@
+import os
+
 import numpy as np
 import pandas as pd
 import rasterio
 
+from pynnmap.cli import build_attribute_raster
 from pynnmap.core import get_id_list
 from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.core.prediction_output import IndependentOutput
@@ -176,6 +179,14 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             # Observed values and weights for this field
             obs_vals = obs_area[attr.field_name]
             obs_wa = WeightedArray(obs_vals, obs_weights)
+
+            # Ensure the predicted raster has been created
+            fn = "./attribute_rasters/{}.tif".format(attr.field_name.lower())
+            if not os.path.exists(fn):
+                print(f"Building {attr.field_name} raster ...")
+                build_attribute_raster.main(
+                    self.parameter_parser, attr.field_name
+                )
 
             # Get predicted areas from predicted rasters that should be
             # pre-generated
