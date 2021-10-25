@@ -140,29 +140,20 @@ def process_raster(
         )
 
 
-@click.command(
-    name="build-attribute-raster",
-    short_help="Build raster for numerical attributes",
-)
-@click.argument("parameter-file", type=click.Path(exists=True), required=True)
-@click.argument("attribute", type=click.STRING, required=True)
-def main(parameter_file, attribute):
-    # Read in the parameters
-    p = ppf.get_parameter_parser(parameter_file)
-
+def main(params, attribute):
     # Get the value of k
     attr_name = attribute.lower()
-    k = min(p.k, scalars.get_k(attr_name.upper()))
+    k = min(params.k, scalars.get_k(attr_name.upper()))
 
     # Build the neighbor rasters if not present
-    nn_files = [p.get_neighbor_file(idx) for idx in range(1, k + 1)]
+    nn_files = [params.get_neighbor_file(idx) for idx in range(1, k + 1)]
     try:
         _ = [rasterio.open(x) for x in nn_files]
     except rasterio.errors.RasterioIOError:
-        create_neighbor_rasters(p)
+        create_neighbor_rasters(params)
 
     # Get the metadata parser and get the project area attributes
-    mp = xsmp.XMLStandMetadataParser(p.stand_metadata_file)
+    mp = xsmp.XMLStandMetadataParser(params.stand_metadata_file)
     attrs = mp.get_area_attrs()
 
     # Find the attribute in the list
@@ -176,14 +167,14 @@ def main(parameter_file, attribute):
     weights = get_weights(k)
 
     # Get the lookup table
-    attr_arr = get_attribute_array(p.stand_attribute_file, attr_name)
+    attr_arr = get_attribute_array(params.stand_attribute_file, attr_name)
 
     # Open the neighbor rasters
     nn_rasters = [rasterio.open(x) for x in nn_files]
 
     # Bring in the boundary raster and the nonforest mask raster
-    mask_raster = rasterio.open(p.boundary_raster)
-    nf_raster = rasterio.open(p.mask_raster)
+    mask_raster = rasterio.open(params.boundary_raster)
+    nf_raster = rasterio.open(params.mask_raster)
 
     # Retrieve the profile from the first neighbor raster
     profile = nn_rasters[0].profile
@@ -212,3 +203,15 @@ def main(parameter_file, attribute):
         scalar,
         out_raster,
     )
+
+
+@click.command(
+    name="build-attribute-raster",
+    short_help="Build raster for numerical attribute",
+)
+@click.argument("parameter-file", type=click.Path(exists=True), required=True)
+@click.argument("attribute", type=click.STRING, required=True)
+def cli_main(parameter_file, attribute):
+    # Read in the parameters
+    params = ppf.get_parameter_parser(parameter_file)
+    main(params, attribute)
