@@ -36,14 +36,14 @@ def create_neighbor_rasters(p):
     subprocess.call(cmd)
 
 
-def get_attribute_df(csv_fn, attr):
-    return pd.read_csv(csv_fn, usecols=["FCID", attr.upper()])
+def get_attribute_df(csv_fn, attr, id_field="FCID"):
+    return pd.read_csv(csv_fn, usecols=[id_field, attr.upper()])
 
 
-def get_attribute_array(csv_fn, attr):
-    df = get_attribute_df(csv_fn, attr)
-    sparse_df = pd.DataFrame({"FCID": np.arange(1, df.FCID.max() + 1)})
-    sparse_df = sparse_df.merge(df, on="FCID", how="left").fillna(0.0)
+def get_attribute_array(csv_fn, attr, id_field="FCID"):
+    df = get_attribute_df(csv_fn, attr, id_field=id_field)
+    sparse_df = pd.DataFrame({id_field: np.arange(1, df[id_field].max() + 1)})
+    sparse_df = sparse_df.merge(df, on=id_field, how="left").fillna(0.0)
     sparse_attr_arr = sparse_df.values
     return np.insert(sparse_attr_arr, 0, [0, 0], axis=0)
 
@@ -167,7 +167,9 @@ def main(params, attribute):
     weights = get_weights(k)
 
     # Get the lookup table
-    attr_arr = get_attribute_array(params.stand_attribute_file, attr_name)
+    attr_arr = get_attribute_array(
+        params.stand_attribute_file, attr_name, id_field=params.plot_id_field
+    )
 
     # Open the neighbor rasters
     nn_rasters = [rasterio.open(x) for x in nn_files]
