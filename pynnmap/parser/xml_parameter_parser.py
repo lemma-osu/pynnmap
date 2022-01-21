@@ -370,32 +370,32 @@ class XMLParameterParser(
         else:
             return []
 
-    # @plot_image_crosswalk.setter
-    # def plot_image_crosswalk(self, records):
-    #     if self.model_type in self.imagery_model_types:
-    #         # Create a new XML tree of these pairs
-    #         new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
-    #         for rec in records.itertuples():
-    #             child = (
-    #                 etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
-    #             )
-    #             try:
-    #                 child.plot_year = rec.PLOT_YEAR
-    #                 child.image_year = rec.IMAGE_YEAR
-    #             except ValueError:
-    #                 err_msg = (
-    #                     'Record does not have PLOT_YEAR or IMAGE_YEAR '
-    #                     'attributes'
-    #                 )
-    #                 raise ValueError(err_msg)
-    #
-    #         # Replace the old XML tree with the newly created one
-    #         pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
-    #         parent = pi_crosswalk_elem.getparent()
-    #         parent.replace(pi_crosswalk_elem, new_pi_crosswalk_elem)
-    #
-    #     else:
-    #         raise NotImplementedError
+    @plot_image_crosswalk.setter
+    def plot_image_crosswalk(self, records):
+        if self.model_type in self.imagery_model_types:
+            # Create a new XML tree of these pairs
+            new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
+            for rec in records.itertuples():
+                child = (
+                    etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
+                )
+                try:
+                    child.plot_year = rec.PLOT_YEAR
+                    child.image_year = rec.IMAGE_YEAR
+                except ValueError:
+                    err_msg = (
+                        'Record does not have PLOT_YEAR or IMAGE_YEAR '
+                        'attributes'
+                    )
+                    raise ValueError(err_msg)
+    
+            # Replace the old XML tree with the newly created one
+            pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
+            parent = pi_crosswalk_elem.getparent()
+            parent.replace(pi_crosswalk_elem, new_pi_crosswalk_elem)
+    
+        else:
+            raise NotImplementedError
 
     @property
     def image_years(self):
@@ -533,30 +533,30 @@ class XMLParameterParser(
                         )
             return v_list
 
-    # def set_ordination_variables(self, records):
-    #     # Create a new XML tree of these pairs
-    #     new_ov_elem = objectify.Element('ordination_variables')
-    #     for rec in records.itertuples():
-    #         child = etree.SubElement(new_ov_elem, 'ordination_variable')
-    #         try:
-    #             child.variable_name = rec.VARIABLE_NAME
-    #             child.variable_path = rec.VARIABLE_PATH
-    #             if rec.MODEL_YEAR == 0:
-    #                 child.set('variable_type', 'STATIC')
-    #             else:
-    #                 child.set('variable_type', 'TEMPORAL')
-    #                 child.set('model_year', str(rec.MODEL_YEAR))
-    #         except ValueError:
-    #             err_msg = (
-    #                 'Record does not have VARIABLE_NAME, VARIABLE_NAME or '
-    #                 'MODEL_YEAR attributes'
-    #             )
-    #             raise ValueError(err_msg)
-    #
-    #     # Replace the old XML tree with the newly created one
-    #     ov_elem = self.op_elem.ordination_variables
-    #     parent = ov_elem.getparent()
-    #     parent.replace(ov_elem, new_ov_elem)
+    def set_ordination_variables(self, records):
+        # Create a new XML tree of these pairs
+        new_ov_elem = objectify.Element('ordination_variables')
+        for rec in records.itertuples():
+            child = etree.SubElement(new_ov_elem, 'ordination_variable')
+            try:
+                child.variable_name = rec.VARIABLE_NAME
+                child.variable_path = rec.VARIABLE_PATH
+                if rec.MODEL_YEAR == 0:
+                    child.set('variable_type', 'STATIC')
+                else:
+                    child.set('variable_type', 'TEMPORAL')
+                    child.set('model_year', str(rec.MODEL_YEAR))
+            except (AttributeError, ValueError):
+                err_msg = (
+                    'Record does not have VARIABLE_NAME, VARIABLE_NAME or '
+                    'MODEL_YEAR attributes'
+                )
+                raise ValueError(err_msg)
+
+        # Replace the old XML tree with the newly created one
+        ov_elem = self.op_elem.ordination_variables
+        parent = ov_elem.getparent()
+        parent.replace(ov_elem, new_ov_elem)
 
     def get_ordination_variable_names(self, model_year=None):
         ord_vars = self.get_ordination_variables(model_year=model_year)
@@ -850,6 +850,13 @@ class XMLParameterParser(
             return int(r_elem.assessment_year)
         return None
 
+    @regional_assessment_year.setter
+    def regional_assessment_year(self, value):
+        r_elem = self.regional_element
+        if r_elem is not None:
+            if r_elem.find("assessment_year") is not None:
+                r_elem.assessment_year = value
+
     @property
     def regional_output_folder(self):
         r_elem = self.regional_element
@@ -922,6 +929,13 @@ class XMLParameterParser(
             return int(r_elem.assessment_year)
         else:
             return None
+
+    @riemann_assessment_year.setter
+    def riemann_assessment_year(self, value):
+        r_elem = self.riemann_element
+        if r_elem is not None:
+            if r_elem.find("assessment_year") is not None:
+                r_elem.assessment_year = value
 
     @property
     def riemann_output_folder(self):
