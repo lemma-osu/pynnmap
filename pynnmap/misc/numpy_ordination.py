@@ -63,7 +63,7 @@ class NumpyCCA(object):
 
         # Run MLR fitting for Y matrix
         right = np.dot(self.q.T, x_bar)
-        ls, res, rank, s = np.linalg.lstsq(self.r, right)
+        ls, res, rank, s = np.linalg.lstsq(self.r, right, rcond=None)
         y = np.dot(self.y_r, ls)
         self.u_raw, s, v = np.linalg.svd(y, full_matrices=False)
 
