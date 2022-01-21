@@ -5,12 +5,11 @@ import numpy as np
 import pandas as pd
 
 from pynnmap.core import (
-    get_id_year_crosswalk,
     get_independence_filter,
     get_id_list,
 )
 from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
-from pynnmap.core.nn_finder import NNFinder
+from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.core.prediction_output import subset_neighbors
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
@@ -167,15 +166,12 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         plot_pixel_obs = attr_data.get_attr_df(flags=flags).astype(np.float64)
         df_to_csv(plot_pixel_obs, output_file, index=True)
 
-        # Create a dictionary of plot ID to image year (or model_year for
-        # non-imagery models) for these plots
+        # Get the IDs on which to run AA
         ids = get_id_list(self.hex_attribute_file, self.id_field)
-        id_x_year = get_id_year_crosswalk(p)
-        id_x_year = dict((k, v) for k, v in id_x_year.items() if k in ids)
 
-        # Create a NNFinder object and calculate neighbors and distances
-        finder = NNFinder(p)
-        neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
+        # Create a PixelNNFinder object and calculate neighbors and distances
+        finder = PixelNNFinder(p)
+        neighbor_data = finder.calculate_neighbors_at_ids(ids)
 
         # Create an independence filter based on the relationship of the
         # id_field and the no_self_assign_field

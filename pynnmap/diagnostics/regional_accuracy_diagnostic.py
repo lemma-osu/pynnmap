@@ -1,12 +1,12 @@
+import os
+
 import numpy as np
 import pandas as pd
 import rasterio
 
-from pynnmap.core import (
-    get_id_year_crosswalk,
-    get_id_list,
-)
-from pynnmap.core.nn_finder import NNFinder
+from pynnmap.cli import build_attribute_raster
+from pynnmap.core import get_id_list
+from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.core.prediction_output import IndependentOutput
 from pynnmap.diagnostics import diagnostic
 from pynnmap.diagnostics.error_matrix_diagnostic import ErrorMatrixDiagnostic
@@ -180,6 +180,14 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             obs_vals = obs_area[attr.field_name]
             obs_wa = WeightedArray(obs_vals, obs_weights)
 
+            # Ensure the predicted raster has been created
+            fn = "./attribute_rasters/{}.tif".format(attr.field_name.lower())
+            if not os.path.exists(fn):
+                print(f"Building {attr.field_name} raster ...")
+                build_attribute_raster.main(
+                    self.parameter_parser, attr.field_name
+                )
+
             # Get predicted areas from predicted rasters that should be
             # pre-generated
             prd_ns_ha = 0.0
@@ -243,13 +251,9 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         # condition (< 2.0)
         ids = self.exclude_forest_minority(ids)
 
-        # Get the crosswalk to assessment year
-        id_x_year = get_id_year_crosswalk(parser)
-        id_x_year = dict((k, v) for k, v in id_x_year.items() if k in ids)
-
-        # Create a NNFinder object and calculate neighbors and distances
-        finder = NNFinder(parser)
-        neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
+        # Create a PixelNNFinder object and calculate neighbors and distances
+        finder = PixelNNFinder(parser)
+        neighbor_data = finder.calculate_neighbors_at_ids(ids)
 
         # Get predicted attributes
         output = IndependentOutput(parser, neighbor_data)

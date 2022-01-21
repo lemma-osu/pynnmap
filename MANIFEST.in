@@ -1,2 +1,5 @@
 include README.rst
 include pynnmap/core/gnn_vegan.r
+include pynnmap/cli/scalars.csv
+include pynnmap/diagnostics/vegclass.xml
+exclude MANIFEST.in

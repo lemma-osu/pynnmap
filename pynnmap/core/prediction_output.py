@@ -33,15 +33,14 @@ class PredictionOutput(ABC):
         zp_df = pd.concat(zps)
         df_to_csv(zp_df, zonal_pixel_fn, n_dec=8)
 
-    @staticmethod
-    def get_zonal_records(plot):
+    def get_zonal_records(self, plot):
         n_pixels = len(plot)
         k = len(plot[0].neighbors)
         n = [plot[i].neighbors[j] for i in range(n_pixels) for j in range(k)]
         d = [plot[i].distances[j] for i in range(n_pixels) for j in range(k)]
         return pd.DataFrame(
             {
-                "FCID": np.repeat(plot[0].id, k * n_pixels),
+                self.id_field: np.repeat(plot[0].id, k * n_pixels),
                 "PIXEL_NUMBER": np.repeat(np.arange(n_pixels) + 1, k),
                 "NEIGHBOR": np.tile(np.arange(k) + 1, n_pixels),
                 "NEIGHBOR_ID": n,

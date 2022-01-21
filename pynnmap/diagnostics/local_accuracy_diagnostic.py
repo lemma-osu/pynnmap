@@ -86,6 +86,11 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # For each attribute, calculate the statistics
         for attr in attrs:
+            # Skip any missing attributes
+            if attr.field_name not in self.obs_df.columns:
+                print(f"{attr.field_name} is not present in observed file")
+                continue
+
             stats = self.run_attr(attr)
 
             # Print this out to the stats file

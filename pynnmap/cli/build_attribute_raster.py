@@ -8,14 +8,13 @@ import rasterio
 from affine import Affine
 from rasterio.windows import Window
 
-from pynnmap.misc import utilities
 from pynnmap.parser import parameter_parser_factory as ppf
 from pynnmap.parser import xml_stand_metadata_parser as xsmp
 from . import scalars
 
 
 # Weights
-K7_WEIGHTS = np.array([0.6321, 0.2325, 0.0855, 0.0315, 0.0116, 0.0043, 0.0016,])
+K7_WEIGHTS = np.array([0.6321, 0.2325, 0.0855, 0.0315, 0.0116, 0.0043, 0.0016])
 K7_WEIGHTS /= K7_WEIGHTS.sum()
 
 WEIGHTS = {1: np.array([1.0]), 7: K7_WEIGHTS}
@@ -37,14 +36,14 @@ def create_neighbor_rasters(p):
     subprocess.call(cmd)
 
 
-def get_attribute_df(csv_fn, attr):
-    return pd.read_csv(csv_fn, usecols=["FCID", attr.upper()])
+def get_attribute_df(csv_fn, attr, id_field="FCID"):
+    return pd.read_csv(csv_fn, usecols=[id_field, attr.upper()])
 
 
-def get_attribute_array(csv_fn, attr):
-    df = get_attribute_df(csv_fn, attr)
-    sparse_df = pd.DataFrame({"FCID": np.arange(1, df.FCID.max() + 1)})
-    sparse_df = sparse_df.merge(df, on="FCID", how="left").fillna(0.0)
+def get_attribute_array(csv_fn, attr, id_field="FCID"):
+    df = get_attribute_df(csv_fn, attr, id_field=id_field)
+    sparse_df = pd.DataFrame({id_field: np.arange(1, df[id_field].max() + 1)})
+    sparse_df = sparse_df.merge(df, on=id_field, how="left").fillna(0.0)
     sparse_attr_arr = sparse_df.values
     return np.insert(sparse_attr_arr, 0, [0, 0], axis=0)
 
@@ -141,29 +140,20 @@ def process_raster(
         )
 
 
-@click.command(
-    name="build-attribute-raster",
-    short_help="Build raster for numerical attributes",
-)
-@click.argument("parameter-file", type=click.Path(exists=True), required=True)
-@click.argument("attribute", type=click.STRING, required=True)
-def main(parameter_file, attribute):
-    # Read in the parameters
-    p = ppf.get_parameter_parser(parameter_file)
-
+def main(params, attribute):
     # Get the value of k
     attr_name = attribute.lower()
-    k = min(p.k, scalars.get_k(attr_name.upper()))
+    k = min(params.k, scalars.get_k(attr_name.upper()))
 
     # Build the neighbor rasters if not present
-    nn_files = [p.get_neighbor_file(idx) for idx in range(1, k + 1)]
+    nn_files = [params.get_neighbor_file(idx) for idx in range(1, k + 1)]
     try:
         _ = [rasterio.open(x) for x in nn_files]
     except rasterio.errors.RasterioIOError:
-        create_neighbor_rasters(p)
+        create_neighbor_rasters(params)
 
     # Get the metadata parser and get the project area attributes
-    mp = xsmp.XMLStandMetadataParser(p.stand_metadata_file)
+    mp = xsmp.XMLStandMetadataParser(params.stand_metadata_file)
     attrs = mp.get_area_attrs()
 
     # Find the attribute in the list
@@ -177,14 +167,16 @@ def main(parameter_file, attribute):
     weights = get_weights(k)
 
     # Get the lookup table
-    attr_arr = get_attribute_array(p.stand_attribute_file, attr_name)
+    attr_arr = get_attribute_array(
+        params.stand_attribute_file, attr_name, id_field=params.plot_id_field
+    )
 
     # Open the neighbor rasters
     nn_rasters = [rasterio.open(x) for x in nn_files]
 
     # Bring in the boundary raster and the nonforest mask raster
-    mask_raster = rasterio.open(p.boundary_raster)
-    nf_raster = rasterio.open(p.mask_raster)
+    mask_raster = rasterio.open(params.boundary_raster)
+    nf_raster = rasterio.open(params.mask_raster)
 
     # Retrieve the profile from the first neighbor raster
     profile = nn_rasters[0].profile
@@ -213,3 +205,15 @@ def main(parameter_file, attribute):
         scalar,
         out_raster,
     )
+
+
+@click.command(
+    name="build-attribute-raster",
+    short_help="Build raster for numerical attribute",
+)
+@click.argument("parameter-file", type=click.Path(exists=True), required=True)
+@click.argument("attribute", type=click.STRING, required=True)
+def cli_main(parameter_file, attribute):
+    # Read in the parameters
+    params = ppf.get_parameter_parser(parameter_file)
+    main(params, attribute)

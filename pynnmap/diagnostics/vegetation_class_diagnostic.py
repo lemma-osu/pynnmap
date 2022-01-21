@@ -1,9 +1,14 @@
+import os
+
 import numpy as np
 import pandas as pd
 
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import classification_accuracy as ca
 from pynnmap.misc.utilities import df_to_csv
+
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+VEGCLASS_XML = os.path.join(BASEDIR, "vegclass.xml")
 
 
 class VegetationClassDiagnostic(diagnostic.Diagnostic):
@@ -148,10 +153,9 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
         df_to_csv(vc_df, self.vegclass_file)
 
         # Create the vegetation class kappa and error matrix files
-        vc_xml = "L:/resources/code/xml/vegclass.xml"
         ca.classification_accuracy(
             self.vegclass_file,
-            vc_xml,
+            VEGCLASS_XML,
             kappa_fn=self.vegclass_kappa_file,
             err_matrix_fn=self.vegclass_errmatrix_file,
         )

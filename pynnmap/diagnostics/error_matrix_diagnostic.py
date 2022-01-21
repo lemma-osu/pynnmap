@@ -4,10 +4,7 @@ import pandas as pd
 from pynnmap.diagnostics import diagnostic
 from pynnmap.misc import interval_classification as ic
 from pynnmap.misc import utilities
-from pynnmap.parser.xml_stand_metadata_parser import (
-    XMLStandMetadataParser,
-    XMLAttributeField,
-)
+from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
 from pynnmap.parser.xml_stand_metadata_parser import Flags
 
 

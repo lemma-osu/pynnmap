@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
-from pynnmap.core.nn_finder import NNFinder
+from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.core.stand_attributes import StandAttributes
 from pynnmap.diagnostics import diagnostic
 from pynnmap.diagnostics import local_accuracy_diagnostic as lad
@@ -71,7 +71,7 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
         id_x_year = dict(s.to_dict())
 
         # Create a NNFinder object
-        finder = NNFinder(p)
+        finder = PixelNNFinder(p)
         neighbor_data = finder.calculate_neighbors_at_ids(id_x_year)
 
         # Retrieve the predicted data for these plots.  In essence, we can

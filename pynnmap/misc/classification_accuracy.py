@@ -8,7 +8,7 @@ import pandas as pd
 from lxml import objectify
 
 
-def natural_sort(l):
+def natural_sort(lst):
     """
     Sorts a list based on natural sorting
     """
@@ -19,7 +19,7 @@ def natural_sort(l):
     def alphanum_key(key):
         return [convert(c) for c in re.split("([0-9]+)", str(key))]
 
-    return sorted(l, key=alphanum_key)
+    return sorted(lst, key=alphanum_key)
 
 
 def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
