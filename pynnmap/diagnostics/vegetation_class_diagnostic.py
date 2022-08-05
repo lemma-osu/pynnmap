@@ -72,28 +72,23 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
             vc = 1
         elif cc == 2:
             vc = 2
-        else:
-            if bah >= 0.65:
-                if sc <= 2:
-                    vc = 3
-                else:
-                    vc = 4
-            elif 0.2 <= bah < 0.65:
-                if sc <= 2:
-                    vc = 5
-                elif 3 <= sc <= 4:
-                    vc = 6
-                else:
-                    vc = 7
+        elif bah >= 0.65:
+            vc = 3 if sc <= 2 else 4
+        elif 0.2 <= bah < 0.65:
+            if sc <= 2:
+                vc = 5
+            elif 3 <= sc <= 4:
+                vc = 6
             else:
-                if sc <= 2:
-                    vc = 8
-                elif 3 <= sc <= 4:
-                    vc = 9
-                elif sc == 5:
-                    vc = 10
-                else:
-                    vc = 11
+                vc = 7
+        elif sc <= 2:
+            vc = 8
+        elif 3 <= sc <= 4:
+            vc = 9
+        elif sc == 5:
+            vc = 10
+        else:
+            vc = 11
         return vc
 
     def vegclass_aa(

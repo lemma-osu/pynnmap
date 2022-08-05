@@ -87,9 +87,7 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
     def attr_missing(self, attr):
         if attr.field_name not in self.error_matrix_df.VARIABLE.values:
             return True
-        if attr.field_name not in self.regional_df.VARIABLE.values:
-            return True
-        return False
+        return attr.field_name not in self.regional_df.VARIABLE.values
 
     def run_attr(self, attr, fh):
         fn = attr.field_name

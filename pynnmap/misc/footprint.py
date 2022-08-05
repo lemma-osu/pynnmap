@@ -62,11 +62,7 @@ class Footprint(object):
         # Iterate through the offsets, turning on the correct pixels
         for offset in self.offsets:
             row, col = offset
-            if np.all(offset == self.index):
-                kernel[row, col] = 2
-            else:
-                kernel[row, col] = 1
-
+            kernel[row, col] = 2 if np.all(offset == self.index) else 1
         # Ensure that the index pixel is not zero for footprints where the
         # index pixel is not part of the footprint
         if kernel[self.index[0], self.index[1]] == 0:
@@ -141,11 +137,8 @@ class FootprintParser(parser.Parser):
         fp_dict : dict of Footprints
         """
 
-        # Open the footprint file and read in all the lines
-        fp_fh = open(fp_file, "r")
-        all_lines = fp_fh.readlines()
-        fp_fh.close()
-
+        with open(fp_file, "r") as fp_fh:
+            all_lines = fp_fh.readlines()
         # Regular expression to match footprint specification starting lines
         fp_start = re.compile(r"^[A-Za-z0-9_]+\s+\d+\s+\d+\s+(\d+\.*\d*)$")
 

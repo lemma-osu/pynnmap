@@ -29,7 +29,7 @@ def calculate_vc_variety(vc_records):
     # has at least 2 '1's and 2 '3's in it
     young = [x for x in coarse_records if x == 1]
     old = [x for x in coarse_records if x == 3]
-    return True if len(young) >= 2 and len(old) >= 2 else False
+    return len(young) >= 2 and len(old) >= 2
 
 
 class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):

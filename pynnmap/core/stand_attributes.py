@@ -10,9 +10,8 @@ class StandAttributes(object):
         attr_names = set(list(self._df.columns) + [id_field])
         metadata_names = set(self._metadata.attr_names())
         excluded = {"HECTARES"}
-        missing = attr_names - metadata_names - excluded
-        if missing:
-            msg = "Metadata fields {} are missing".format(tuple(missing))
+        if missing := attr_names - metadata_names - excluded:
+            msg = f"Metadata fields {tuple(missing)} are missing"
             raise ValueError(msg)
 
     def get_attr_df(self, flags=None):

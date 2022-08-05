@@ -22,7 +22,7 @@ def get_global_range(*datasets):
     max : float
         The global max across datasets
     """
-    if len(list(datasets)) == 0:
+    if not list(datasets):
         msg = "One of more datasets is needed"
         raise ValueError(msg)
     min_list = []

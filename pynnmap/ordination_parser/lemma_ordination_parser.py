@@ -33,11 +33,8 @@ class LemmaOrdinationParser(parser.Parser):
         -------
         model : OrdinationModel instance
         """
-        # Read the ordination file into a list
-        ordination_fh = open(ordination_file, "r")
-        all_lines = ordination_fh.readlines()
-        ordination_fh.close()
-
+        with open(ordination_file, "r") as ordination_fh:
+            all_lines = ordination_fh.readlines()
         # Create an empty OrdinationModel
         model = ordination_model.OrdinationModel()
 
@@ -72,22 +69,19 @@ class LemmaOrdinationParser(parser.Parser):
         try:
             parser.assert_same_size(model.axis_weights, model.var_coeff[0])
         except parser.ParserError:
-            err_msg = "Number of axes differ between eigenvalues "
-            err_msg += "and coefficients"
+            err_msg = "Number of axes differ between eigenvalues " + "and coefficients"
             raise parser.ParserError(err_msg)
 
         try:
             parser.assert_same_size(model.axis_weights, model.plot_scores[0])
         except parser.ParserError:
-            err_msg = "Number of axes differ between eigenvalues "
-            err_msg += "and plot scores"
+            err_msg = "Number of axes differ between eigenvalues " + "and plot scores"
             raise parser.ParserError(err_msg)
 
         try:
             parser.assert_same_size(model.axis_weights, model.biplot_scores[0])
         except parser.ParserError:
-            err_msg = "Number of axes differ between eigenvalues and "
-            err_msg += "biplot scores"
+            err_msg = "Number of axes differ between eigenvalues and " + "biplot scores"
             raise parser.ParserError(err_msg)
 
         # Set model parameter counts
@@ -106,9 +100,9 @@ class LemmaOrdinationParser(parser.Parser):
             model.plot_id_dict[plot_id] = i
             model.id_plot_dict[i] = plot_id
 
-        model.var_name_dict = {}
-        for (i, var_name) in enumerate(model.var_names):
-            model.var_name_dict[var_name] = i
+        model.var_name_dict = {
+            var_name: i for i, var_name in enumerate(model.var_names)
+        }
 
         # Return the model to the caller
         return model

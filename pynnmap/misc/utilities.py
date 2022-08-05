@@ -154,14 +154,8 @@ class MissingConstraintError(Exception):
 
 
 def check_missing_files(files):
-    missing_files = []
-    for fn in files:
-        if not os.path.exists(fn):
-            missing_files.append(fn)
-    if len(missing_files) > 0:
-        err_msg = ""
-        for fn in missing_files:
-            err_msg += "\n" + fn + " does not exist"
+    if missing_files := [fn for fn in files if not os.path.exists(fn)]:
+        err_msg = "".join("\n" + fn + " does not exist" for fn in missing_files)
         raise MissingConstraintError(err_msg)
 
 
@@ -209,7 +203,7 @@ def assert_valid_attr_values(df, attr):
 def assert_same_len_ids(merged_df, df1, df2):
     try:
         merge_num = len(merged_df)
-        assert merge_num == len(df1) or merge_num == len(df2)
+        assert merge_num in [len(df1), len(df2)]
     except AssertionError:
         msg = "Merged data frame does not have same length as originals"
         raise ValueError(msg)
