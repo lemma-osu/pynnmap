@@ -21,8 +21,7 @@ class ImputationModel(object):
 
         # Create weightings based on use_weightings flag
         if use_weightings:
-            self.ax_weights = \
-                np.diag(np.sqrt(ord_model.axis_weights[0:n_axes]))
+            self.ax_weights = np.diag(np.sqrt(ord_model.axis_weights[:n_axes]))
         else:
             self.ax_weights = np.diag(np.ones(n_axes, dtype=np.float))
 
@@ -30,7 +29,7 @@ class ImputationModel(object):
         # Use the parameter 'max_neighbors' to determine how many neighbors
         # to return
         plot_scores = \
-            np.dot(ord_model.plot_scores[:, 0:n_axes], self.ax_weights)
+                np.dot(ord_model.plot_scores[:, 0:n_axes], self.ax_weights)
         self.nn_finder = NearestNeighbors(max_neighbors)
         self.nn_finder.fit(plot_scores)
 

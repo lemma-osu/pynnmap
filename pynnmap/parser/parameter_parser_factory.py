@@ -11,7 +11,7 @@ def get_parameter_parser(parameter_file):
         err_msg = '.ini files are not yet supported'
         raise NotImplementedError(err_msg)
     else:
-        err_msg = ext.lower() + ' file types are unsupported'
+        err_msg = f'{ext.lower()} file types are unsupported'
         raise NotImplementedError(err_msg)
 
     return parser

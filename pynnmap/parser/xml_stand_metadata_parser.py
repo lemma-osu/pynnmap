@@ -25,10 +25,10 @@ class XMLStandMetadataParser(xml_parser.XMLParser):
         super(XMLStandMetadataParser, self).__init__(xml_file_name)
 
     def get_attribute(self, field_name):
-        elem = self.root.xpath('attribute[field_name="' + field_name + '"]')
-        if not elem:
-            raise ValueError('Missing attribute: {}'.format(field_name))
-        return XMLAttributeField(elem[0])
+        if elem := self.root.xpath('attribute[field_name="' + field_name + '"]'):
+            return XMLAttributeField(elem[0])
+        else:
+            raise ValueError(f'Missing attribute: {field_name}')
 
     @property
     def attributes(self):

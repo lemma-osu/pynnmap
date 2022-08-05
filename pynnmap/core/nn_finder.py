@@ -17,9 +17,7 @@ class NNPixel(object):
 
     def __repr__(self):
         return '{kls}(\n neighbors={n}\n distances={d}\n)'.format(
-            kls=self.__class__.__name__,
-            n=self.neighbors[0:5],
-            d=self.distances[0:5]
+            kls=self.__class__.__name__, n=self.neighbors[:5], d=self.distances[:5]
         )
 
 
@@ -148,8 +146,7 @@ class NNFinder(object):
         lop = lemma_ordination_parser.LemmaOrdinationParser(delimiter=',')
         ord_model = lop.parse(ord_file)
         plot_ids = ord_model.plot_ids
-        id_x_year = dict(
-            (i, id_x_year[i]) for i in id_x_year.keys() if i in plot_ids)
+        id_x_year = {i: id_x_year[i] for i in id_x_year.keys() if i in plot_ids}
 
         # Call the main function
         return self.calculate_neighbors_at_ids(id_x_year)
@@ -261,7 +258,7 @@ class NNFinder(object):
             print(year)
 
             # Get the subset of footprint offsets and windows for this year
-            windows = dict((x, fp_windows[x]) for x in year_ids[year])
+            windows = {x: fp_windows[x] for x in year_ids[year]}
 
             # Extract footprints for any variables that are not common to all
             # years, but specialized for this year
@@ -296,8 +293,8 @@ class NNFinder(object):
             print(year)
 
             # Get the subset of footprint offsets and windows for this year
-            offsets = dict((x, fp_offsets[x]) for x in year_ids[year])
-            windows = dict((x, fp_windows[x]) for x in year_ids[year])
+            offsets = {x: fp_offsets[x] for x in year_ids[year]}
+            windows = {x: fp_windows[x] for x in year_ids[year]}
 
             # At this point, we have all the footprint information needed for
             # this year stored in fp_value_dict.  Now, iterate over each plot
@@ -354,12 +351,9 @@ class NNFinder(object):
             Dict of footprint IDs (keys) to footprint values stored in 2d
             numpy arrays (values)
         """
-        out_dict = {}
         gt = ds.GetGeoTransform()
         band = ds.GetRasterBand(band)
-        for (k, v) in windows.items():
-            out_dict[k] = self._get_footprint_value(v, band, gt)
-        return out_dict
+        return {k: self._get_footprint_value(v, band, gt) for k, v in windows.items()}
 
     @staticmethod
     def _get_footprint_value(window, band, gt):
@@ -384,8 +378,7 @@ class NNFinder(object):
         (x_min, y_max, x_size, y_size) = window
         col = int((x_min - gt[0]) / gt[1])
         row = int((y_max - gt[3]) / gt[5])
-        value = band.ReadAsArray(col, row, x_size, y_size)
-        return value
+        return band.ReadAsArray(col, row, x_size, y_size)
 
     @staticmethod
     def _get_values_from_offset(footprints, offset):
@@ -406,7 +399,4 @@ class NNFinder(object):
         out_list : list of
             Vector of ordination variable values for this pixel
         """
-        out_list = []
-        for fp in footprints:
-            out_list.append(fp[offset[0], offset[1]])
-        return out_list
+        return [fp[offset[0], offset[1]] for fp in footprints]

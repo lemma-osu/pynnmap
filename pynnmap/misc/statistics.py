@@ -111,15 +111,15 @@ class BinaryErrorMatrix:
 
         # Observed present and predicted absent
         self._counts[0, 1] = \
-            np.logical_and(x_float, np.logical_not(y_float)).sum()
+                np.logical_and(x_float, np.logical_not(y_float)).sum()
 
         # Observed absent and predicted present
         self._counts[1, 0] = \
-            np.logical_and(np.logical_not(x_float), y_float).sum()
+                np.logical_and(np.logical_not(x_float), y_float).sum()
 
         # Observed absent and predicted absent
         self._counts[1, 1] = \
-            np.logical_not(np.logical_or(x_float, y_float)).sum()
+                np.logical_not(np.logical_or(x_float, y_float)).sum()
 
         # Total number of plots
         self._total = self._counts.sum()
@@ -167,10 +167,7 @@ class BinaryErrorMatrix:
 
     def positive_predictive_power(self):
         denominator = self._counts[0, 0] + self._counts[1, 0]
-        if denominator == 0.0:
-            return 1.0
-        else:
-            return self._counts[0, 0] / denominator
+        return 1.0 if denominator == 0.0 else self._counts[0, 0] / denominator
 
     def odds_ratio(self):
         denominator = self._counts[0, 1] * self._counts[1, 0]
@@ -186,16 +183,11 @@ class BinaryErrorMatrix:
 
         p = self._counts / self._total
         p_chance = \
-            ((p[0, 0] + p[0, 1]) * (p[0, 0] + p[1, 0])) + \
-            ((p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0]))
+                ((p[0, 0] + p[0, 1]) * (p[0, 0] + p[1, 0])) + \
+                ((p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0]))
         p_correct = p[0, 0] + p[1, 1]
 
-        if p_chance != 1.0:
-            kappa = (p_correct - p_chance) / (1.0 - p_chance)
-        else:
-            kappa = 0.0
-
-        return kappa
+        return (p_correct - p_chance) / (1.0 - p_chance) if p_chance != 1.0 else 0.0
 
 
 def _convert_to_float_array(x):
@@ -214,8 +206,7 @@ def _convert_to_float_array(x):
         Output numpy array
     """
 
-    x_float = np.array(x, dtype='float64', ndmin=1)
-    return x_float
+    return np.array(x, dtype='float64', ndmin=1)
 
 
 def rmse(x, y):

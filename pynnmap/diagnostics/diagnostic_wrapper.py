@@ -36,9 +36,10 @@ class DiagnosticWrapper(object):
         p = self.parameter_parser
 
         # Ensure that the accuracy assessment folder has been created
-        if p.accuracy_diagnostics:
-            if not os.path.exists(p.accuracy_assessment_folder):
-                os.makedirs(p.accuracy_assessment_folder)
+        if p.accuracy_diagnostics and not os.path.exists(
+            p.accuracy_assessment_folder
+        ):
+            os.makedirs(p.accuracy_assessment_folder)
 
         # Run each accuracy diagnostic
         for d in p.accuracy_diagnostics:
@@ -47,7 +48,7 @@ class DiagnosticWrapper(object):
                 diagnostic = kls.from_parameter_parser(p)
                 diagnostic.run_diagnostic()
             except KeyError as e:
-                print('Key {} is not a diagnostic'.format(d))
+                print(f'Key {d} is not a diagnostic')
             except utilities.MissingConstraintError as e:
                 print(e.message)
 
@@ -55,9 +56,10 @@ class DiagnosticWrapper(object):
         p = self.parameter_parser
 
         # Ensure that the outlier folder has been created
-        if p.outlier_diagnostics:
-            if not os.path.exists(p.outlier_assessment_folder):
-                os.makedirs(p.outlier_assessment_folder)
+        if p.outlier_diagnostics and not os.path.exists(
+            p.outlier_assessment_folder
+        ):
+            os.makedirs(p.outlier_assessment_folder)
 
         for d in p.outlier_diagnostics:
             try:

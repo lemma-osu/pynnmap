@@ -67,7 +67,7 @@ def df_to_csv(df, csv_file, index=False, n_dec=4):
     df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
     # Convert to CSV
-    frmt = '%.{}f'.format(n_dec)
+    frmt = f'%.{n_dec}f'
     df.to_csv(csv_file, index=index, float_format=frmt)
 
 
@@ -296,14 +296,8 @@ class MissingConstraintError(Exception):
 
 
 def check_missing_files(files):
-    missing_files = []
-    for f in files:
-        if not os.path.exists(f):
-            missing_files.append(f)
-    if len(missing_files) > 0:
-        err_msg = ''
-        for f in missing_files:
-            err_msg += '\n' + f + ' does not exist'
+    if missing_files := [f for f in files if not os.path.exists(f)]:
+        err_msg = ''.join('\n' + f + ' does not exist' for f in missing_files)
         raise MissingConstraintError(err_msg)
 
 
@@ -339,7 +333,7 @@ def assert_valid_attr_values(df, attr):
 def assert_same_len_ids(merged_df, df1, df2):
     try:
         merge_num = len(merged_df)
-        assert(merge_num == len(df1) or merge_num == len(df2))
+        assert merge_num in [len(df1), len(df2)]
     except AssertionError:
         msg = 'Merged data frame does not have same length as originals'
         raise ValueError(msg)

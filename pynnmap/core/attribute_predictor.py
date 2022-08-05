@@ -34,16 +34,13 @@ class AttributePredictor(object):
         self.independence_filter = independence_filter
 
     def calculate_predictions(self, neighbor_data, k=1, weights=None):
-        # Iterate over all neighbors and calculate predictions
-        predictions = []
-        for id_val, fp in sorted(neighbor_data.items()):
-            predictions.append(self.calculate_predictions_at_id(fp, k, weights))
-        return predictions
+        return [
+            self.calculate_predictions_at_id(fp, k, weights)
+            for id_val, fp in sorted(neighbor_data.items())
+        ]
 
     def get_zonal_pixel_df(self, predictions):
-        zps = []
-        for prd in predictions:
-            zps.append(self.prediction_to_zonal_records(prd))
+        zps = [self.prediction_to_zonal_records(prd) for prd in predictions]
         return pd.concat(zps)
 
     def get_predicted_attributes_df(self, predictions, id_field):
@@ -92,7 +89,7 @@ class AttributePredictor(object):
         plot_prediction = []
 
         # Determine if weights need to be calculated based on NN distances
-        calc_weights = True if weights is None else False
+        calc_weights = weights is None
 
         # Iterate over pixels in the footprint
         for pixel_number, pixel in enumerate(fp.pixels):
@@ -102,11 +99,11 @@ class AttributePredictor(object):
             # Filter the neighbors using the independence mask
             if self.independence_filter:
                 mask = self.independence_filter.mask(fp.id, pixel.neighbors)
-                pp.neighbors = pixel.neighbors[mask][0:k]
-                pp.distances = pixel.distances[mask][0:k]
+                pp.neighbors = pixel.neighbors[mask][:k]
+                pp.distances = pixel.distances[mask][:k]
             else:
-                pp.neighbors = pixel.neighbors[0:k]
-                pp.distances = pixel.distances[0:k]
+                pp.neighbors = pixel.neighbors[:k]
+                pp.distances = pixel.distances[:k]
 
             # Fix distance array for 0.0 values
             distances = np.where(

@@ -77,10 +77,7 @@ class ContinuousHistogramBC(HistogramBC):
 
         # Create class labels from the endpoints of the bins
         self.bin_names = []
-        if self.bin_endpoints[-1] < 1e5:
-            fmt_str = '%.1f'
-        else:
-            fmt_str = '%.1e'
+        fmt_str = '%.1f' if self.bin_endpoints[-1] < 1e5 else '%.1e'
         for i in range(self.bin_endpoints.size - 1):
             first = fmt_str % (self.bin_endpoints[i])
             second = fmt_str % (self.bin_endpoints[i+1])
@@ -181,16 +178,13 @@ def bin_categorical(datasets, class_names=None):
     all_unique = []
     for ds in datasets:
         a = np.unique(ds.values)
-        all_unique.extend([i for i in a])
+        all_unique.extend(list(a))
 
     unique = np.unique(all_unique)
 
     # Create a mapping between these unique values and an enumeration.
     # The enumeration is needed to do a histogram on the data
-    class_mapped = {}
-    for (i, value) in enumerate(unique):
-        class_mapped[value] = i
-
+    class_mapped = {value: i for i, value in enumerate(unique)}
     # We need to create an ending edge for the last bin.  Because this is an
     # enumeration, we can safely add one to the end of the list for this
     # endpoint.  Note that we only add it to the bin and not to the
@@ -206,8 +200,8 @@ def bin_categorical(datasets, class_names=None):
     class_keys = class_mapped.keys()
     class_keys.sort()
 
-    if len(class_names):
-        for key in class_keys:
+    for key in class_keys:
+        if len(class_names):
             if key is not None:
                 key = str(key)
 
@@ -216,8 +210,7 @@ def bin_categorical(datasets, class_names=None):
 
                 # Add this value to the c_names list
                 c_names.append(value)
-    else:
-        for key in class_keys:
+        else:
             c_names.append(str(key))
 
     histogram_data = []

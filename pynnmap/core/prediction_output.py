@@ -31,31 +31,27 @@ class PredictionOutput(object):
         nn_index_file: str
             Name of the nn_index_file
         """
-        # Open the nn_index file and print the header line
-        nn_index_fh = open(nn_index_file, 'w')
-        header_fields = (id_field, 'AVERAGE_POSITION')
-        nn_index_fh.write(','.join(header_fields) + '\n')
+        with open(nn_index_file, 'w') as nn_index_fh:
+            header_fields = (id_field, 'AVERAGE_POSITION')
+            nn_index_fh.write(','.join(header_fields) + '\n')
 
-        # For each ID, find how far a plot had to go for self assignment
-        for id_val, fp in sorted(neighbor_data.items()):
-            self_assign_indexes = []
-            for nn_pixel in fp.pixels:
-                # Find the occurrence of this ID in the neighbor list
-                # Because we restrict the neighbors to only the first 100,
-                # we may not find the self-assignment within those neighbors.
-                # Set it to the max value in this case
-                try:
-                    index = np.where(nn_pixel.neighbors == id_val)[0][0] + 1
-                except IndexError:
-                    index = nn_pixel.neighbors.size
-                self_assign_indexes.append(index)
+            # For each ID, find how far a plot had to go for self assignment
+            for id_val, fp in sorted(neighbor_data.items()):
+                self_assign_indexes = []
+                for nn_pixel in fp.pixels:
+                    # Find the occurrence of this ID in the neighbor list
+                    # Because we restrict the neighbors to only the first 100,
+                    # we may not find the self-assignment within those neighbors.
+                    # Set it to the max value in this case
+                    try:
+                        index = np.where(nn_pixel.neighbors == id_val)[0][0] + 1
+                    except IndexError:
+                        index = nn_pixel.neighbors.size
+                    self_assign_indexes.append(index)
 
-            # Get the average index position across pixels
-            average_position = float(np.mean(self_assign_indexes))
-            nn_index_fh.write('%d,%.4f\n' % (id_val, average_position))
-
-        # Clean up
-        nn_index_fh.close()
+                # Get the average index position across pixels
+                average_position = float(np.mean(self_assign_indexes))
+                nn_index_fh.write('%d,%.4f\n' % (id_val, average_position))
 
     def get_weights(self):
         w = self.parameter_parser.weights

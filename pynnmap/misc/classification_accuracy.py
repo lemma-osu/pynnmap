@@ -51,16 +51,12 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
         Dictionary of class value to row or column number
     """
 
-    if compact is True:
-        # Find all classes present in either the observed or predicted data
+    if compact is not True and classes is None or compact is True:
+        # No classes given - default to those present as above
         classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
     else:
-        if classes is None:
-            # No classes given - default to those present as above
-            classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
-        else:
-            # Use the user-defined classes
-            classes = np.array(classes)
+        # Use the user-defined classes
+        classes = np.array(classes)
 
     n = classes.size
 
@@ -73,7 +69,7 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
         in itertools.product(classes, repeat=2)]).reshape(n, n)
 
     # Create the dictionary of class value to row/column number
-    class_xwalk = dict((c, i) for (c, i) in zip(classes, range(n)))
+    class_xwalk = dict(zip(classes, range(n)))
 
     return err_mat, class_xwalk
 
@@ -98,10 +94,11 @@ def kappa(m):
     diag_sum = np.diag(m).sum()
     total = m.sum()
     chance = (row_sums * col_sums / total).sum()
-    if (total - chance) > 0.0:
-        return (diag_sum - chance) / (total - chance)
-    else:
-        return 0.0
+    return (
+        (diag_sum - chance) / (total - chance)
+        if (total - chance) > 0.0
+        else 0.0
+    )
 
 
 class Classification:
@@ -172,7 +169,7 @@ class Classifier:
         classifiers = {}
         for i in values:
             value = i
-            name = 'Class ' + str(i)
+            name = f'Class {str(i)}'
             f_values = [i]
             classifiers[value] = Classification(value, name, f_values)
         return cls(classifiers)
@@ -232,9 +229,7 @@ class KappaCalculator(object):
         Create a string representation of this error matrix
         """
 
-        out_str = ''
-        out_str += 'CLASS,KAPPA,FUZZY_KAPPA\n'
-
+        out_str = '' + 'CLASS,KAPPA,FUZZY_KAPPA\n'
         # Iterate over classes printing out kappa and fuzzy kappa
         for key in natural_sort(self.kappa_values.keys()):
             if key == 'all':
@@ -277,7 +272,7 @@ class KappaCalculator(object):
         n_classes = len(class_xwalk)
 
         # Create a reverse crosswalk as well
-        rev_class_xwalk = dict((i, c) for (c, i) in class_xwalk.items())
+        rev_class_xwalk = {i: c for (c, i) in class_xwalk.items()}
 
         # Create a non-fuzzy mask to apply to the error matrix
         mask = np.diag(np.ones(n_classes))
@@ -299,16 +294,16 @@ class KappaCalculator(object):
             j = rev_class_xwalk[i]
             self.kappa_values[j] = {}
             self.kappa_values[j]['kappa'] = \
-                self._get_masked_kappa(err_mat, mask, c=i)
+                    self._get_masked_kappa(err_mat, mask, c=i)
             self.kappa_values[j]['fuzzy'] = \
-                self._get_masked_kappa(err_mat, f_mask, c=i)
+                    self._get_masked_kappa(err_mat, f_mask, c=i)
 
         # Calculate kappa for the entire matrix
         self.kappa_values['all'] = {}
         self.kappa_values['all']['kappa'] = \
-            self._get_masked_kappa(err_mat, mask)
+                self._get_masked_kappa(err_mat, mask)
         self.kappa_values['all']['fuzzy'] = \
-            self._get_masked_kappa(err_mat, f_mask)
+                self._get_masked_kappa(err_mat, f_mask)
 
     @staticmethod
     def _get_masked_kappa(err_mat, mask, c=None):
@@ -392,9 +387,8 @@ class KappaCalculator(object):
         -------
         None
         """
-        kappa_fh = open(kappa_file, 'w')
-        kappa_fh.write(self.__repr__())
-        kappa_fh.close()
+        with open(kappa_file, 'w') as kappa_fh:
+            kappa_fh.write(self.__repr__())
 
 
 class ErrorMatrix(object):
@@ -456,29 +450,41 @@ class ErrorMatrix(object):
 
         # Row labels, values, totals, percent correct and percent fuzzy correct
         for i in range(num_classes):
-            out_list = [class_labels[i]]
-            out_list.extend(['%d' % x for x in self.err_mat[i, :]])
-            out_list.append('%d' % self.r_totals[i])
-            out_list.append('%.3f' % self.r_percent_correct[i])
-            out_list.append('%.3f' % self.r_percent_f_correct[i])
+            out_list = [
+                class_labels[i],
+                *['%d' % x for x in self.err_mat[i, :]],
+                '%d' % self.r_totals[i],
+                '%.3f' % self.r_percent_correct[i],
+                '%.3f' % self.r_percent_f_correct[i],
+            ]
+
             out_str += ','.join(out_list) + '\n'
 
         # Column totals
-        out_list = [class_labels[num_classes]]
-        out_list.extend(['%d' % x for x in self.c_totals])
-        out_list.extend(['%d' % self.m_total, '', ''])
+        out_list = [
+            class_labels[num_classes],
+            *['%d' % x for x in self.c_totals],
+            *['%d' % self.m_total, '', ''],
+        ]
+
         out_str += ','.join(out_list) + '\n'
 
         # Column correct
-        out_list = [class_labels[num_classes + 1]]
-        out_list.extend(['%.3f' % x for x in self.c_percent_correct])
-        out_list.extend(['', '%.3f' % self.m_percent_correct, ''])
+        out_list = [
+            class_labels[num_classes + 1],
+            *['%.3f' % x for x in self.c_percent_correct],
+            *['', '%.3f' % self.m_percent_correct, ''],
+        ]
+
         out_str += ','.join(out_list) + '\n'
 
         # Column fuzzy correct
-        out_list = [class_labels[num_classes + 2]]
-        out_list.extend(['%.3f' % x for x in self.c_percent_f_correct])
-        out_list.extend(['', '', '%.3f' % self.m_percent_f_correct])
+        out_list = [
+            class_labels[num_classes + 2],
+            *['%.3f' % x for x in self.c_percent_f_correct],
+            *['', '', '%.3f' % self.m_percent_f_correct],
+        ]
+
         out_str += ','.join(out_list) + '\n'
 
         return out_str
@@ -572,9 +578,8 @@ class ErrorMatrix(object):
         -------
         None
         """
-        err_matrix_fh = open(err_matrix_fn, 'w')
-        err_matrix_fh.write(self.__repr__())
-        err_matrix_fh.close()
+        with open(err_matrix_fn, 'w') as err_matrix_fh:
+            err_matrix_fh.write(self.__repr__())
 
 
 def print_kappa_file(obs_data, prd_data, classifier, kappa_fn):

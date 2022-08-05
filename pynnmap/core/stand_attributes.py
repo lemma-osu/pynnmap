@@ -8,9 +8,8 @@ class StandAttributes(object):
         self._metadata = metadata
         attr_names = set(list(self._df.columns) + [id_field])
         metadata_names = set(self._metadata.attr_names())
-        missing = attr_names - metadata_names
-        if missing:
-            msg = 'Metadata fields {} are missing'.format(tuple(missing))
+        if missing := attr_names - metadata_names:
+            msg = f'Metadata fields {tuple(missing)} are missing'
             raise ValueError(msg)
 
     def get_attr_df(self, flags=None):

@@ -24,17 +24,15 @@ class VeganOrdination(Ordination):
         # order to initialize
         try:
             p = kwargs['parameters']
-            if isinstance(p, pp.ParameterParser):
-                self.spp_file = p.species_matrix_file
-                self.env_file = p.environmental_matrix_file
-                self.variables = p.get_ordination_variable_names()
-                self.id_field = p.plot_id_field
-                self.species_downweighting = p.species_downweighting
-                self.species_transform = p.species_transform
-                self.ord_file = p.get_ordination_file()
-            else:
-                err_msg = 'Passed object is not a ParameterParser object'
-                raise ValueError(err_msg)
+            if not isinstance(p, pp.ParameterParser):
+                raise ValueError('Passed object is not a ParameterParser object')
+            self.spp_file = p.species_matrix_file
+            self.env_file = p.environmental_matrix_file
+            self.variables = p.get_ordination_variable_names()
+            self.id_field = p.plot_id_field
+            self.species_downweighting = p.species_downweighting
+            self.species_transform = p.species_transform
+            self.ord_file = p.get_ordination_file()
         except KeyError:
             try:
                 self.spp_file = kwargs['spp_file']
@@ -45,8 +43,7 @@ class VeganOrdination(Ordination):
                 self.species_transform = kwargs['species_transform']
                 self.ord_file = kwargs['vegan_file']
             except KeyError:
-                err_msg = 'Not all required parameters were passed'
-                raise ValueError(err_msg)
+                raise ValueError('Not all required parameters were passed')
 
     def run(self):
         from rpy2 import robjects
@@ -97,17 +94,15 @@ class NumpyOrdination(Ordination):
         # order to initialize
         try:
             p = kwargs['parameters']
-            if isinstance(p, pp.ParameterParser):
-                self.spp_file = p.species_matrix_file
-                self.env_file = p.environmental_matrix_file
-                self.variables = p.get_ordination_variable_names()
-                self.id_field = p.plot_id_field
-                self.species_downweighting = p.species_downweighting
-                self.species_transform = p.species_transform
-                self.ord_file = p.get_ordination_file()
-            else:
-                err_msg = 'Passed object is not a ParameterParser object'
-                raise ValueError(err_msg)
+            if not isinstance(p, pp.ParameterParser):
+                raise ValueError('Passed object is not a ParameterParser object')
+            self.spp_file = p.species_matrix_file
+            self.env_file = p.environmental_matrix_file
+            self.variables = p.get_ordination_variable_names()
+            self.id_field = p.plot_id_field
+            self.species_downweighting = p.species_downweighting
+            self.species_transform = p.species_transform
+            self.ord_file = p.get_ordination_file()
         except KeyError:
             try:
                 self.spp_file = kwargs['spp_file']
@@ -118,8 +113,7 @@ class NumpyOrdination(Ordination):
                 self.species_transform = kwargs['species_transform']
                 self.ord_file = kwargs['numpy_file']
             except KeyError:
-                err_msg = 'Not all required parameters were passed'
-                raise ValueError(err_msg)
+                raise ValueError('Not all required parameters were passed')
 
     def run(self):
         raise NotImplementedError
@@ -163,95 +157,90 @@ class NumpyCCAOrdination(NumpyOrdination):
         # Create the CCA object
         cca = numpy_ordination.NumpyCCA(spp, env)
 
-        # Open the output file
-        numpy_fh = open(self.ord_file, 'w')
+        with open(self.ord_file, 'w') as numpy_fh:
+            # Eigenvalues
+            numpy_fh.write('### Eigenvalues ###\n')
+            for (i, e) in enumerate(cca.eigenvalues):
+                numpy_fh.write(f'CCA{str(i + 1)},' + '%.10f' % e + '\n')
+            numpy_fh.write('\n')
 
-        # Eigenvalues
-        numpy_fh.write('### Eigenvalues ###\n')
-        for (i, e) in enumerate(cca.eigenvalues):
-            numpy_fh.write('CCA' + str(i + 1) + ',' + '%.10f' % e + '\n')
-        numpy_fh.write('\n')
+            # Print out variable means
+            numpy_fh.write('### Variable Means ###\n')
+            for (i, m) in enumerate(cca.env_means):
+                numpy_fh.write('%s,%.10f\n' % (self.variables[i], m))
+            numpy_fh.write('\n')
 
-        # Print out variable means
-        numpy_fh.write('### Variable Means ###\n')
-        for (i, m) in enumerate(cca.env_means):
-            numpy_fh.write('%s,%.10f\n' % (self.variables[i], m))
-        numpy_fh.write('\n')
+            # Print out environmental coefficients loadings
+            numpy_fh.write('### Coefficient Loadings ###\n')
+            header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
+            numpy_fh.write(f'VARIABLE,{header_str}' + '\n')
+            for (i, c) in enumerate(cca.coefficients()):
+                coeff = ','.join(['%.10f' % x for x in c])
+                numpy_fh.write('%s,%s\n' % (self.variables[i], coeff))
+            numpy_fh.write('\n')
 
-        # Print out environmental coefficients loadings
-        numpy_fh.write('### Coefficient Loadings ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
-        numpy_fh.write('VARIABLE,' + header_str + '\n')
-        for (i, c) in enumerate(cca.coefficients()):
-            coeff = ','.join(['%.10f' % x for x in c])
-            numpy_fh.write('%s,%s\n' % (self.variables[i], coeff))
-        numpy_fh.write('\n')
+            # Print out biplot scores
+            numpy_fh.write('### Biplot Scores ###\n')
+            header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
+            numpy_fh.write(f'VARIABLE,{header_str}' + '\n')
+            for (i, b) in enumerate(cca.biplot_scores()):
+                scores = ','.join(['%.10f' % x for x in b])
+                numpy_fh.write('%s,%s\n' % (self.variables[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out biplot scores
-        numpy_fh.write('### Biplot Scores ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
-        numpy_fh.write('VARIABLE,' + header_str + '\n')
-        for (i, b) in enumerate(cca.biplot_scores()):
-            scores = ','.join(['%.10f' % x for x in b])
-            numpy_fh.write('%s,%s\n' % (self.variables[i], scores))
-        numpy_fh.write('\n')
+            # Print out species centroids
+            numpy_fh.write('### Species Centroids ###\n')
+            header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
+            numpy_fh.write(f'SPECIES,{header_str}' + '\n')
+            for (i, c) in enumerate(cca.species_centroids()):
+                scores = ','.join(['%.10f' % x for x in c])
+                numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out species centroids
-        numpy_fh.write('### Species Centroids ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
-        numpy_fh.write('SPECIES,' + header_str + '\n')
-        for (i, c) in enumerate(cca.species_centroids()):
-            scores = ','.join(['%.10f' % x for x in c])
-            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
-        numpy_fh.write('\n')
+            # Print out species tolerances
+            numpy_fh.write('### Species Tolerances ###\n')
+            header_str = \
+                    ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
+            numpy_fh.write(f'SPECIES,{header_str}' + '\n')
+            for (i, t) in enumerate(cca.species_tolerances()):
+                scores = ','.join(['%.21f' % x for x in t])
+                numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out species tolerances
-        numpy_fh.write('### Species Tolerances ###\n')
-        header_str = \
-            ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
-        numpy_fh.write('SPECIES,' + header_str + '\n')
-        for (i, t) in enumerate(cca.species_tolerances()):
-            scores = ','.join(['%.21f' % x for x in t])
-            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
-        numpy_fh.write('\n')
+            # Print out miscellaneous species information
+            numpy_fh.write('### Miscellaneous Species Information ###\n')
+            numpy_fh.write('SPECIES,WEIGHT,N2\n')
+            species_weights, species_n2 = cca.species_information()
+            for i in range(len(species_weights)):
+                numpy_fh.write('%s,%.10f,%.10f\n' % (
+                    spp_df.columns[i], species_weights[i], species_n2[i]))
+            numpy_fh.write('\n')
 
-        # Print out miscellaneous species information
-        numpy_fh.write('### Miscellaneous Species Information ###\n')
-        numpy_fh.write('SPECIES,WEIGHT,N2\n')
-        species_weights, species_n2 = cca.species_information()
-        for i in range(len(species_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (
-                spp_df.columns[i], species_weights[i], species_n2[i]))
-        numpy_fh.write('\n')
+            # Print out site LC scores
+            numpy_fh.write('### Site LC Scores ###\n')
+            header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
+            numpy_fh.write(f'ID,{header_str}' + '\n')
+            for (i, s) in enumerate(cca.site_lc_scores()):
+                scores = ','.join(['%.10f' % x for x in s])
+                numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out site LC scores
-        numpy_fh.write('### Site LC Scores ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
-        numpy_fh.write('ID,' + header_str + '\n')
-        for (i, s) in enumerate(cca.site_lc_scores()):
-            scores = ','.join(['%.10f' % x for x in s])
-            numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
-        numpy_fh.write('\n')
+            # Print out site WA scores
+            numpy_fh.write('### Site WA Scores ###\n')
+            header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
+            numpy_fh.write(f'ID,{header_str}' + '\n')
+            for (i, s) in enumerate(cca.site_wa_scores()):
+                scores = ','.join(['%.10f' % x for x in s])
+                numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out site WA scores
-        numpy_fh.write('### Site WA Scores ###\n')
-        header_str = ','.join(['CCA%d' % (i + 1) for i in range(cca.rank)])
-        numpy_fh.write('ID,' + header_str + '\n')
-        for (i, s) in enumerate(cca.site_wa_scores()):
-            scores = ','.join(['%.10f' % x for x in s])
-            numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
-        numpy_fh.write('\n')
-
-        # Miscellaneous site information
-        numpy_fh.write('### Miscellaneous Site Information ###\n')
-        numpy_fh.write('ID,WEIGHT,N2\n')
-        site_weights, site_n2 = cca.site_information()
-        for i in range(len(site_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (
-                spp_plot_ids[i], site_weights[i], site_n2[i]))
-
-        # Close the file
-        numpy_fh.close()
+            # Miscellaneous site information
+            numpy_fh.write('### Miscellaneous Site Information ###\n')
+            numpy_fh.write('ID,WEIGHT,N2\n')
+            site_weights, site_n2 = cca.site_information()
+            for i in range(len(site_weights)):
+                numpy_fh.write('%s,%.10f,%.10f\n' % (
+                    spp_plot_ids[i], site_weights[i], site_n2[i]))
 
 
 class NumpyRDAOrdination(NumpyOrdination):
@@ -291,95 +280,90 @@ class NumpyRDAOrdination(NumpyOrdination):
         # Create the RDA object
         rda = numpy_ordination.NumpyRDA(spp, env)
 
-        # Open the output file
-        numpy_fh = open(self.ord_file, 'w')
+        with open(self.ord_file, 'w') as numpy_fh:
+            # Eigenvalues
+            numpy_fh.write('### Eigenvalues ###\n')
+            for i, e in enumerate(rda.eigenvalues):
+                numpy_fh.write(f'RDA{str(i + 1)},' + '%.10f' % e + '\n')
+            numpy_fh.write('\n')
 
-        # Eigenvalues
-        numpy_fh.write('### Eigenvalues ###\n')
-        for i, e in enumerate(rda.eigenvalues):
-            numpy_fh.write('RDA' + str(i + 1) + ',' + '%.10f' % e + '\n')
-        numpy_fh.write('\n')
+            # Print out variable means
+            numpy_fh.write('### Variable Means ###\n')
+            for i, m in enumerate(rda.env_means):
+                numpy_fh.write('%s,%.10f\n' % (self.variables[i], m))
+            numpy_fh.write('\n')
 
-        # Print out variable means
-        numpy_fh.write('### Variable Means ###\n')
-        for i, m in enumerate(rda.env_means):
-            numpy_fh.write('%s,%.10f\n' % (self.variables[i], m))
-        numpy_fh.write('\n')
+            # Print out environmental coefficients loadings
+            numpy_fh.write('### Coefficient Loadings ###\n')
+            header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
+            numpy_fh.write(f'VARIABLE,{header_str}' + '\n')
+            for i, c in enumerate(rda.coefficients()):
+                coeff = ','.join(['%.10f' % x for x in c])
+                numpy_fh.write('%s,%s\n' % (self.variables[i], coeff))
+            numpy_fh.write('\n')
 
-        # Print out environmental coefficients loadings
-        numpy_fh.write('### Coefficient Loadings ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
-        numpy_fh.write('VARIABLE,' + header_str + '\n')
-        for i, c in enumerate(rda.coefficients()):
-            coeff = ','.join(['%.10f' % x for x in c])
-            numpy_fh.write('%s,%s\n' % (self.variables[i], coeff))
-        numpy_fh.write('\n')
+            # Print out biplot scores
+            numpy_fh.write('### Biplot Scores ###\n')
+            header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
+            numpy_fh.write(f'VARIABLE,{header_str}' + '\n')
+            for i, b in enumerate(rda.biplot_scores()):
+                scores = ','.join(['%.10f' % x for x in b])
+                numpy_fh.write('%s,%s\n' % (self.variables[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out biplot scores
-        numpy_fh.write('### Biplot Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
-        numpy_fh.write('VARIABLE,' + header_str + '\n')
-        for i, b in enumerate(rda.biplot_scores()):
-            scores = ','.join(['%.10f' % x for x in b])
-            numpy_fh.write('%s,%s\n' % (self.variables[i], scores))
-        numpy_fh.write('\n')
+            # Print out species centroids
+            numpy_fh.write('### Species Centroids ###\n')
+            header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
+            numpy_fh.write(f'SPECIES,{header_str}' + '\n')
+            for i, c in enumerate(rda.species_centroids()):
+                scores = ','.join(['%.10f' % x for x in c])
+                numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out species centroids
-        numpy_fh.write('### Species Centroids ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
-        numpy_fh.write('SPECIES,' + header_str + '\n')
-        for i, c in enumerate(rda.species_centroids()):
-            scores = ','.join(['%.10f' % x for x in c])
-            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
-        numpy_fh.write('\n')
+            # Print out species tolerances
+            numpy_fh.write('### Species Tolerances ###\n')
+            header_str = \
+                    ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
+            numpy_fh.write(f'SPECIES,{header_str}' + '\n')
+            for i, t in enumerate(rda.species_tolerances()):
+                scores = ','.join(['%.21f' % x for x in t])
+                numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out species tolerances
-        numpy_fh.write('### Species Tolerances ###\n')
-        header_str = \
-            ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
-        numpy_fh.write('SPECIES,' + header_str + '\n')
-        for i, t in enumerate(rda.species_tolerances()):
-            scores = ','.join(['%.21f' % x for x in t])
-            numpy_fh.write('%s,%s\n' % (spp_df.columns[i], scores))
-        numpy_fh.write('\n')
+            # Print out miscellaneous species information
+            numpy_fh.write('### Miscellaneous Species Information ###\n')
+            numpy_fh.write('SPECIES,WEIGHT,N2\n')
+            species_weights, species_n2 = rda.species_information()
+            for i in range(len(species_weights)):
+                numpy_fh.write('%s,%.10f,%.10f\n' % (
+                    spp_df.columns[i], species_weights[i], species_n2[i]))
+            numpy_fh.write('\n')
 
-        # Print out miscellaneous species information
-        numpy_fh.write('### Miscellaneous Species Information ###\n')
-        numpy_fh.write('SPECIES,WEIGHT,N2\n')
-        species_weights, species_n2 = rda.species_information()
-        for i in range(len(species_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (
-                spp_df.columns[i], species_weights[i], species_n2[i]))
-        numpy_fh.write('\n')
+            # Print out site LC scores
+            numpy_fh.write('### Site LC Scores ###\n')
+            header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
+            numpy_fh.write(f'ID,{header_str}' + '\n')
+            for i, s in enumerate(rda.site_lc_scores()):
+                scores = ','.join(['%.10f' % x for x in s])
+                numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out site LC scores
-        numpy_fh.write('### Site LC Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
-        numpy_fh.write('ID,' + header_str + '\n')
-        for i, s in enumerate(rda.site_lc_scores()):
-            scores = ','.join(['%.10f' % x for x in s])
-            numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
-        numpy_fh.write('\n')
+            # Print out site WA scores
+            numpy_fh.write('### Site WA Scores ###\n')
+            header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
+            numpy_fh.write(f'ID,{header_str}' + '\n')
+            for i, s in enumerate(rda.site_wa_scores()):
+                scores = ','.join(['%.10f' % x for x in s])
+                numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
+            numpy_fh.write('\n')
 
-        # Print out site WA scores
-        numpy_fh.write('### Site WA Scores ###\n')
-        header_str = ','.join(['RDA%d' % (i + 1) for i in range(rda.rank)])
-        numpy_fh.write('ID,' + header_str + '\n')
-        for i, s in enumerate(rda.site_wa_scores()):
-            scores = ','.join(['%.10f' % x for x in s])
-            numpy_fh.write('%d,%s\n' % (spp_plot_ids[i], scores))
-        numpy_fh.write('\n')
-
-        # Miscellaneous site information
-        numpy_fh.write('### Miscellaneous Site Information ###\n')
-        numpy_fh.write('ID,WEIGHT,N2\n')
-        site_weights, site_n2 = rda.site_information()
-        for i in range(len(site_weights)):
-            numpy_fh.write('%s,%.10f,%.10f\n' % (
-                spp_plot_ids[i], site_weights[i], site_n2[i]))
-
-        # Close the file
-        numpy_fh.close()
+            # Miscellaneous site information
+            numpy_fh.write('### Miscellaneous Site Information ###\n')
+            numpy_fh.write('ID,WEIGHT,N2\n')
+            site_weights, site_n2 = rda.site_information()
+            for i in range(len(site_weights)):
+                numpy_fh.write('%s,%.10f,%.10f\n' % (
+                    spp_plot_ids[i], site_weights[i], site_n2[i]))
 
 
 class NumpyEUCOrdination(NumpyOrdination):

@@ -30,7 +30,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
     @classmethod
     def from_parameter_parser(cls, parameter_parser):
         p = parameter_parser
-        raster_name = 'mr{}_nnmsk1'.format(p.model_region)
+        raster_name = f'mr{p.model_region}_nnmsk1'
         predicted_raster = os.path.join(p.model_directory, raster_name)
         return cls(
             predicted_raster,
@@ -100,8 +100,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         ids_1 = getattr(ids, self.id_field)
         ids_2 = getattr(sad, self.id_field)
         if not np.all(np.in1d(ids_1, ids_2)):
-            err_msg = 'Not all values in the raster are present in the '
-            err_msg += 'attribute data'
+            err_msg = 'Not all values in the raster are present in the ' + 'attribute data'
             raise ValueError(err_msg)
 
         # Join the two recarrays together
@@ -117,7 +116,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
     def run_diagnostic(self):
         # Read in the observed data from the area estimate file
         (obs_area, obs_nf_hectares, obs_ns_hectares) = \
-           self.get_observed_estimates()
+               self.get_observed_estimates()
 
         # Get the observed and predicted data arrays
         (prd_area, prd_nf_hectares) = self.get_predicted_estimates()
@@ -146,7 +145,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             try:
                 fm = mp.get_attribute(v)
             except ValueError:
-                err_msg = v + ' is missing metadata.'
+                err_msg = f'{v} is missing metadata.'
                 print(err_msg)
                 continue
 
@@ -169,9 +168,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 bins = histogram.bin_continuous([obs_vw, prd_vw], bins=7)
             else:
                 if fm.codes:
-                    class_names = {}
-                    for code in fm.codes:
-                        class_names[code.code_value] = code.label
+                    class_names = {code.code_value: code.label for code in fm.codes}
                 else:
                     class_names = None
                 bins = histogram.bin_categorical(
@@ -187,11 +184,12 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             self.insert_class(bins[1], 'Nonforest', prd_nf_hectares)
 
             for b in bins:
-                for i in range(0, len(b.bin_counts)):
+                for i in range(len(b.bin_counts)):
                     out_data = [
-                        '%s' % v,
-                        '%s' % b.name,
+                        f'{v}',
+                        f'{b.name}',
                         '"%s"' % b.bin_names[i],
                         '%.3f' % b.bin_counts[i],
                     ]
+
                     stats_fh.write(','.join(out_data) + '\n')

@@ -140,7 +140,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
     @staticmethod
     def _create_directory_structure(hex_resolutions, root_dir):
-        hex_levels = ['hex_{}'.format(x[1]) for x in hex_resolutions]
+        hex_levels = [f'hex_{x[1]}' for x in hex_resolutions]
         all_levels = ['plot_pixel'] + hex_levels
         for level in all_levels:
             sub_dir = os.path.join(root_dir, level)

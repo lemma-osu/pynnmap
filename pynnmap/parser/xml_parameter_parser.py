@@ -143,11 +143,7 @@ class XMLParameterParser(
 
     def get_spatial_filter(self):
         index = str(self.fl_elem.footprint_file).find('single')
-        if index > -1:
-            fltr = 'SINGLE'
-        else:
-            fltr = 'MULTI'
-        return fltr
+        return 'SINGLE' if index > -1 else 'MULTI'
 
     # -------------------------------------------------------------------------
     # Parameter set
@@ -214,11 +210,10 @@ class XMLParameterParser(
 
     @property
     def id_list_file(self):
-        if self.fl_elem.find('id_list_file') is not None:
-            file_name = str(self.fl_elem.id_list_file)
-            return self._get_path('id_list_file', file_name)
-        else:
+        if self.fl_elem.find('id_list_file') is None:
             return ''
+        file_name = str(self.fl_elem.id_list_file)
+        return self._get_path('id_list_file', file_name)
 
     @property
     def species_matrix_file(self):
@@ -329,70 +324,63 @@ class XMLParameterParser(
 
     @property
     def image_source(self):
-        if self.model_type in self.imagery_model_types:
-            mt_elem = self.model_type_elem
-            return str(mt_elem.image_source)
-        else:
+        if self.model_type not in self.imagery_model_types:
             return ''
+        mt_elem = self.model_type_elem
+        return str(mt_elem.image_source)
 
     @property
     def image_version(self):
-        if self.model_type in self.imagery_model_types:
-            mt_elem = self.model_type_elem
-            return float(mt_elem.image_version)
-        else:
+        if self.model_type not in self.imagery_model_types:
             return 0.0
+        mt_elem = self.model_type_elem
+        return float(mt_elem.image_version)
 
     @property
     def plot_image_crosswalk(self):
-        if self.model_type in self.imagery_model_types:
-            pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
-            if pi_crosswalk_elem.xpath('keyword'):
-                return str(pi_crosswalk_elem.keyword)
-            else:
-                return [
-                    (int(p.plot_year), int(p.image_year))
-                    for p in pi_crosswalk_elem.getchildren()]
-        else:
+        if self.model_type not in self.imagery_model_types:
             return []
+        pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
+        return (
+            str(pi_crosswalk_elem.keyword)
+            if pi_crosswalk_elem.xpath('keyword')
+            else [
+                (int(p.plot_year), int(p.image_year))
+                for p in pi_crosswalk_elem.getchildren()
+            ]
+        )
 
     @plot_image_crosswalk.setter
     def plot_image_crosswalk(self, records):
-        if self.model_type in self.imagery_model_types:
-            # Create a new XML tree of these pairs
-            new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
-            for rec in records.itertuples():
-                child = (
-                    etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
-                )
-                try:
-                    child.plot_year = rec.PLOT_YEAR
-                    child.image_year = rec.IMAGE_YEAR
-                except ValueError:
-                    err_msg = (
-                        'Record does not have PLOT_YEAR or IMAGE_YEAR '
-                        'attributes'
-                    )
-                    raise ValueError(err_msg)
-
-            # Replace the old XML tree with the newly created one
-            pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
-            parent = pi_crosswalk_elem.getparent()
-            parent.replace(pi_crosswalk_elem, new_pi_crosswalk_elem)
-
-        else:
+        if self.model_type not in self.imagery_model_types:
             raise NotImplementedError
+        # Create a new XML tree of these pairs
+        new_pi_crosswalk_elem = objectify.Element('plot_image_crosswalk')
+        for rec in records.itertuples():
+            child = (
+                etree.SubElement(new_pi_crosswalk_elem, 'plot_image_pair')
+            )
+            try:
+                child.plot_year = rec.PLOT_YEAR
+                child.image_year = rec.IMAGE_YEAR
+            except ValueError:
+                err_msg = (
+                    'Record does not have PLOT_YEAR or IMAGE_YEAR '
+                    'attributes'
+                )
+                raise ValueError(err_msg)
+
+        # Replace the old XML tree with the newly created one
+        pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
+        parent = pi_crosswalk_elem.getparent()
+        parent.replace(pi_crosswalk_elem, new_pi_crosswalk_elem)
 
     @property
     def image_years(self):
-        if self.model_type in self.imagery_model_types:
-            pic = self.plot_image_crosswalk
-            if isinstance(pic, str):
-                return []
-            else:
-                return [x[1] for x in pic]
-        else:
+        if self.model_type not in self.imagery_model_types:
             return []
+        pic = self.plot_image_crosswalk
+        return [] if isinstance(pic, str) else [x[1] for x in pic]
 
     @property
     def plot_years(self):
@@ -401,27 +389,22 @@ class XMLParameterParser(
             return [int(x) for x in py_elem.getchildren()]
         else:
             pic = self.plot_image_crosswalk
-            if isinstance(pic, str):
-                return []
-            else:
-                return [x[0] for x in pic]
+            return [] if isinstance(pic, str) else [x[0] for x in pic]
 
     @plot_years.setter
     def plot_years(self, year_list):
-        if self.model_type not in self.imagery_model_types:
-
-            # Create a new XML tree of these pairs
-            new_py_elem = objectify.Element('plot_years')
-            for year in year_list:
-                etree.SubElement(new_py_elem, 'plot_year')
-                new_py_elem.plot_year[-1] = year
-
-            # Replace the old XML tree with the newly created one
-            py_elem = self.model_type_elem.plot_years
-            parent = py_elem.getparent()
-            parent.replace(py_elem, new_py_elem)
-        else:
+        if self.model_type in self.imagery_model_types:
             raise NotImplementedError
+        # Create a new XML tree of these pairs
+        new_py_elem = objectify.Element('plot_years')
+        for year in year_list:
+            etree.SubElement(new_py_elem, 'plot_year')
+            new_py_elem.plot_year[-1] = year
+
+        # Replace the old XML tree with the newly created one
+        py_elem = self.model_type_elem.plot_years
+        parent = py_elem.getparent()
+        parent.replace(py_elem, new_py_elem)
 
     @property
     def coincident_plots(self):
@@ -505,18 +488,17 @@ class XMLParameterParser(
         ov_elem = self.op_elem.ordination_variables
         if (ov_elem.getchildren())[0].tag == 'keyword':
             return str((ov_elem.getchildren())[0])
-        else:
-            if model_year is None:
-                model_year = self.model_year
-            v_list = []
-            for v in ov_elem.getchildren():
-                if v.get('variable_type') == 'STATIC':
-                    v_list.append((str(v.variable_name), str(v.variable_path)))
-                elif v.get('variable_type') == 'TEMPORAL':
-                    if int(v.get('model_year')) == model_year:
-                        v_list.append(
-                            (str(v.variable_name), str(v.variable_path)))
-            return v_list
+        if model_year is None:
+            model_year = self.model_year
+        v_list = []
+        for v in ov_elem.getchildren():
+            if v.get('variable_type') == 'STATIC':
+                v_list.append((str(v.variable_name), str(v.variable_path)))
+            elif v.get('variable_type') == 'TEMPORAL':
+                if int(v.get('model_year')) == model_year:
+                    v_list.append(
+                        (str(v.variable_name), str(v.variable_path)))
+        return v_list
 
     def set_ordination_variables(self, records):
         # Create a new XML tree of these pairs
@@ -545,10 +527,7 @@ class XMLParameterParser(
 
     def get_ordination_variable_names(self, model_year=None):
         ord_vars = self.get_ordination_variables(model_year=model_year)
-        if isinstance(ord_vars, list):
-            return [str(x[0]) for x in ord_vars]
-        else:
-            return None
+        return [str(x[0]) for x in ord_vars] if isinstance(ord_vars, list) else None
 
     # -------------------------------------------------------------------------
     # Imputation Parameters
@@ -597,17 +576,11 @@ class XMLParameterParser(
 
     @property
     def point_x(self):
-        if self.domain == 'point':
-            return float(self.domain_element.x)
-        else:
-            return None
+        return float(self.domain_element.x) if self.domain == 'point' else None
 
     @property
     def point_y(self):
-        if self.domain == 'point':
-            return float(self.domain_element.y)
-        else:
-            return None
+        return float(self.domain_element.y) if self.domain == 'point' else None
 
     @property
     def list_points(self):
@@ -699,11 +672,10 @@ class XMLParameterParser(
 
     @property
     def accuracy_assessment_report(self):
-        if self.aa_elem.find('accuracy_assessment_report') is not None:
-            file_name = str(self.aa_elem.accuracy_assessment_report)
-            return self._get_path('accuracy_assessment_report', file_name)
-        else:
+        if self.aa_elem.find('accuracy_assessment_report') is None:
             return ''
+        file_name = str(self.aa_elem.accuracy_assessment_report)
+        return self._get_path('accuracy_assessment_report', file_name)
 
     @accuracy_assessment_report.setter
     def accuracy_assessment_report(self, value):
@@ -712,11 +684,10 @@ class XMLParameterParser(
 
     @property
     def report_metadata_file(self):
-        if self.aa_elem.find('report_metadata_file') is not None:
-            file_name = str(self.aa_elem.report_metadata_file)
-            return self._get_path('report_metadata_file', file_name)
-        else:
+        if self.aa_elem.find('report_metadata_file') is None:
             return ''
+        file_name = str(self.aa_elem.report_metadata_file)
+        return self._get_path('report_metadata_file', file_name)
 
     @property
     def accuracy_diagnostics_element(self):
@@ -728,10 +699,7 @@ class XMLParameterParser(
     @property
     def accuracy_diagnostics(self):
         ade = self.accuracy_diagnostics_element
-        if ade is not None:
-            return [x.tag for x in ade.iterchildren()]
-        else:
-            return []
+        return [x.tag for x in ade.iterchildren()] if ade is not None else []
 
     @property
     def local_accuracy_file(self):
@@ -808,18 +776,12 @@ class XMLParameterParser(
     def riemann_element(self):
         ade = self.accuracy_diagnostics_element
         if ade is not None:
-            if ade.find('riemann_accuracy') is not None:
-                return ade.riemann_accuracy
-            else:
-                return None
+            return None if ade.find('riemann_accuracy') is None else ade.riemann_accuracy
 
     @property
     def riemann_assessment_year(self):
         r_elem = self.riemann_element
-        if r_elem is not None:
-            return int(r_elem.assessment_year)
-        else:
-            return None
+        return int(r_elem.assessment_year) if r_elem is not None else None
 
     @property
     def riemann_output_folder(self):
@@ -860,32 +822,30 @@ class XMLParameterParser(
     @property
     def riemann_hex_resolutions(self):
         r_elem = self.riemann_element
-        if r_elem is not None:
-            hex_resolutions = []
-            for elem in r_elem.hex_resolutions.iterchildren():
-                field_name = str(elem.field_name)
-                intercell_spacing = int(elem.intercell_spacing)
-                area = float(elem.area)
-                minimum_plots_per_hex = int(elem.minimum_plots_per_hex)
-                hex_resolutions.append((
-                    field_name, intercell_spacing, area, minimum_plots_per_hex)
-                )
-            return hex_resolutions
-        else:
+        if r_elem is None:
             return []
+        hex_resolutions = []
+        for elem in r_elem.hex_resolutions.iterchildren():
+            field_name = str(elem.field_name)
+            intercell_spacing = int(elem.intercell_spacing)
+            area = float(elem.area)
+            minimum_plots_per_hex = int(elem.minimum_plots_per_hex)
+            hex_resolutions.append((
+                field_name, intercell_spacing, area, minimum_plots_per_hex)
+            )
+        return hex_resolutions
 
     @property
     def riemann_k_values(self):
         r_elem = self.riemann_element
-        if r_elem is not None:
-            k_values = []
-            for elem in r_elem.k_values.iterchildren():
-                k = int(elem.k)
-                weights = get_weights(elem.weights, k)
-                k_values.append((k, weights))
-            return k_values
-        else:
+        if r_elem is None:
             return []
+        k_values = []
+        for elem in r_elem.k_values.iterchildren():
+            k = int(elem.k)
+            weights = get_weights(elem.weights, k)
+            k_values.append((k, weights))
+        return k_values
 
     @property
     def validation_element(self):
@@ -946,21 +906,17 @@ class XMLParameterParser(
     @property
     def outlier_diagnostics_element(self):
         oa_elem = self.oa_elem
-        if oa_elem is not None:
-            if self.oa_elem.find('diagnostics') is not None:
-                return self.oa_elem.diagnostics
-            else:
-                return None
+        if oa_elem is None:
+            return None
+        if self.oa_elem.find('diagnostics') is not None:
+            return self.oa_elem.diagnostics
         else:
             return None
 
     @property
     def outlier_diagnostics(self):
         ode = self.outlier_diagnostics_element
-        if ode is not None:
-            return [x.tag for x in ode.iterchildren()]
-        else:
-            return []
+        return [x.tag for x in ode.iterchildren()] if ode is not None else []
 
     @property
     def nn_index_outlier_file(self):
@@ -1012,12 +968,11 @@ class XMLParameterParser(
 
     @property
     def variable_deviation_file(self):
-        if self.outlier_diagnostics:
-            ode = self.outlier_diagnostics_element
-            if ode.find('variable_deviation_outlier') is not None:
-                file_name = str(ode.variable_deviation_outlier.output_file)
-                return self._get_path('variable_deviation_file', file_name)
-            else:
-                return ''
+        if not self.outlier_diagnostics:
+            return ''
+        ode = self.outlier_diagnostics_element
+        if ode.find('variable_deviation_outlier') is not None:
+            file_name = str(ode.variable_deviation_outlier.output_file)
+            return self._get_path('variable_deviation_file', file_name)
         else:
             return ''

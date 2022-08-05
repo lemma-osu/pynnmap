@@ -14,5 +14,5 @@ from pynnmap.parser import parameter_parser_factory as ppf
 def impute(parameter_file):
     p = ppf.get_parameter_parser(parameter_file)
     os.chdir(p.model_directory)
-    cmd = 'gnnrun ' + parameter_file
+    cmd = f'gnnrun {parameter_file}'
     subprocess.call(cmd)
