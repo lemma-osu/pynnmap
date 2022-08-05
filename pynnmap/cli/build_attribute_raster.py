@@ -156,12 +156,12 @@ def main(params, attribute):
     mp = xsmp.XMLStandMetadataParser(params.stand_metadata_file)
     attrs = mp.get_area_attrs()
 
-    # Find the attribute in the list
-    try:
-        _ = [x for x in attrs if x.field_name.lower() == attr_name][0]
-    except IndexError:
-        msg = "Could not find {} in valid area attributes".format(attr_name)
-        raise ValueError(msg)
+    # # Find the attribute in the list
+    # try:
+    #     _ = [x for x in attrs if x.field_name.lower() == attr_name][0]
+    # except IndexError:
+    #     msg = "Could not find {} in valid area attributes".format(attr_name)
+    #     raise ValueError(msg)
 
     # Obtain the weights
     weights = get_weights(k)
