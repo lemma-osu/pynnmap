@@ -21,7 +21,7 @@ class ImputationModel(object):
 
         # Create weightings based on use_weightings flag
         if use_weightings:
-            self.ax_weights = np.diag(np.sqrt(ord_model.axis_weights[0:n_axes]))
+            self.ax_weights = np.diag(np.sqrt(ord_model.axis_weights[:n_axes]))
         else:
             self.ax_weights = np.diag(np.ones(n_axes, dtype=np.float))
 

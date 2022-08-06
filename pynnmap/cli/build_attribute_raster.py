@@ -191,7 +191,7 @@ def main(params, attribute):
     # Open the output image for writing
     if not os.path.exists("attribute_rasters"):
         os.makedirs("attribute_rasters")
-    out_fn = "attribute_rasters/{}.tif".format(attr_name)
+    out_fn = f"attribute_rasters/{attr_name}.tif"
     out_raster = open_output_raster(profile, window, scalar, out_fn)
 
     # Run the process
