@@ -105,6 +105,9 @@ class QuantileIntervals(DynamicIntervals):
 
 
 def jenks_natural_breaks(arr, bin_count):
+    uniq = list(np.unique(arr))
+    if bin_count > len(uniq):
+        return uniq + [uniq[-1]] * (bin_count - len(uniq))
     return jenkspy.jenks_breaks(arr, bin_count)
 
 
