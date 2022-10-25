@@ -103,8 +103,8 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
             values="COUNT",
         )
         conds = (area_df.VARIABLE == fn) & (area_df.DATASET == "PREDICTED")
-        bin_names = np.array(area_df[conds].BIN_NAME[2:])
-        mapped = np.array(area_df[conds].AREA[2:])
+        bin_names = np.array(area_df[conds].BIN_NAME.iloc[2:])
+        mapped = np.array(area_df[conds].AREA.iloc[2:])
         olofsson = ErrorAdjustment(err_matrix, mapped)
         self.write_records(
             fh,
