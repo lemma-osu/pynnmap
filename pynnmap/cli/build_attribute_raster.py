@@ -24,16 +24,9 @@ def get_weights(k):
     return WEIGHTS[k]
 
 
-def create_neighbor_rasters(p):
-    # TODO: This is a total hack to hard code the parameter file name.  We
-    # TODO: only have the parameter parser object at this point.
-    # TODO: Because we are still calling the C program, we're still
-    # TODO: requiring the model filename as input.
-    md = p.model_directory
-    model_fn = os.path.join(md, "model.xml")
-    os.chdir(md)
-    cmd = " ".join(("gnnrun", model_fn))
-    subprocess.call(cmd)
+def create_neighbor_rasters(p, model_fn="model.xml"):
+    os.chdir(p.model_directory)
+    subprocess.call(f"gnnrun {model_fn}")
 
 
 def get_attribute_df(csv_fn, attr, id_field="FCID"):
@@ -41,11 +34,13 @@ def get_attribute_df(csv_fn, attr, id_field="FCID"):
 
 
 def get_attribute_array(csv_fn, attr, id_field="FCID"):
-    df = get_attribute_df(csv_fn, attr, id_field=id_field)
-    sparse_df = pd.DataFrame({id_field: np.arange(1, df[id_field].max() + 1)})
-    sparse_df = sparse_df.merge(df, on=id_field, how="left").fillna(0.0)
-    sparse_attr_arr = sparse_df.values
-    return np.insert(sparse_attr_arr, 0, [0, 0], axis=0)
+    attr_df = get_attribute_df(csv_fn, attr, id_field=id_field)
+    return (
+        pd.DataFrame({id_field: np.arange(0, attr_df[id_field].max() + 1)})
+        .merge(attr_df, on=id_field, how="left")
+        .fillna(0.0)
+        .values
+    )
 
 
 def open_output_raster(profile, window, scalar, out_fn):
@@ -140,28 +135,19 @@ def process_raster(
         )
 
 
-def main(params, attribute):
-    # Get the value of k
+def main(params, attribute, model_fn="model.xml", k=None):
     attr_name = attribute.lower()
-    k = min(params.k, scalars.get_k(attr_name.upper()))
+
+    # Get the value of k if not defined
+    if k is None:
+        k = min(params.k, scalars.get_k(attr_name.upper()))
 
     # Build the neighbor rasters if not present
     nn_files = [params.get_neighbor_file(idx) for idx in range(1, k + 1)]
     try:
         _ = [rasterio.open(x) for x in nn_files]
     except rasterio.errors.RasterioIOError:
-        create_neighbor_rasters(params)
-
-    # Get the metadata parser and get the project area attributes
-    mp = xsmp.XMLStandMetadataParser(params.stand_metadata_file)
-    attrs = mp.get_area_attrs()
-
-    # # Find the attribute in the list
-    # try:
-    #     _ = [x for x in attrs if x.field_name.lower() == attr_name][0]
-    # except IndexError:
-    #     msg = "Could not find {} in valid area attributes".format(attr_name)
-    #     raise ValueError(msg)
+        create_neighbor_rasters(params, model_fn=model_fn)
 
     # Obtain the weights
     weights = get_weights(k)
@@ -213,7 +199,14 @@ def main(params, attribute):
 )
 @click.argument("parameter-file", type=click.Path(exists=True), required=True)
 @click.argument("attribute", type=click.STRING, required=True)
-def cli_main(parameter_file, attribute):
+@click.option(
+    "-k",
+    type=click.INT,
+    default=None,
+    show_default=True,
+    help="Number of neighbors",
+)
+def cli_main(parameter_file, attribute, k):
     # Read in the parameters
     params = ppf.get_parameter_parser(parameter_file)
-    main(params, attribute)
+    main(params, attribute, parameter_file, k)
