@@ -21,6 +21,7 @@ setup(
         "matplotlib",
         "numpy",
         "pandas",
+        "pydantic",
         "rasterio",
         "rpy2",
         "scikit-learn",
