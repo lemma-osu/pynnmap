@@ -85,24 +85,25 @@ def get_variable_info(parser, years):
 
 
 def get_footprint_values(ds, windows, band=1):
-    out_dict = {}
     gt = ds.GetGeoTransform()
     band = ds.GetRasterBand(band)
-    for (k, v) in windows.items():
-        out_dict[k] = get_footprint_value(v, band, gt)
-    return out_dict
+    return {k: get_footprint_value(v, band, gt) for k, v in windows.items()}
 
 
 def get_footprint_value(window, band, gt):
-    (x_min, y_max, x_size, y_size) = window
+    x_min, y_max, x_size, y_size = window
     col = int((x_min - gt[0]) / gt[1])
     row = int((y_max - gt[3]) / gt[5])
-    value = band.ReadAsArray(col, row, x_size, y_size)
-    return value
+    return band.ReadAsArray(col, row, x_size, y_size)
 
 
 def extract_footprints(
-    raster_counts, raster_dict, years, fp_windows, year_ids, ord_year_var_dict,
+    raster_counts,
+    raster_dict,
+    years,
+    fp_windows,
+    year_ids,
+    ord_year_var_dict,
 ):
     # Create a reverse dictionary of path name to variable name
     # There will be multiple identical entries for non-temporally varying
@@ -130,7 +131,7 @@ def extract_footprints(
 
             # Store these footprint values in a dictionary keyed by
             # id and variable file name
-            for (id_val, fp) in fp_values.items():
+            for id_val, fp in fp_values.items():
                 fp_value_dict[id_val][var] = fp
 
             # Close this dataset - no longer needed
@@ -141,7 +142,7 @@ def extract_footprints(
         print(year)
 
         # Get the subset of footprint offsets and windows for this year
-        windows = dict((x, fp_windows[x]) for x in year_ids[year])
+        windows = {x: fp_windows[x] for x in year_ids[year]}
 
         # Extract footprints for any variables that are not common to all
         # years, but specialized for this year
@@ -158,7 +159,7 @@ def extract_footprints(
                 raster_dict[fn][1] = True
 
                 # Store these values
-                for (id_val, fp) in fp_values.items():
+                for id_val, fp in fp_values.items():
                     fp_value_dict[id_val][var] = fp
 
                 # Close the dataset - no longer needed
@@ -194,8 +195,8 @@ class NNPixel(object):
     def __repr__(self):
         return "{kls}(\n neighbors={n}\n distances={d}\n)".format(
             kls=self.__class__.__name__,
-            n=self.neighbors[0:5],
-            d=self.distances[0:5],
+            n=self.neighbors[:5],
+            d=self.distances[:5],
         )
 
 
@@ -276,9 +277,7 @@ class NNFinder(ABC):
         pass
 
     @staticmethod
-    def get_neighbors(
-        env_data, ord_model, imp_model,
-    ):
+    def get_neighbors(env_data, ord_model, imp_model):
         var_names = ord_model.var_names
         neighbor_data = {}
         for id_val in sorted(env_data.keys()):
@@ -308,9 +307,7 @@ class PixelNNFinder(NNFinder):
 
         # Crosswalk of ID to year
         id_x_year = get_id_year_crosswalk(p)
-        id_x_year = dict(
-            (i, id_x_year[i]) for i in id_x_year.keys() if i in plot_ids
-        )
+        id_x_year = {i: id_x_year[i] for i in id_x_year.keys() if i in plot_ids}
 
         # Get the list of IDs, years, and the crosswalk of years to IDs
         id_vals, years, year_ids = get_year_id_crosswalk(id_x_year)
@@ -353,7 +350,7 @@ class PlotNNFinder(NNFinder):
         env_df = plot_df.merge(env_df, on=p.plot_id_field)
 
         # Create an EnvironmentalVector for each ID
-        env_dict = {}
-        for row in env_df.to_dict(orient="records"):
-            env_dict[row[p.plot_id_field]] = [EnvironmentalVector(row)]
-        return env_dict
+        return {
+            row[p.plot_id_field]: [EnvironmentalVector(row)]
+            for row in env_df.to_dict(orient="records")
+        }
