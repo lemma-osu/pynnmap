@@ -182,6 +182,10 @@ class BinaryErrorMatrix:
         else:
             return (self._counts[0, 0] * self._counts[1, 1]) / denominator
 
+    def tss(self):
+        """True skill statistic"""
+        return self.sensitivity() + self.specificity() - 1.0
+
     def kappa(self):
         """
         Cohen's kappa coefficient
