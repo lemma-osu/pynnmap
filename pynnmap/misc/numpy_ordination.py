@@ -59,7 +59,7 @@ class NumpyCCA(object):
         self.y_r, weighted_means = self._weight_center(self.y, row_sums)
 
         # Perform QR decomposition on the weighted Y matrix
-        self.q, self.r = np.linalg.qr(self.y_r, mode="full")
+        self.q, self.r = np.linalg.qr(self.y_r)
 
         # Run MLR fitting for Y matrix
         right = np.dot(self.q.T, x_bar)
@@ -71,28 +71,25 @@ class NumpyCCA(object):
         v = v.T
 
         # Determine rank
-        if rank > np.sum([s > ZERO]):
-            self.rank = np.sum([s > ZERO])
-        else:
-            self.rank = rank
+        self.rank = np.sum([s > ZERO]) if rank > np.sum([s > ZERO]) else rank
 
         # Set instance-level variables for later reporting
-        self.eigenvalues = s[0:rank] * s[0:rank]
+        self.eigenvalues = s[:rank] * s[:rank]
         self.env_means = weighted_means
 
         u_weight = np.expand_dims(1.0 / np.sqrt(row_sums), axis=1)
-        self.u = np.multiply(self.u_raw[:, 0:rank], u_weight)
+        self.u = np.multiply(self.u_raw[:, :rank], u_weight)
 
         v_weight = np.expand_dims(1.0 / np.sqrt(col_sums), axis=1)
         self.v = np.multiply(v[:, 0:rank], v_weight)
 
-        self.u_eig = np.multiply(self.u, s[0:rank])
-        self.v_eig = np.multiply(self.v, s[0:rank])
+        self.u_eig = np.multiply(self.u, s[:rank])
+        self.v_eig = np.multiply(self.v, s[:rank])
 
-        a = np.dot(x_bar, v[:, 0:rank])
+        a = np.dot(x_bar, v[:, :rank])
         self.wa_eig = np.multiply(a, u_weight)
 
-        self.wa = np.multiply(self.wa_eig, (1.0 / s[0:rank]))
+        self.wa = np.multiply(self.wa_eig, (1.0 / s[:rank]))
 
     @staticmethod
     def _weight_center(x, w):
@@ -105,17 +102,17 @@ class NumpyCCA(object):
         """
         Return biplot scores of environmental variable by axis
         """
-        biplot_scores = np.corrcoef(
-            self.y_r, self.u_raw[:, 0 : self.rank], rowvar=False
-        )
-        return biplot_scores[0 : self.rank, self.rank :]
+        xx = self.y_r[:, : self.rank]
+        u_raw = self.u_raw[:, : self.rank]
+        scaling = 1.0 / np.sqrt((xx * xx).sum(axis=0))
+        return scaling[:, None] * xx.T.dot(u_raw)
 
     def coefficients(self):
         """
         Return the environmental variable loadings of for each axis
         """
         right = np.dot(self.q.T, self.u_raw[:, 0 : self.rank])
-        (x, residual, rank, s) = np.linalg.lstsq(self.r, right)
+        x, residual, rank, s = np.linalg.lstsq(self.r, right, rcond=None)
         return np.array(x)
 
     def species_centroids(self):
@@ -140,8 +137,7 @@ class NumpyCCA(object):
         y_xiuk_sqr = np.zeros((uk.shape[0], uk.shape[1]), dtype=np.float64)
         for i in range(y.shape[0]):
             y_xiuk_sqr[i] = np.dot(y[i], np.square(xiuk[i]))
-        species_tolerances = np.sqrt(y_xiuk_sqr / y.sum(axis=1).reshape(-1, 1))
-        return species_tolerances
+        return np.sqrt(y_xiuk_sqr / y.sum(axis=1).reshape(-1, 1))
 
     def species_information(self):
         """
@@ -230,27 +226,24 @@ class NumpyRDA(object):
         v = v.T
 
         # Determine rank
-        if rank > np.sum([s > ZERO]):
-            self.rank = np.sum([s > ZERO])
-        else:
-            self.rank = rank
+        self.rank = np.sum([s > ZERO]) if rank > np.sum([s > ZERO]) else rank
 
         # Divide s by degrees of freedom
         s /= math.sqrt(num_rows)
 
         # Set instance-level variables for later reporting
-        self.eigenvalues = s[0:rank] * s[0:rank]
+        self.eigenvalues = s[:rank] * s[:rank]
 
-        self.u = u[:, 0:rank]
-        self.v = v[:, 0:rank]
+        self.u = u[:, :rank]
+        self.v = v[:, :rank]
 
-        self.u_eig = np.multiply(self.u, s[0:rank])
-        self.v_eig = np.multiply(self.v, s[0:rank])
+        self.u_eig = np.multiply(self.u, s[:rank])
+        self.v_eig = np.multiply(self.v, s[:rank])
 
         a = np.dot(x_bar, v[:, 0:rank])
         self.wa_eig = a / math.sqrt(num_rows)
 
-        self.wa = np.multiply(self.wa_eig, (1.0 / s[0:rank]))
+        self.wa = np.multiply(self.wa_eig, (1.0 / s[:rank]))
 
     def biplot_scores(self):
         """
@@ -295,8 +288,7 @@ class NumpyRDA(object):
         y_xiuk_sqr = np.zeros((uk.shape[0], uk.shape[1]), dtype=np.float64)
         for i in range(y.shape[0]):
             y_xiuk_sqr[i] = np.dot(y[i], np.square(xiuk[i]))
-        species_tolerances = np.sqrt(y_xiuk_sqr / y.sum(axis=1).reshape(-1, 1))
-        return species_tolerances
+        return np.sqrt(y_xiuk_sqr / y.sum(axis=1).reshape(-1, 1))
 
     def species_information(self):
         """
