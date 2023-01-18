@@ -126,6 +126,8 @@ class AttributePredictor(ABC):
     def get_predicted_attributes_df(self, predictions, id_field):
         d = {}
         col_names = self.stand_attr_df.columns
+        if len(col_names) == 0:
+            return None
         for prd in predictions:
             values = self.stat_func(prd.attr_arr)
             d[prd.id] = values
@@ -160,7 +162,7 @@ def calculate_predicted_attributes(
     plot_predictions, attr_data, fltr, parser, id_field
 ):
     dfs = []
-    for (kls, k, weights) in (
+    for kls, k, weights in (
         (ContinuousAttributePredictor, parser.k, get_weights(parser)),
         (CategoricalAttributePredictor, 1, np.array([1.0])),
         (SpeciesAttributePredictor, 1, np.array([1.0])),
@@ -172,6 +174,7 @@ def calculate_predicted_attributes(
             plot_predictions, k=k, weights=weights
         )
         prd_df = predictor.get_predicted_attributes_df(predictions, id_field)
-        dfs.append(prd_df)
+        if prd_df is not None:
+            dfs.append(prd_df)
 
     return reduce(lambda df1, df2: pd.merge(df1, df2, on=id_field), dfs)
