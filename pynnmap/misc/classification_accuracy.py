@@ -54,16 +54,12 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
         Dictionary of class value to row or column number
     """
 
-    if compact is True:
-        # Find all classes present in either the observed or predicted data
+    if compact is not True and classes is None or compact is True:
+        # No classes given - default to those present as above
         classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
     else:
-        if classes is None:
-            # No classes given - default to those present as above
-            classes = np.union1d(np.unique(obs_data), np.unique(prd_data))
-        else:
-            # Use the user-defined classes
-            classes = np.array(classes)
+        # Use the user-defined classes
+        classes = np.array(classes)
 
     n = classes.size
 

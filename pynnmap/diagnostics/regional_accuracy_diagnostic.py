@@ -173,6 +173,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         )
 
         # Iterate over all fields and print out the area histogram statistics
+        prd_ns_ha = 0.0
+        needs_conversion = (False, True)
         for attr in attrs:
             print(attr.field_name)
 
@@ -190,9 +192,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
             # Get predicted areas from predicted rasters that should be
             # pre-generated
-            prd_ns_ha = 0.0
             prd_f_arr, prd_nf_ha, ha_per_px = get_predicted_raster(attr)
-            needs_conversion = (False, True)
 
             # Bin the data based on field type
             bins = self._bin_data(
