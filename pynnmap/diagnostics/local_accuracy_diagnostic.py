@@ -67,41 +67,39 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
         )
 
     def run_diagnostic(self):
-        # Open the stats file and print out the header line
-        stats_fh = open(self.statistics_file, "w")
-        out_list = [
-            "VARIABLE",
-            "PEARSON_R",
-            "SPEARMAN_R",
-            "RMSE",
-            "NORMALIZED_RMSE",
-            "BIAS_PERCENTAGE",
-            "R_SQUARE",
-        ]
-        stats_fh.write(",".join(out_list) + "\n")
-
-        # Read in the stand attribute metadata and get continuous attributes
-        mp = XMLStandMetadataParser(self.stand_metadata_file)
-        attrs = mp.filter(Flags.CONTINUOUS | Flags.ACCURACY)
-
-        # For each attribute, calculate the statistics
-        for attr in attrs:
-            # Skip any missing attributes
-            if attr.field_name not in self.obs_df.columns:
-                print(f"{attr.field_name} is not present in observed file")
-                continue
-
-            stats = self.run_attr(attr)
-
-            # Print this out to the stats file
+        with open(self.statistics_file, "w") as stats_fh:
             out_list = [
-                attr.field_name,
-                "{:.6f}".format(stats.pearson_r),
-                "{:.6f}".format(stats.spearman_r),
-                "{:.6f}".format(stats.rmse),
-                "{:.6f}".format(stats.std_rmse),
-                "{:.6f}".format(stats.bias),
-                "{:.6f}".format(stats.r2),
+                "VARIABLE",
+                "PEARSON_R",
+                "SPEARMAN_R",
+                "RMSE",
+                "NORMALIZED_RMSE",
+                "BIAS_PERCENTAGE",
+                "R_SQUARE",
             ]
             stats_fh.write(",".join(out_list) + "\n")
-        stats_fh.close()
+
+            # Read in the stand attribute metadata and get continuous attributes
+            mp = XMLStandMetadataParser(self.stand_metadata_file)
+            attrs = mp.filter(Flags.CONTINUOUS | Flags.ACCURACY)
+
+            # For each attribute, calculate the statistics
+            for attr in attrs:
+                # Skip any missing attributes
+                if attr.field_name not in self.obs_df.columns:
+                    print(f"{attr.field_name} is not present in observed file")
+                    continue
+
+                stats = self.run_attr(attr)
+
+                # Print this out to the stats file
+                out_list = [
+                    attr.field_name,
+                    "{:.6f}".format(stats.pearson_r),
+                    "{:.6f}".format(stats.spearman_r),
+                    "{:.6f}".format(stats.rmse),
+                    "{:.6f}".format(stats.std_rmse),
+                    "{:.6f}".format(stats.bias),
+                    "{:.6f}".format(stats.r2),
+                ]
+                stats_fh.write(",".join(out_list) + "\n")

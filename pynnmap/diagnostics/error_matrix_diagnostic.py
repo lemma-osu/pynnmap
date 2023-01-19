@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 import pandas as pd
 
@@ -27,9 +28,7 @@ def get_error_matrix(obs_vals, prd_vals, intervals, return_bins=True):
     digitizer.set_bins(np.hstack((obs_vals, prd_vals)))
     obs, prd = map(digitizer.bin_data, (obs_vals, prd_vals))
     err_mat = pd.crosstab(index=obs, columns=prd, dropna=False)
-    if return_bins:
-        return err_mat, digitizer.bins
-    return err_mat
+    return (err_mat, digitizer.bins) if return_bins else err_mat
 
 
 class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
@@ -103,9 +102,7 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
     def attr_missing(self, attr):
         if attr.field_name not in self.obs_df.columns:
             return True
-        if attr.field_name not in self.prd_df.columns:
-            return True
-        return False
+        return attr.field_name not in self.prd_df.columns
 
     def run_attr(self, attr, clf, return_bins=True):
         obs_vals = getattr(self.obs_df, attr.field_name)
@@ -117,18 +114,12 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
     def run_diagnostic(self):
         # Open the error matrix file and print out the header line
         err_matrix_fh = open(self.error_matrix_file, "w")
-        err_matrix_fh.write(
-            "{},{},{},{}\n".format(
-                "VARIABLE", "OBSERVED_CLASS", "PREDICTED_CLASS", "COUNT"
-            )
-        )
+        err_matrix_fh.write(f"VARIABLE,OBSERVED_CLASS,PREDICTED_CLASS,COUNT\n")
 
         # Open the bin file and print out the header line
         if self.output_bin_file:
             bin_fh = open(self.output_bin_file, "w")
-            bin_fh.write(
-                "{},{},{},{}\n".format("VARIABLE", "CLASS", "LOW", "HIGH")
-            )
+            bin_fh.write(f"VARIABLE,CLASS,LOW,HIGH\n")
 
         # Read in the stand attribute metadata and get continuous
         # and categorical attributes
@@ -156,15 +147,14 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
 
             rows, cols = err_mat.shape
             labels = list(err_mat.index)
-            for j in range(cols):
-                for i in range(rows):
-                    out_list = [
-                        attr.field_name,
-                        "{}".format(labels[i]),
-                        "{}".format(labels[j]),
-                        "{}".format(err_mat.iat[i, j]),
-                    ]
-                    err_matrix_fh.write(",".join(out_list) + "\n")
+            for j, i in itertools.product(range(cols), range(rows)):
+                out_list = [
+                    attr.field_name,
+                    f"{labels[i]}",
+                    f"{labels[j]}",
+                    f"{err_mat.iat[i, j]}",
+                ]
+                err_matrix_fh.write(",".join(out_list) + "\n")
 
             if self.output_bin_file:
                 for i in range(len(labels)):
@@ -174,7 +164,7 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
                         start, end = bins[i], bins[i] + 1
                     out_list = [
                         attr.field_name,
-                        "{}".format(labels[i]),
+                        f"{labels[i]}",
                         "{:.4f}".format(start),
                         "{:.4f}".format(end),
                     ]

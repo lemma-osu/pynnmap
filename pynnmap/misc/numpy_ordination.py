@@ -131,7 +131,7 @@ class NumpyCCA(object):
         xiuk = np.zeros(
             (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64
         )
-        for (i, s) in enumerate(uk):
+        for i, s in enumerate(uk):
             xiuk[i] = xi - s
         y = self.x.T
         y_xiuk_sqr = np.zeros((uk.shape[0], uk.shape[1]), dtype=np.float64)
@@ -282,7 +282,7 @@ class NumpyRDA(object):
         xiuk = np.zeros(
             (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64
         )
-        for (i, s) in enumerate(uk):
+        for i, s in enumerate(uk):
             xiuk[i] = xi - s
         y = self.x.T
         y_xiuk_sqr = np.zeros((uk.shape[0], uk.shape[1]), dtype=np.float64)

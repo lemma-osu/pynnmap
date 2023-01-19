@@ -6,7 +6,6 @@ class ImputationModel(object):
     def __init__(
         self, ord_model, n_axes=8, use_weightings=True, max_neighbors=100
     ):
-
         # Ensure that n_axes isn't larger than the number of axes in our
         # ordination model
         self.n_axes = n_axes

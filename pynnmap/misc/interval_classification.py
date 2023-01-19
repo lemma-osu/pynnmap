@@ -22,7 +22,7 @@ def get_global_range(*datasets):
     max : float
         The global max across datasets
     """
-    if len(list(datasets)) == 0:
+    if not list(datasets):
         msg = "One of more datasets is needed"
         raise ValueError(msg)
     min_list = []
@@ -54,8 +54,8 @@ class DynamicIntervals(RangeIntervals):
     def __init__(self, bin_count):
         try:
             bin_count = int(bin_count)
-        except ValueError:
-            raise ValueError("Bins must be a number")
+        except ValueError as e:
+            raise ValueError("Bins must be a number") from e
 
         if bin_count <= 0:
             raise ValueError("Number of bins must be a positive integer")

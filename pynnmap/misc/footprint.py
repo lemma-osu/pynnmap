@@ -27,9 +27,9 @@ class Footprint(object):
                 self.index = np.transpose(np.nonzero(kernel == 3))
                 assert len(self.index) == 1
                 self.index = self.index[0]
-            except AssertionError:
+            except AssertionError as e:
                 err_msg = "Incorrect number of index pixels in kernel"
-                raise FootprintError(err_msg)
+                raise FootprintError(err_msg) from e
 
         # Get offsets into array
         self.offsets = np.nonzero(np.logical_or(kernel == 1, kernel == 2))
@@ -38,7 +38,7 @@ class Footprint(object):
     def __str__(self):
         out_str = ""
         out_str += self.__class__.__name__ + "\n"
-        out_str += 'Key = "' + self.key + '"\n'
+        out_str += f'Key = "{self.key}"\n'
         out_str += "Cellsize = %.2f\n" % self.cell_size
         out_str += "Number of rows = %d\n" % self.n_rows
         out_str += "Number of columns = %d\n" % self.n_cols
@@ -62,10 +62,7 @@ class Footprint(object):
         # Iterate through the offsets, turning on the correct pixels
         for offset in self.offsets:
             row, col = offset
-            if np.all(offset == self.index):
-                kernel[row, col] = 2
-            else:
-                kernel[row, col] = 1
+            kernel[row, col] = 2 if np.all(offset == self.index) else 1
 
         # Ensure that the index pixel is not zero for footprints where the
         # index pixel is not part of the footprint
@@ -141,10 +138,8 @@ class FootprintParser(parser.Parser):
         fp_dict : dict of Footprints
         """
 
-        # Open the footprint file and read in all the lines
-        fp_fh = open(fp_file, "r")
-        all_lines = fp_fh.readlines()
-        fp_fh.close()
+        with open(fp_file, "r") as fp_fh:
+            all_lines = fp_fh.readlines()
 
         # Regular expression to match footprint specification starting lines
         fp_start = re.compile(r"^[A-Za-z0-9_]+\s+\d+\s+\d+\s+(\d+\.*\d*)$")

@@ -21,42 +21,34 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
     ]
 
     def __init__(self, **kwargs):
-        if "parameters" in kwargs:
-            p = kwargs["parameters"]
-            if isinstance(p, pp.ParameterParser):
-                self.observed_file = p.validation_attribute_file
-                self.stand_metadata_file = p.stand_metadata_file
-                self.parameter_parser = p
-                self.id_field = p.plot_id_field
+        if "parameters" not in kwargs:
+            raise NotImplementedError(
+                "Only ParameterParser objects may be passed."
+            )
 
-                # For the remainder of the files, get the values from the
-                # parameter parser, but strip off the directory information
-                # and prepend the validation directory
-                pf = p.independent_predicted_file
-                laf = p.local_accuracy_file
-                vf = p.vegclass_file
-                vkf = p.vegclass_kappa_file
-                vef = p.vegclass_errmatrix_file
+        p = kwargs["parameters"]
+        if not isinstance(p, pp.ParameterParser):
+            raise ValueError("Passed object is not a ParameterParser object")
+        self.observed_file = p.validation_attribute_file
+        self.stand_metadata_file = p.stand_metadata_file
+        self.parameter_parser = p
+        self.id_field = p.plot_id_field
 
-                vd = p.validation_output_folder
-                self.predicted_file = os.path.join(vd, os.path.basename(pf))
-                self.local_accuracy_file = os.path.join(
-                    vd, os.path.basename(laf)
-                )
-                self.vegclass_file = os.path.join(vd, os.path.basename(vf))
-                self.vegclass_kappa_file = os.path.join(
-                    vd, os.path.basename(vkf)
-                )
-                self.vegclass_errmatrix_file = os.path.join(
-                    vd, os.path.basename(vef)
-                )
-            else:
-                err_msg = "Passed object is not a ParameterParser object"
-                raise ValueError(err_msg)
-        else:
-            err_msg = "Only ParameterParser objects may be passed."
-            raise NotImplementedError(err_msg)
+        # For the remainder of the files, get the values from the
+        # parameter parser, but strip off the directory information
+        # and prepend the validation directory
+        pf = p.independent_predicted_file
+        laf = p.local_accuracy_file
+        vf = p.vegclass_file
+        vkf = p.vegclass_kappa_file
+        vef = p.vegclass_errmatrix_file
 
+        vd = p.validation_output_folder
+        self.predicted_file = os.path.join(vd, os.path.basename(pf))
+        self.local_accuracy_file = os.path.join(vd, os.path.basename(laf))
+        self.vegclass_file = os.path.join(vd, os.path.basename(vf))
+        self.vegclass_kappa_file = os.path.join(vd, os.path.basename(vkf))
+        self.vegclass_errmatrix_file = os.path.join(vd, os.path.basename(vef))
         self.check_missing_files()
 
     def run_diagnostic(self):

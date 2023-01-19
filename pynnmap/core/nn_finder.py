@@ -174,7 +174,7 @@ def extract_footprints(
             arr = fp.flatten()
             for i, pixel_val in enumerate(arr):
                 pixel_data[i][var] = pixel_val
-        for i, d in pixel_data.items():
+        for d in pixel_data.values():
             env_dict[id_val].append(EnvironmentalVector(d))
     return env_dict
 

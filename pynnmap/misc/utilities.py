@@ -154,14 +154,9 @@ class MissingConstraintError(Exception):
 
 
 def check_missing_files(files):
-    missing_files = []
-    for fn in files:
-        if not os.path.exists(fn):
-            missing_files.append(fn)
-    if len(missing_files) > 0:
-        err_msg = ""
-        for fn in missing_files:
-            err_msg += "\n" + fn + " does not exist"
+    missing_files = [fn for fn in files if not os.path.exists(fn)]
+    if missing_files:
+        err_msg = "".join(f"\n{fn} does not exist" for fn in missing_files)
         raise MissingConstraintError(err_msg)
 
 
@@ -193,26 +188,26 @@ def get_area_attrs(mp):
 def assert_columns_in_df(df, cols):
     try:
         assert set(cols).issubset(df.columns)
-    except AssertionError:
+    except AssertionError as e:
         msg = "Columns do not appear in dataframe"
-        raise NameError(msg)
+        raise NameError(msg) from e
 
 
 def assert_valid_attr_values(df, attr):
     try:
         assert df[attr].isnull().sum() == 0
-    except AssertionError:
+    except AssertionError as e:
         msg = "Data frame has null attribute values"
-        raise ValueError(msg)
+        raise ValueError(msg) from e
 
 
 def assert_same_len_ids(merged_df, df1, df2):
     try:
         merge_num = len(merged_df)
-        assert merge_num == len(df1) or merge_num == len(df2)
-    except AssertionError:
+        assert merge_num in [len(df1), len(df2)]
+    except AssertionError as e:
         msg = "Merged data frame does not have same length as originals"
-        raise ValueError(msg)
+        raise ValueError(msg) from e
 
 
 def _list_like(x):

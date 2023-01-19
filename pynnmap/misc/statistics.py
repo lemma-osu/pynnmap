@@ -170,10 +170,7 @@ class BinaryErrorMatrix:
 
     def positive_predictive_power(self):
         denominator = self._counts[0, 0] + self._counts[1, 0]
-        if denominator == 0.0:
-            return 1.0
-        else:
-            return self._counts[0, 0] / denominator
+        return 1.0 if denominator == 0.0 else self._counts[0, 0] / denominator
 
     def odds_ratio(self):
         denominator = self._counts[0, 1] * self._counts[1, 0]
@@ -196,13 +193,11 @@ class BinaryErrorMatrix:
             (p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0])
         )
         p_correct = p[0, 0] + p[1, 1]
-
-        if p_chance != 1.0:
-            kappa = (p_correct - p_chance) / (1.0 - p_chance)
-        else:
-            kappa = 0.0
-
-        return kappa
+        return (
+            (p_correct - p_chance) / (1.0 - p_chance)
+            if p_chance != 1.0
+            else 0.0
+        )
 
 
 def _convert_to_float_array(x):
@@ -220,9 +215,7 @@ def _convert_to_float_array(x):
     out : np.array
         Output numpy array
     """
-
-    x_float = np.array(x, dtype="float64", ndmin=1)
-    return x_float
+    return np.array(x, dtype="float64", ndmin=1)
 
 
 def rmse(x, y):

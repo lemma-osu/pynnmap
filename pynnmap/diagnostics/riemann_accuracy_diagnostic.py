@@ -41,7 +41,6 @@ class RiemannVariable(object):
         self.y = y
 
     def gmfr_statistics(self):
-
         # Short circuit the condition where there is no observed or predicted
         # variance typically caused by no observed or predicted presences
         if self.x.var() == 0.0 or self.y.var() == 0.0:
@@ -91,7 +90,6 @@ class RiemannVariable(object):
         }
 
     def ks_statistics(self, num_bins=1000):
-
         x_sorted = np.sort(self.x)
         y_sorted = np.sort(self.y)
 
@@ -135,7 +133,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
     @staticmethod
     def _create_directory_structure(hex_resolutions, root_dir):
-        hex_levels = ["hex_{}".format(x[1]) for x in hex_resolutions]
+        hex_levels = [f"hex_{x[1]}" for x in hex_resolutions]
         all_levels = ["plot_pixel"] + hex_levels
         for level in all_levels:
             sub_dir = os.path.join(root_dir, level)
@@ -216,12 +214,10 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Create the fields for which to extract statistics at the hexagon
         # levels
-        mean_list = [(id_field, len)]
-        mean_list.extend([(x, np.mean) for x in attrs])
+        mean_list = [(id_field, len), *[(x, np.mean) for x in attrs]]
         mean_dict = OrderedDict(mean_list)
 
-        sd_list = [(id_field, len)]
-        sd_list.extend([(x, lambda i: np.std(i)) for x in attrs])
+        sd_list = [(id_field, len), *[(x, lambda i: np.std(i)) for x in attrs]]
         sd_dict = OrderedDict(sd_list)
 
         stat_sets = {
@@ -232,10 +228,9 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         # For each hexagon level, associate the plots with their hexagon ID
         # and find observed and predicted statistics for each hexagon
         for hex_resolution in hex_resolutions:
-
-            hex_id_field, hex_distance = hex_resolution[0:2]
+            hex_id_field, hex_distance = hex_resolution[:2]
             min_plots_per_hex = hex_resolution[3]
-            prefix = "hex_{}".format(hex_distance)
+            prefix = f"hex_{hex_distance}"
 
             # Create a crosswalk between the id_field and the hex_id_field
             s1 = self.hex_id_xwalk[id_field]
@@ -244,9 +239,9 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
             # Iterate over all sets of statistics and write a unique file
             # for each set
-            for (stat_name, stat_fields) in stat_sets.items():
+            for stat_name, stat_fields in stat_sets.items():
                 # Get the output file name
-                file_name = "{}_observed_{}.csv".format(prefix, stat_name)
+                file_name = f"{prefix}_observed_{stat_name}.csv"
                 obs_out_file = os.path.join(root_dir, prefix, file_name)
 
                 s = pd.Series(id_x_hex, name=hex_id_field)
@@ -263,18 +258,16 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             for k, _ in k_values:
                 # Open the plot_pixel predicted file for this value of k
                 # and join the hex_id_field to the recarray
-                prd_file = "plot_pixel_predicted_k{}.csv".format(k)
+                prd_file = f"plot_pixel_predicted_k{k}.csv"
                 prd_file = os.path.join(root_dir, "plot_pixel", prd_file)
                 prd_data = pd.read_csv(prd_file)
                 prd_data = prd_data.merge(self.hex_id_xwalk, on=id_field)
 
                 # Iterate over all sets of statistics and write a unique file
                 # for each set
-                for (stat_name, stat_fields) in stat_sets.items():
+                for stat_name, stat_fields in stat_sets.items():
                     # Get the output file name
-                    file_name = "{}_predicted_k{}_{}.csv".format(
-                        prefix, k, stat_name
-                    )
+                    file_name = f"{prefix}_predicted_k{k}_{stat_name}.csv"
                     prd_out_file = os.path.join(root_dir, prefix, file_name)
 
                     grouped = prd_data.groupby(hex_id_field)
@@ -300,12 +293,12 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         # files for any level or value of k
         compare_list = []
         for hex_resolution in hex_resolutions:
-            (hex_id_field, hex_distance) = hex_resolution[0:2]
-            prefix = "hex_{}".format(hex_distance)
-            obs_file = "{}_observed_mean.csv".format(prefix)
+            (hex_id_field, hex_distance) = hex_resolution[:2]
+            prefix = f"hex_{hex_distance}"
+            obs_file = f"{prefix}_observed_mean.csv"
             obs_file = os.path.join(root_dir, prefix, obs_file)
             for k, _ in k_values:
-                prd_file = "{}_predicted_k{}_mean.csv".format(prefix, k)
+                prd_file = f"{prefix}_predicted_k{k}_mean.csv"
                 prd_file = os.path.join(root_dir, prefix, prd_file)
                 r = RiemannComparison(
                     prefix, obs_file, prd_file, hex_id_field, k
@@ -317,7 +310,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         obs_file = "plot_pixel_observed.csv"
         obs_file = os.path.join(root_dir, prefix, obs_file)
         for k, _ in k_values:
-            prd_file = "plot_pixel_predicted_k{}.csv".format(k)
+            prd_file = f"plot_pixel_predicted_k{k}.csv"
             prd_file = os.path.join(root_dir, prefix, prd_file)
             r = RiemannComparison(prefix, obs_file, prd_file, id_field, k)
             compare_list.append(r)
@@ -332,8 +325,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             ids1 = getattr(obs_data, c.id_field)
             ids2 = getattr(prd_data, c.id_field)
             if np.all(ids1 != ids2):
-                err_msg = "IDs do not match between observed and "
-                err_msg += "predicted data"
+                err_msg = "IDs do not match between observed and predicted data"
                 raise ValueError(err_msg)
 
             for attr in attrs:

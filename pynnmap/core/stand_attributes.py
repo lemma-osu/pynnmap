@@ -12,7 +12,7 @@ class StandAttributes(object):
         excluded = {"HECTARES"}
         missing = attr_names - metadata_names - excluded
         if missing:
-            msg = "Metadata fields {} are missing".format(tuple(missing))
+            msg = f"Metadata fields {tuple(missing)} are missing"
             raise ValueError(msg)
 
     def get_attr_df(self, flags=None):

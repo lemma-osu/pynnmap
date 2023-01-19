@@ -161,7 +161,7 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
             return []
 
     def get_species(self, species):
-        expr = 'species_names/species[spp_symbol="' + species + '"]'
+        expr = f'species_names/species[spp_symbol="{species}"]'
         elem = self.root.xpath(expr)
         return XMLSpeciesName(elem[0])
 

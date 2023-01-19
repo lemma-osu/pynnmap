@@ -27,9 +27,7 @@ class PredictionOutput(ABC):
         )
 
     def write_zonal_records(self, zonal_pixel_fn):
-        zps = []
-        for plot in self.plot_predictions:
-            zps.append(self.get_zonal_records(plot))
+        zps = [self.get_zonal_records(plot) for plot in self.plot_predictions]
         zp_df = pd.concat(zps)
         df_to_csv(zp_df, zonal_pixel_fn, n_dec=8)
 
@@ -100,28 +98,24 @@ class DependentOutput(PredictionOutput):
         """
         id_field = self.parameter_parser.plot_id_field
 
-        # Open the nn_index file and print the header line
-        nn_index_fh = open(nn_index_fn, "w")
-        header_fields = (id_field, "AVERAGE_POSITION")
-        nn_index_fh.write(",".join(header_fields) + "\n")
+        with open(nn_index_fn, "w") as nn_index_fh:
+            header_fields = (id_field, "AVERAGE_POSITION")
+            nn_index_fh.write(",".join(header_fields) + "\n")
 
-        # For each ID, find how far a plot had to go for self assignment
-        for id_val, fp in sorted(neighbor_data.items()):
-            self_assign_indexes = []
-            for nn_pixel in fp.pixels:
-                # Find the occurrence of this ID in the neighbor list
-                # Because we restrict the neighbors to only the first 100,
-                # we may not find the self-assignment within those neighbors.
-                # Set it to the max value in this case
-                try:
-                    index = np.where(nn_pixel.neighbors == id_val)[0][0] + 1
-                except IndexError:
-                    index = nn_pixel.neighbors.size
-                self_assign_indexes.append(index)
+            # For each ID, find how far a plot had to go for self assignment
+            for id_val, fp in sorted(neighbor_data.items()):
+                self_assign_indexes = []
+                for nn_pixel in fp.pixels:
+                    # Find the occurrence of this ID in the neighbor list
+                    # Because we restrict the neighbors to only the first 100,
+                    # we may not find the self-assignment within those neighbors.
+                    # Set it to the max value in this case
+                    try:
+                        index = np.where(nn_pixel.neighbors == id_val)[0][0] + 1
+                    except IndexError:
+                        index = nn_pixel.neighbors.size
+                    self_assign_indexes.append(index)
 
-            # Get the average index position across pixels
-            average_position = float(np.mean(self_assign_indexes))
-            nn_index_fh.write("%d,%.4f\n" % (id_val, average_position))
-
-        # Clean up
-        nn_index_fh.close()
+                # Get the average index position across pixels
+                average_position = float(np.mean(self_assign_indexes))
+                nn_index_fh.write("%d,%.4f\n" % (id_val, average_position))
