@@ -20,7 +20,7 @@ from pynnmap.parser.xml_stand_metadata_parser import Flags
 
 def get_predicted_raster(attr):
     # TODO: This is *very* fragile
-    fn = "./attribute_rasters/{}.tif".format(attr.field_name.lower())
+    fn = f"./attribute_rasters/{attr.field_name.lower()}.tif"
     with rasterio.open(fn) as src:
         arr = src.read(1, masked=True)
         cell_area = src.res[0] * src.res[1]
@@ -117,16 +117,16 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
                 clf = ic.QuantileIntervals(bin_count=bin_count)
                 bins = clf(obs_arr)
             else:
-                msg = "Bin type {} not supported".format(bin_type)
+                msg = f"Bin type {bin_type} not supported"
                 raise ValueError(msg)
 
             # For getting the histograms, use the actual obs and prd objects
             histograms = histogram.bin_continuous(*(obs, prd), bins=bins)
         else:
             if attr.codes:
-                code_dict = {}
-                for code in attr.codes:
-                    code_dict[int(code.code_value)] = code.label
+                code_dict = {
+                    int(code.code_value): code.label for code in attr.codes
+                }
             else:
                 code_dict = None
             histograms = histogram.bin_categorical(
@@ -153,7 +153,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         # Open the classification bin file and print out the header line
         bin_file = self.parameter_parser.regional_bin_file
         bin_fh = open(bin_file, "w")
-        bin_fh.write("{},{},{},{}\n".format("VARIABLE", "CLASS", "LOW", "HIGH"))
+        bin_fh.write(f"VARIABLE,CLASS,LOW,HIGH\n")
 
         # Get the metadata parser and get the project area attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
@@ -173,6 +173,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         )
 
         # Iterate over all fields and print out the area histogram statistics
+        prd_ns_ha = 0.0
+        needs_conversion = (False, True)
         for attr in attrs:
             print(attr.field_name)
 
@@ -181,7 +183,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             obs_wa = WeightedArray(obs_vals, obs_weights)
 
             # Ensure the predicted raster has been created
-            fn = "./attribute_rasters/{}.tif".format(attr.field_name.lower())
+            fn = f"./attribute_rasters/{attr.field_name.lower()}.tif"
             if not os.path.exists(fn):
                 print(f"Building {attr.field_name} raster ...")
                 build_attribute_raster.main(
@@ -190,9 +192,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
             # Get predicted areas from predicted rasters that should be
             # pre-generated
-            prd_ns_ha = 0.0
             prd_f_arr, prd_nf_ha, ha_per_px = get_predicted_raster(attr)
-            needs_conversion = (False, True)
 
             # Bin the data based on field type
             bins = self._bin_data(
@@ -228,7 +228,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             self.insert_class(bins[1], "Nonforest", prd_nf_ha)
 
             for b in bins:
-                for i in range(0, len(b.bin_counts)):
+                for i in range(len(b.bin_counts)):
                     out_data = "{:s},{:s},{:s},{:.3f}\n".format(
                         attr.field_name, b.name, b.bin_names[i], b.bin_counts[i]
                     )

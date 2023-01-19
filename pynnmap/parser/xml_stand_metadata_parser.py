@@ -159,9 +159,9 @@ class XMLStandMetadataParser(xml_parser.XMLParser):
         super().__init__(xml_file_name)
 
     def get_attribute(self, field_name):
-        elem = self.root.xpath('attribute[field_name="' + field_name + '"]')
+        elem = self.root.xpath(f'attribute[field_name="{field_name}"]')
         if not elem:
-            raise ValueError("Missing attribute: {}".format(field_name))
+            raise ValueError(f"Missing attribute: {field_name}")
         return XMLAttributeField(elem[0])
 
     def get_area_attrs(self):

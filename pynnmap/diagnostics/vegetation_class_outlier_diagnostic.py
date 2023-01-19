@@ -92,8 +92,7 @@ class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
     def run_diagnostic(self):
         # Run this for both independent and dependent predictions
         out_dfs = []
-        for (prd_type, prd_file) in self.predicted_files:
-
+        for prd_type, prd_file in self.predicted_files:
             # Read the observed and predicted files into dataframes
             obs_df = pd.read_csv(self.observed_file, index_col=self.id_field)
             prd_df = pd.read_csv(prd_file, index_col=self.id_field)

@@ -1,48 +1,67 @@
+from typing import Dict
 import json
 
 import numpy as np
+from pydantic.dataclasses import dataclass
 
 
-class OrdinationModel(object):
-    def __init__(self):
-        pass
+class Config:
+    arbitrary_types_allowed = True
 
-    def __repr__(self):
-        return_str = ""
-        return_str += "\nNumber of axes: " + repr(self.n_axes)
-        return_str += "\nNumber of variables: " + repr(self.n_variables)
-        return_str += "\nNumber of species: " + repr(self.n_species)
-        return_str += "\nNumber of plots: " + repr(self.n_plots) + "\n"
-        return_str += "\nAxis weights:\n"
-        return_str += repr(self.axis_weights) + "\n"
-        return_str += "\nAxis intercepts:\n"
-        return_str += repr(self.axis_intercepts) + "\n"
-        return_str += "\nVariable names:\n"
-        return_str += repr(self.var_names) + "\n"
-        return_str += "\nVariable coefficients:\n"
-        return_str += repr(self.var_coeff) + "\n"
-        return_str += "\nSpecies names:\n"
-        return_str += repr(self.species_names) + "\n"
-        return_str += "\nSpecies scores:\n"
-        return_str += repr(self.species_scores) + "\n"
-        return_str += "\nPlot IDs:\n"
-        return_str += repr(self.plot_ids) + "\n"
-        return_str += "\nPlot scores:\n"
-        return_str += repr(self.plot_scores) + "\n"
-        return return_str
 
-    def to_json(self):
-        d = {}
-        for i in self.__dict__:
-            if isinstance(self.__dict__[i], int):
-                d[i] = self.__dict__[i]
-            elif isinstance(self.__dict__[i], dict):
-                d[i] = self.__dict__[i]
-            elif isinstance(self.__dict__[i], np.ndarray):
-                d[i] = self.__dict__[i].tolist()
-        return json.dumps(d)
+@dataclass(config=Config)
+class OrdinationModel:
+    axis_weights: np.ndarray
+    var_names: np.ndarray
+    var_coeff: np.ndarray
+    var_means: np.ndarray
+    species_names: np.ndarray
+    species_scores: np.ndarray
+    plot_ids: np.ndarray
+    plot_scores: np.ndarray
+    biplot_scores: np.ndarray
 
-    def plot_score(self, id_val):
-        # Find the corresponding row in plot_ids
-        row_num = self.plot_id_dict[id_val]
-        return self.plot_scores[row_num]
+    def trim_axes(self, n_axes: int):
+        return OrdinationModel(
+            axis_weights=self.axis_weights[:n_axes],
+            var_names=self.var_names,
+            var_coeff=self.var_coeff[:, :n_axes],
+            var_means=self.var_means,
+            species_names=self.species_names,
+            species_scores=self.species_scores[:, :n_axes],
+            plot_ids=self.plot_ids,
+            plot_scores=self.plot_scores[:, :n_axes],
+            biplot_scores=self.biplot_scores[:, :n_axes],
+        )
+
+    @property
+    def n_variables(self) -> int:
+        return len(self.var_names)
+
+    @property
+    def n_axes(self) -> int:
+        return self.axis_weights.size
+
+    @property
+    def n_species(self) -> int:
+        return self.species_names.size
+
+    @property
+    def n_plots(self) -> int:
+        return len(self.plot_ids)
+
+    @property
+    def axis_intercepts(self) -> int:
+        return np.dot(self.var_means, self.var_coeff)
+
+    @property
+    def plot_id_dict(self) -> Dict[int, int]:
+        return {x: idx for idx, x in enumerate(self.plot_ids)}
+
+    @property
+    def id_plot_dict(self) -> Dict[int, int]:
+        return dict(enumerate(self.plot_ids))
+
+    @property
+    def var_name_dict(self) -> Dict[str, int]:
+        return {x: idx for idx, x in enumerate(self.var_names)}

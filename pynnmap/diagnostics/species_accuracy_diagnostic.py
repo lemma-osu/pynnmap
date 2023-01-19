@@ -51,64 +51,60 @@ class SpeciesAccuracyDiagnostic(diagnostic.Diagnostic):
         # Read in the stand attribute metadata
         mp = xsmp.XMLStandMetadataParser(self.stand_metadata_file)
 
-        # Open the stats file and print out the header lines
-        stats_fh = open(self.statistics_file, "w")
-        out_list = [
-            "SPECIES",
-            "OP_PP",
-            "OP_PA",
-            "OA_PP",
-            "OA_PA",
-            "PREVALENCE",
-            "SENSITIVITY",
-            "FALSE_NEGATIVE_RATE",
-            "SPECIFICITY",
-            "FALSE_POSITIVE_RATE",
-            "PERCENT_CORRECT",
-            "ODDS_RATIO",
-            "KAPPA",
-        ]
-        stats_fh.write(",".join(out_list) + "\n")
-
-        # For each variable, calculate the statistics
-        for v in obs.columns:
-
-            # Get the metadata for this field
-            try:
-                fm = mp.get_attribute(v)
-            except ValueError:
-                err_msg = "Missing metadata for {}".format(v)
-                # TODO: log this as warning instead
-                print(err_msg)
-                continue
-
-            # Only continue if this is a continuous species variable
-            if not fm.is_continuous_species_attr():
-                continue
-
-            obs_vals = getattr(obs, v)
-            prd_vals = getattr(prd, v)
-
-            # Create a binary error matrix from the obs and prd data
-            stats = statistics.BinaryErrorMatrix(obs_vals, prd_vals)
-            counts = stats.counts()
-
-            # Build the list of items for printing
+        with open(self.statistics_file, "w") as stats_fh:
             out_list = [
-                v,
-                "%d" % counts[0, 0],
-                "%d" % counts[0, 1],
-                "%d" % counts[1, 0],
-                "%d" % counts[1, 1],
-                "%.4f" % stats.prevalence(),
-                "%.4f" % stats.sensitivity(),
-                "%.4f" % stats.false_negative_rate(),
-                "%.4f" % stats.specificity(),
-                "%.4f" % stats.false_positive_rate(),
-                "%.4f" % stats.percent_correct(),
-                "%.4f" % stats.odds_ratio(),
-                "%.4f" % stats.kappa(),
+                "SPECIES",
+                "OP_PP",
+                "OP_PA",
+                "OA_PP",
+                "OA_PA",
+                "PREVALENCE",
+                "SENSITIVITY",
+                "FALSE_NEGATIVE_RATE",
+                "SPECIFICITY",
+                "FALSE_POSITIVE_RATE",
+                "PERCENT_CORRECT",
+                "ODDS_RATIO",
+                "KAPPA",
             ]
             stats_fh.write(",".join(out_list) + "\n")
 
-        stats_fh.close()
+            # For each variable, calculate the statistics
+            for v in obs.columns:
+                # Get the metadata for this field
+                try:
+                    fm = mp.get_attribute(v)
+                except ValueError:
+                    err_msg = f"Missing metadata for {v}"
+                    # TODO: log this as warning instead
+                    print(err_msg)
+                    continue
+
+                # Only continue if this is a continuous species variable
+                if not fm.is_continuous_species_attr():
+                    continue
+
+                obs_vals = getattr(obs, v)
+                prd_vals = getattr(prd, v)
+
+                # Create a binary error matrix from the obs and prd data
+                stats = statistics.BinaryErrorMatrix(obs_vals, prd_vals)
+                counts = stats.counts()
+
+                # Build the list of items for printing
+                out_list = [
+                    v,
+                    "%d" % counts[0, 0],
+                    "%d" % counts[0, 1],
+                    "%d" % counts[1, 0],
+                    "%d" % counts[1, 1],
+                    "%.4f" % stats.prevalence(),
+                    "%.4f" % stats.sensitivity(),
+                    "%.4f" % stats.false_negative_rate(),
+                    "%.4f" % stats.specificity(),
+                    "%.4f" % stats.false_positive_rate(),
+                    "%.4f" % stats.percent_correct(),
+                    "%.4f" % stats.odds_ratio(),
+                    "%.4f" % stats.kappa(),
+                ]
+                stats_fh.write(",".join(out_list) + "\n")

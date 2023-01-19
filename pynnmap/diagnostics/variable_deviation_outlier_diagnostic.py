@@ -31,7 +31,7 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
     def run_diagnostic(self):
         # Run this for both independent and dependent predictions
         out_dfs = []
-        for (prd_type, prd_file) in self.predicted_files:
+        for prd_type, prd_file in self.predicted_files:
             # Read the observed and predicted files into data frames
             obs_df = pd.read_csv(self.observed_file, index_col=self.id_field)
             prd_df = pd.read_csv(prd_file, index_col=self.id_field)
@@ -50,7 +50,7 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
                 "PREDICTED_VALUE",
                 "DEVIATION",
             ]
-            for (variable, min_deviation) in self.deviation_variables:
+            for variable, min_deviation in self.deviation_variables:
                 df = pd.DataFrame(
                     {
                         self.id_field: obs_df.index,

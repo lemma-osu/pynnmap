@@ -10,7 +10,6 @@ from pynnmap.misc import statistics
 def draw_scatterplot(
     x, y, metadata, output_type=SCREEN, output_file=None, **kwargs
 ):
-
     # Unpack the metadata information
     variable = metadata.field_name
     short_desc = metadata.short_description
@@ -33,7 +32,7 @@ def draw_scatterplot(
 
     # Draw the scatterplot data and title
     pl.scatter(x, y, s=2, c="b", edgecolor="k", linewidth=0.25, **kwargs)
-    pl.title(variable + " : " + short_desc, size=4.5)
+    pl.title(f"{variable} : {short_desc}", size=4.5)
 
     # Calculate correlation coefficient, normalized RMSE and r_square
     this_corr = statistics.pearson_r(x, y)
@@ -68,11 +67,11 @@ def draw_scatterplot(
 
     # Draw the 1:1 line and format the x and y axes
     pl.plot([abs_min, abs_max], [abs_min, abs_max], "k-", linewidth=0.5)
-    ylabel_str = "Observed " + variable
-    xlabel_str = "Predicted " + variable
+    ylabel_str = f"Observed {variable}"
+    xlabel_str = f"Predicted {variable}"
     if units != "none":
-        ylabel_str += " (" + units + ")"
-        xlabel_str += " (" + units + ")"
+        ylabel_str += f" ({units})"
+        xlabel_str += f" ({units})"
     pl.ylabel(ylabel_str, size=4.5)
     pl.xlabel(xlabel_str, size=4.5)
 
@@ -118,9 +117,8 @@ def draw_histogram(
     metadata,
     output_type=SCREEN,
     output_file=None,
-    **kwargs
+    **kwargs,
 ):
-
     """
     Given one or more series of data with identical edges, draw a comparative
     histogram.
@@ -184,24 +182,23 @@ def draw_histogram(
     ind = np.arange(len(histograms[0]))
 
     # Draw all these plots
-    plots = []
-    for i in range(len(histograms)):
-        plots.append(
-            pl.bar(
-                ind + (width * i) + half_width,
-                histograms[i],
-                color=colors[i],
-                width=width,
-                lw=0.2,
-                **kwargs
-            )
+    plots = [
+        pl.bar(
+            ind + (width * i) + half_width,
+            histograms[i],
+            color=colors[i],
+            width=width,
+            lw=0.2,
+            **kwargs,
         )
+        for i in range(len(histograms))
+    ]
 
     # Set up the axes to be used
-    pl.title(variable + " : " + short_desc, size=4.5)
+    pl.title(f"{variable}  : {short_desc}", size=4.5)
     pl.ylabel("Area (ha)", size=4.5)
     if units != "none":
-        pl.xlabel(variable + " (" + units + ")", size=4.5)
+        pl.xlabel(f"{variable} ({units})", size=4.5)
     else:
         pl.xlabel(variable, size=4.5)
     pl.gca().ticklabel_format(scilimits=(-10, 10))

@@ -42,11 +42,10 @@ class RasterBlock:
         """
         Return a string representation of this object
         """
-        return_str = ""
-        return_str += "\nBlock origin: ("
-        return_str += repr(self.x_offset) + ", " + repr(self.y_offset) + ")"
+        return_str = "\nBlock origin: ("
+        return_str += f"{repr(self.x_offset)}, {repr(self.y_offset)})"
         return_str += "\nBlock size: ("
-        return_str += repr(self.x_size) + ", " + repr(self.y_size) + ")"
+        return_str += f"{repr(self.x_size)}, {repr(self.y_size)})"
         return_str += "\nData:"
         return_str += "\n" + repr(self.data)
         return return_str
@@ -229,13 +228,13 @@ def compare_datasets(ds_01, ds_02, skip=()):
     }
 
     failed_tests = []
-    for (kw, fcn) in all_tests.items():
+    for kw, fcn in all_tests.items():
         if kw not in skip:
             result = fcn(ds_01, ds_02)
             if not result:
                 failed_tests.append(kw)
 
-    return len(failed_tests) == 0, tuple(failed_tests)
+    return not failed_tests, tuple(failed_tests)
 
 
 def compare_geotransform(ds_01, ds_02):

@@ -6,7 +6,6 @@ class ImputationModel(object):
     def __init__(
         self, ord_model, n_axes=8, use_weightings=True, max_neighbors=100
     ):
-
         # Ensure that n_axes isn't larger than the number of axes in our
         # ordination model
         self.n_axes = n_axes
@@ -21,7 +20,7 @@ class ImputationModel(object):
 
         # Create weightings based on use_weightings flag
         if use_weightings:
-            self.ax_weights = np.diag(np.sqrt(ord_model.axis_weights[0:n_axes]))
+            self.ax_weights = np.diag(np.sqrt(ord_model.axis_weights[:n_axes]))
         else:
             self.ax_weights = np.diag(np.ones(n_axes, dtype=np.float))
 

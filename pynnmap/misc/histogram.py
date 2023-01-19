@@ -47,7 +47,6 @@ class ContinuousHistogramBC(HistogramBC):
     """
 
     def __init__(self, bin_counts, bin_endpoints, name="SERIES"):
-
         # Call the HistogramBC constructor first
         super(ContinuousHistogramBC, self).__init__(
             bin_counts, bin_endpoints, name
@@ -55,10 +54,7 @@ class ContinuousHistogramBC(HistogramBC):
 
         # Create class labels from the endpoints of the bins
         self.bin_names = []
-        if self.bin_endpoints[-1] < 1e5:
-            fmt_str = "%.1f"
-        else:
-            fmt_str = "%.1e"
+        fmt_str = "%.1f" if self.bin_endpoints[-1] < 1e5 else "%.1e"
         for i in range(self.bin_endpoints.size - 1):
             first = fmt_str % (self.bin_endpoints[i])
             second = fmt_str % (self.bin_endpoints[i + 1])
@@ -77,7 +73,6 @@ class CategoricalHistogramBC(HistogramBC):
     """
 
     def __init__(self, bin_counts, bin_endpoints, bin_names, name="SERIES"):
-
         # Call the HistogramBC constructor first
         super(CategoricalHistogramBC, self).__init__(
             bin_counts, bin_endpoints, name
@@ -156,20 +151,18 @@ def bin_categorical(*datasets, code_dict=None):
         # Figure out the unique values in these datasets
         all_unique = []
         for ds in datasets:
-            if isinstance(ds, WeightedArray):
-                a = np.unique(ds.values)
-            else:
-                a = np.unique(ds)
-            all_unique.extend([i for i in a])
+            a = (
+                np.unique(ds.values)
+                if isinstance(ds, WeightedArray)
+                else np.unique(ds)
+            )
+            all_unique.extend(list(a))
         codes = np.unique([int(x) for x in all_unique])
-        code_dict = dict((i, str(i)) for i in codes)
+        code_dict = {i: str(i) for i in codes}
 
     # Create a mapping between these codes and an enumeration.
     # The enumeration is needed to do a histogram (using bins) on the data
-    code_mapping = {}
-    for i, code in enumerate(sorted(code_dict.keys())):
-        code_mapping[code] = i
-
+    code_mapping = {code: i for i, code in enumerate(sorted(code_dict.keys()))}
     # We need to create an ending edge for the last bin.  Because this is an
     # enumeration, we can safely add one to the end of the list for this
     # endpoint.  Note that we only add it to the bin and not to the

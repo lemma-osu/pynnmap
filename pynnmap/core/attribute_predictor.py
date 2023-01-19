@@ -23,11 +23,11 @@ def subset_neighbors(neighbor_data, k=1, fltr=None):
         for pixel_number, pixel in enumerate(fp.pixels):
             if fltr:
                 mask = fltr.mask(fp.id, pixel.neighbors)
-                neighbors = pixel.neighbors[mask][0:k]
-                distances = pixel.distances[mask][0:k]
+                neighbors = pixel.neighbors[mask][:k]
+                distances = pixel.distances[mask][:k]
             else:
-                neighbors = pixel.neighbors[0:k]
-                distances = pixel.distances[0:k]
+                neighbors = pixel.neighbors[:k]
+                distances = pixel.distances[:k]
             pixel_predictions.append(
                 PixelPrediction(id_val, pixel_number, k, neighbors, distances)
             )
@@ -68,13 +68,10 @@ class AttributePredictor(ABC):
         self.independence_filter = independence_filter
 
     def calculate_predictions(self, plot_predictions, k=1, weights=None):
-        # Iterate over all plots and calculate predictions
-        predictions = []
-        for plot in plot_predictions:
-            predictions.append(
-                self.calculate_predictions_at_id(plot, k, weights)
-            )
-        return predictions
+        return [
+            self.calculate_predictions_at_id(plot, k, weights)
+            for plot in plot_predictions
+        ]
 
     def calculate_predictions_at_id(self, plot, k, weights):
         """
@@ -97,21 +94,21 @@ class AttributePredictor(ABC):
         pixel_predictions = []
 
         # Determine if weights need to be calculated based on NN distances
-        calc_weights = True if weights is None else False
+        calc_weights = weights is None
 
         # Iterate over pixels in the plot
         for pixel in plot:
-            neighbors = pixel.neighbors[0:k]
+            neighbors = pixel.neighbors[:k]
             if calc_weights:
                 # Fix distance array for 0.0 values
                 distances = np.where(
-                    pixel.distances[0:k] == 0.0, MIN_DIST, pixel.distances[0:k]
+                    pixel.distances[:k] == 0.0, MIN_DIST, pixel.distances[:k]
                 )
                 weights = 1.0 / distances
                 weights /= weights.sum()
                 weights = weights.reshape(1, len(neighbors)).T
             else:
-                weights = weights[0:k]
+                weights = weights[:k]
 
             # Extract the data rows and attributes and multiply by weights
             # Only do this for the first k neighbors
@@ -129,6 +126,8 @@ class AttributePredictor(ABC):
     def get_predicted_attributes_df(self, predictions, id_field):
         d = {}
         col_names = self.stand_attr_df.columns
+        if len(col_names) == 0:
+            return None
         for prd in predictions:
             values = self.stat_func(prd.attr_arr)
             d[prd.id] = values
@@ -163,7 +162,7 @@ def calculate_predicted_attributes(
     plot_predictions, attr_data, fltr, parser, id_field
 ):
     dfs = []
-    for (kls, k, weights) in (
+    for kls, k, weights in (
         (ContinuousAttributePredictor, parser.k, get_weights(parser)),
         (CategoricalAttributePredictor, 1, np.array([1.0])),
         (SpeciesAttributePredictor, 1, np.array([1.0])),
@@ -175,6 +174,7 @@ def calculate_predicted_attributes(
             plot_predictions, k=k, weights=weights
         )
         prd_df = predictor.get_predicted_attributes_df(predictions, id_field)
-        dfs.append(prd_df)
+        if prd_df is not None:
+            dfs.append(prd_df)
 
     return reduce(lambda df1, df2: pd.merge(df1, df2, on=id_field), dfs)
