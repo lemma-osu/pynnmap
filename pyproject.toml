@@ -1,3 +1,82 @@
-[tool.black]
-line-length = 80
-preview = true
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pynnmap"
+dynamic = ["version"]
+description = "Python based nearest neighbor mapping"
+readme = "README.md"
+license = ""
+requires-python = ">=3.8"
+authors = [
+    { name = "Matt Gregory", email = "matt.gregory@oregonstate.edu" },
+    { name = "Heather Roberts", email = "heather.roberts@oregonstate.edu" },
+]
+dependencies = [
+    "affine",
+    "click",
+    "click_plugins",
+    "jenkspy",
+    "lxml",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "patsy",
+    "pydantic",
+    "rasterio",
+    "rpy2",
+    "scikit-learn",
+    "scipy",
+]
+
+[project.urls]
+Homepage = "https://github.com/lemma-osu/pynnmap"
+Source = "https://github.com/lemma-osu/pynnmap"
+
+[tool.hatch.version]
+path = "pynnmap/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pynnmap"]
+
+[tool.hatch.build.targets.sdist]
+include = ["."]
+
+[tool.hatch.envs.default]
+dependencies = ["pre-commit"]
+
+[tool.hatch.envs.test]
+dependencies = ["pytest", "pytest-cov"]
+
+[tool.hatch.envs.test.scripts]
+all = "pytest . {args} --doctest-modules"
+coverage = "pytest . --cov=pynnmap {args} --doctest-modules"
+
+[tool.pytest.ini_options]
+pythonpath = "."
+
+[tool.ruff]
+target-version = "py38"
+fix = true
+show-fixes = true
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "I",
+    "F",
+    "B",
+    "FA",
+    "UP",
+    "ISC",
+    "PT",
+    "NPY",
+    "Q",
+    "RET",
+    "SIM",
+    "PERF",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pynnmap"]
