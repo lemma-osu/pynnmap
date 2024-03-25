@@ -5,6 +5,7 @@ from pynnmap.misc.utilities import df_to_csv
 
 
 class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
+    _required = ["nn_index_file"]
 
     def __init__(self, parameters):
         self.nn_index_file = parameters.dependent_nn_index_file
@@ -12,15 +13,7 @@ class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
         self.index_threshold = parameters.index_threshold
         self.id_field = parameters.plot_id_field
 
-        # Ensure all input files are present
-        files = [
-            self.nn_index_file,
-        ]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping NNIndexOutlierDiagnostic\n'
-            raise e
+        self.check_missing_files()
 
     def run_diagnostic(self):
         # Read in the dependent nn_index_file
@@ -32,4 +25,3 @@ class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
 
         # Write out the resulting recarray
         df_to_csv(in_df, self.nn_index_outlier_file)
-

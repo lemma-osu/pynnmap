@@ -1,37 +1,23 @@
 import click
 
-from pynnmap.core.prediction_output import DependentOutput, IndependentOutput
-from pynnmap.core.nn_finder import NNFinder
+from pynnmap.cli.cross_validate import run_cross_validate
+from pynnmap.core.nn_finder import PixelNNFinder
 from pynnmap.diagnostics import diagnostic_wrapper as dw
 from pynnmap.parser import parameter_parser_factory as ppf
 
 
-@click.command(short_help='Find plot outliers based on user-defined tests')
-@click.argument(
-    'parameter-file',
-    type=click.Path(exists=True),
-    required=True)
+@click.command(short_help="Find plot outliers based on user-defined tests")
+@click.argument("parameter-file", type=click.Path(exists=True), required=True)
 def find_outliers(parameter_file):
     # Get the model parameters
-    p = ppf.get_parameter_parser(parameter_file)
+    parser = ppf.get_parameter_parser(parameter_file)
 
-    # Create a NNFinder object
-    finder = NNFinder(p)
+    # Create a PixelNNFinder object
+    finder = PixelNNFinder(parser)
 
     # Run cross-validation to create the neighbor/distance information
-    neighbor_data = finder.calculate_neighbors_cross_validation()
+    run_cross_validate(parser, finder)
 
-    # Create an IndependentOutput object
-    independent_output = IndependentOutput(p)
-
-    # Create the independent predicted data and zonal pixel file
-    independent_output.create_predictions(neighbor_data, 'LOC_ID')
-
-    # Create a DependentOutput object
-    dependent_output = DependentOutput(p)
-
-    # Create the dependent predicted data, zonal pixel file and nn index file
-    dependent_output.create_predictions(neighbor_data)
-
-    diagnostic_wrapper = dw.DiagnosticWrapper(p)
+    # Run outlier analysis
+    diagnostic_wrapper = dw.DiagnosticWrapper(parser)
     diagnostic_wrapper.run_outlier_diagnostics()

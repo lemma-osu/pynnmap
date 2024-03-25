@@ -1,42 +1,24 @@
-class PixelPrediction(object):
+class PixelPrediction:
     """
-    Class to hold a given pixel's prediction including neighbor IDs, distances
-    and predicted values for each continuous attribute.
+    (Data)class to hold a pixel's prediction including neighbor IDs
+    and distances up to k values
     """
-    def __init__(self, id_val, pixel_number, k):
+
+    def __init__(self, id_val, pixel_number, k, neighbors, distances):
         self.id = id_val
         self.pixel_number = pixel_number
         self.k = k
-        self._predicted_arr = None
-        self._neighbors = None
-        self._distances = None
+        self.neighbors = neighbors
+        self.distances = distances
 
-    def __repr__(self):
-        return '{kls}(\n id={id},\n neighbors={n},\n distances={d}\n)'.format(
-            kls=self.__class__.__name__,
-            id=self.id,
-            n=self.neighbors,
-            d=self.distances
-        )
 
-    @property
-    def neighbors(self):
-        return self._neighbors
+class PlotAttributePrediction:
+    """
+    (Data)class to hold a plot's ID and predicted attribute values
+    at the pixel scale.  The attr_arr is a 2D array of pixels (rows) by
+    attributes (columns).
+    """
 
-    @neighbors.setter
-    def neighbors(self, neighbors):
-        self._neighbors = neighbors
-
-    @property
-    def distances(self):
-        return self._distances
-
-    @distances.setter
-    def distances(self, distances):
-        self._distances = distances
-
-    def get_predicted_attrs(self):
-        return self._predicted_arr
-
-    def set_predicted_attrs(self, arr):
-        self._predicted_arr = arr
+    def __init__(self, id_val, attr_arr):
+        self.id = id_val
+        self.attr_arr = attr_arr

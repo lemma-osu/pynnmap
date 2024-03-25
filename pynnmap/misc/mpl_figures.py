@@ -8,8 +8,8 @@ from pynnmap.misc import statistics
 
 
 def draw_scatterplot(
-        x, y, metadata, output_type=SCREEN, output_file=None, **kwargs):
-
+    x, y, metadata, output_type=SCREEN, output_file=None, **kwargs
+):
     # Unpack the metadata information
     variable = metadata.field_name
     short_desc = metadata.short_description
@@ -31,8 +31,8 @@ def draw_scatterplot(
     abs_max = max(x.max(), y.max())
 
     # Draw the scatterplot data and title
-    pl.scatter(x, y, s=2, c='b', edgecolor='k', linewidth=0.25, **kwargs)
-    pl.title(variable + ' : ' + short_desc, size=4.5)
+    pl.scatter(x, y, s=2, c="b", edgecolor="k", linewidth=0.25, **kwargs)
+    pl.title(f"{variable} : {short_desc}", size=4.5)
 
     # Calculate correlation coefficient, normalized RMSE and r_square
     this_corr = statistics.pearson_r(x, y)
@@ -41,30 +41,43 @@ def draw_scatterplot(
 
     # Draw the annotation text on the figure
     pl.text(
-        0.89, 0.93, '1:1', transform=pl.gca().transAxes, size=4.5, rotation=45)
+        0.89, 0.93, "1:1", transform=pl.gca().transAxes, size=4.5, rotation=45
+    )
     pl.text(
-        0.05, 0.93, 'Correlation coefficient:  %.4f' % this_corr,
-        transform=pl.gca().transAxes, size=4.5)
+        0.05,
+        0.93,
+        "Correlation coefficient:  %.4f" % this_corr,
+        transform=pl.gca().transAxes,
+        size=4.5,
+    )
     pl.text(
-        0.05, 0.89, 'Normalized RMSE: %.4f' % this_rmse,
-        transform=pl.gca().transAxes, size=4.5)
+        0.05,
+        0.89,
+        "Normalized RMSE: %.4f" % this_rmse,
+        transform=pl.gca().transAxes,
+        size=4.5,
+    )
     pl.text(
-        0.05, 0.85, 'R-square: %.4f' % this_r2, transform=pl.gca().transAxes,
-        size=4.5)
+        0.05,
+        0.85,
+        "R-square: %.4f" % this_r2,
+        transform=pl.gca().transAxes,
+        size=4.5,
+    )
 
     # Draw the 1:1 line and format the x and y axes
-    pl.plot([abs_min, abs_max], [abs_min, abs_max], 'k-', linewidth=0.5)
-    ylabel_str = 'Observed ' + variable
-    xlabel_str = 'Predicted ' + variable
-    if units != 'none':
-        ylabel_str += ' (' + units + ')'
-        xlabel_str += ' (' + units + ')'
+    pl.plot([abs_min, abs_max], [abs_min, abs_max], "k-", linewidth=0.5)
+    ylabel_str = f"Observed {variable}"
+    xlabel_str = f"Predicted {variable}"
+    if units != "none":
+        ylabel_str += f" ({units})"
+        xlabel_str += f" ({units})"
     pl.ylabel(ylabel_str, size=4.5)
     pl.xlabel(xlabel_str, size=4.5)
 
     import matplotlib.ticker as ticker
+
     f = ticker.OldScalarFormatter()
-    # f.set_powerlimits((-3, 4))
     pl.gca().xaxis.set_major_formatter(f)
     pl.gca().xaxis.set_minor_formatter(f)
     pl.gca().yaxis.set_major_formatter(f)
@@ -89,18 +102,23 @@ def draw_scatterplot(
         axis.spines[spine].set_linewidth(0.2)
 
     # Set fill and edge for the figure
-    pl.gcf().patch.set_edgecolor('k')
+    pl.gcf().patch.set_edgecolor("k")
     pl.gcf().patch.set_linewidth(2.0)
 
     # Draw and output to file if requested
     pl.draw()
     if output_type == FILE:
-        pl.savefig(output_file, dpi=250, edgecolor='k')
+        pl.savefig(output_file, dpi=250, edgecolor="k")
 
 
-def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
-                   output_file=None, **kwargs):
-
+def draw_histogram(
+    histograms,
+    bin_names,
+    metadata,
+    output_type=SCREEN,
+    output_file=None,
+    **kwargs,
+):
     """
     Given one or more series of data with identical edges, draw a comparative
     histogram.
@@ -154,7 +172,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
     pl.gcf().set_dpi(250)
 
     # Set colors for the different series
-    colors = ['r', 'y', 'b', 'm', 'c', 'k', 'g', 'w']
+    colors = ["r", "y", "b", "m", "c", "k", "g", "w"]
 
     # Set width of the bars
     width = 0.35
@@ -164,22 +182,23 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
     ind = np.arange(len(histograms[0]))
 
     # Draw all these plots
-    plots = []
-    for i in range(len(histograms)):
-        plots.append(
-            pl.bar(
-                ind + (width * i) + half_width,
-                histograms[i],
-                color=colors[i],
-                width=width,
-                lw=0.2,
-                **kwargs))
+    plots = [
+        pl.bar(
+            ind + (width * i) + half_width,
+            histograms[i],
+            color=colors[i],
+            width=width,
+            lw=0.2,
+            **kwargs,
+        )
+        for i in range(len(histograms))
+    ]
 
     # Set up the axes to be used
-    pl.title(variable + ' : ' + short_desc, size=4.5)
-    pl.ylabel('Area (ha)', size=4.5)
-    if units != 'none':
-        pl.xlabel(variable + ' (' + units + ')', size=4.5)
+    pl.title(f"{variable}  : {short_desc}", size=4.5)
+    pl.ylabel("Area (ha)", size=4.5)
+    if units != "none":
+        pl.xlabel(f"{variable} ({units})", size=4.5)
     else:
         pl.xlabel(variable, size=4.5)
     pl.gca().ticklabel_format(scilimits=(-10, 10))
@@ -189,9 +208,14 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
 
     # Draw the legend
     from matplotlib.font_manager import FontProperties
+
     pl.legend(
-        (plots[0][0], plots[1][0]), ('Plots', 'GNN'),
-        prop=FontProperties(size=4.5), borderpad=0.6, loc=(0.75, 0.87))
+        (plots[0][0], plots[1][0]),
+        ("Plots", "GNN"),
+        prop=FontProperties(size=4.5),
+        borderpad=0.6,
+        loc=(0.75, 0.87),
+    )
     pl.gca().get_legend().get_frame().set_linewidth(0.2)
 
     # Set the height of the y-axis
@@ -227,7 +251,7 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
         x = min_ratio - (label_width / max_label)
         y = m * x
         rotation = 30.0 + y
-        pl.setp(labels, 'rotation', rotation)
+        pl.setp(labels, "rotation", rotation)
 
     # Set the vertical components of the axes based on the rotation angle
     frame_y = 0.10
@@ -244,8 +268,8 @@ def draw_histogram(histograms, bin_names, metadata, output_type=SCREEN,
     for spine in axis.spines:
         axis.spines[spine].set_linewidth(0.2)
 
-    pl.gcf().patch.set_edgecolor('k')
+    pl.gcf().patch.set_edgecolor("k")
     pl.gcf().patch.set_linewidth(2.0)
 
     if output_type == FILE:
-        pl.savefig(output_file, dpi=250, edgecolor='k')
+        pl.savefig(output_file, dpi=250, edgecolor="k")

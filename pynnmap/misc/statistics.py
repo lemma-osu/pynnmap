@@ -5,7 +5,9 @@ assessment between observed and predicted data sets.
 import math
 
 import numpy as np
+import pandas as pd
 from scipy import stats as scipy_stats
+from sklearn.metrics import confusion_matrix
 
 
 class ZeroSizeError(Exception):
@@ -23,7 +25,6 @@ class DataError(Exception):
 # Simple least-squares linear regression class including normal, inverse, and
 # reduced major axis (rma) predictions
 class SimpleLinearRegression:
-
     def __init__(self, x, y):
         """
         Initialize the object
@@ -86,7 +87,6 @@ class SimpleLinearRegression:
 
 # Two-by-two error matrix for presence/absence data
 class BinaryErrorMatrix:
-
     def __init__(self, x, y):
         """
         Initialize the object
@@ -110,16 +110,19 @@ class BinaryErrorMatrix:
         self._counts[0, 0] = np.logical_and(x_float, y_float).sum()
 
         # Observed present and predicted absent
-        self._counts[0, 1] = \
-            np.logical_and(x_float, np.logical_not(y_float)).sum()
+        self._counts[0, 1] = np.logical_and(
+            x_float, np.logical_not(y_float)
+        ).sum()
 
         # Observed absent and predicted present
-        self._counts[1, 0] = \
-            np.logical_and(np.logical_not(x_float), y_float).sum()
+        self._counts[1, 0] = np.logical_and(
+            np.logical_not(x_float), y_float
+        ).sum()
 
         # Observed absent and predicted absent
-        self._counts[1, 1] = \
-            np.logical_not(np.logical_or(x_float, y_float)).sum()
+        self._counts[1, 1] = np.logical_not(
+            np.logical_or(x_float, y_float)
+        ).sum()
 
         # Total number of plots
         self._total = self._counts.sum()
@@ -167,10 +170,7 @@ class BinaryErrorMatrix:
 
     def positive_predictive_power(self):
         denominator = self._counts[0, 0] + self._counts[1, 0]
-        if denominator == 0.0:
-            return 1.0
-        else:
-            return self._counts[0, 0] / denominator
+        return 1.0 if denominator == 0.0 else self._counts[0, 0] / denominator
 
     def odds_ratio(self):
         denominator = self._counts[0, 1] * self._counts[1, 0]
@@ -179,23 +179,25 @@ class BinaryErrorMatrix:
         else:
             return (self._counts[0, 0] * self._counts[1, 1]) / denominator
 
+    def tss(self):
+        """True skill statistic"""
+        return self.sensitivity() + self.specificity() - 1.0
+
     def kappa(self):
         """
         Cohen's kappa coefficient
         """
 
         p = self._counts / self._total
-        p_chance = \
-            ((p[0, 0] + p[0, 1]) * (p[0, 0] + p[1, 0])) + \
-            ((p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0]))
+        p_chance = ((p[0, 0] + p[0, 1]) * (p[0, 0] + p[1, 0])) + (
+            (p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0])
+        )
         p_correct = p[0, 0] + p[1, 1]
-
-        if p_chance != 1.0:
-            kappa = (p_correct - p_chance) / (1.0 - p_chance)
-        else:
-            kappa = 0.0
-
-        return kappa
+        return (
+            (p_correct - p_chance) / (1.0 - p_chance)
+            if p_chance != 1.0
+            else 0.0
+        )
 
 
 def _convert_to_float_array(x):
@@ -213,9 +215,7 @@ def _convert_to_float_array(x):
     out : np.array
         Output numpy array
     """
-
-    x_float = np.array(x, dtype='float64', ndmin=1)
-    return x_float
+    return np.array(x, dtype="float64", ndmin=1)
 
 
 def rmse(x, y):
@@ -234,22 +234,17 @@ def rmse(x, y):
     -------
     out : float
         Root mean square error of x and y
-
-    Example
-    --------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = rmse(x,y)
-    >>> z
-    0.57735026918962573
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Throw an exception for zero-sized arrays
     if x_float.size == 0 or y_float.size == 0:
-        raise ZeroSizeError('Input arrays must not have zero elements')
+        raise ZeroSizeError("Input arrays must not have zero elements")
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     d = x_float - y_float
     return (np.inner(d, d) / len(d)) ** 0.5
@@ -273,13 +268,16 @@ def bias_percentage(x, y):
     out : float
         Bias percentage relative to mean of x
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Throw an exception for zero-sized arrays
     if x_float.size == 0 or y_float.size == 0:
-        raise ZeroSizeError('Input arrays must not have zero elements')
+        raise ZeroSizeError("Input arrays must not have zero elements")
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     return (y_float - x_float).sum() / x_float.sum() * 100.0
 
@@ -300,22 +298,17 @@ def pearson_r(x, y):
     -------
     out : float
         Pearson's correlation coefficient between x and y
-
-    Example
-    --------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = pearson_r(x,y)
-    >>> z
-    0.98198050606196585
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Catch insufficient data
     if x_float.size <= 1 or y_float.size <= 1:
-        raise DataError('Input arrays need more than one element')
+        raise DataError("Input arrays need more than one element")
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     return scipy_stats.pearsonr(x_float, y_float)[0]
 
@@ -337,21 +330,17 @@ def spearman_r(x, y):
     out : float
         Spearman's rank correlation coefficient between x and y
 
-    Example
-    -------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = spearman_r(x,y)
-    >>> z
-    1.0
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Catch insufficient data
     if x_float.size <= 1 or y_float.size <= 1:
-        raise DataError('Input arrays need more than one element')
+        raise DataError("Input arrays need more than one element")
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     return scipy_stats.spearmanr(x_float, y_float)[0]
 
@@ -372,22 +361,17 @@ def r2(x, y):
     -------
     out : float
         Coefficient of determination (r2) between x and y
-
-    Example
-    --------
-    >>> x = np.array([1.0, 2.0, 3.0])
-    >>> y = np.array([1.0, 2.0, 4.0])
-    >>> z = r2(x,y)
-    >>> z
-    0.5
     """
-
     x_float = _convert_to_float_array(x)
     y_float = _convert_to_float_array(y)
 
     # Catch insufficient data
     if x_float.size == 1 or y_float.size == 1:
-        raise DataError('Input arrays need more than one element')
+        raise DataError("Input arrays need more than one element")
+
+    # Special case when either x_float or y_float is all zero
+    if np.all(x_float == 0.0) or np.all(y_float == 0.0):
+        return 0.0
 
     x_mean = x_float.mean()
     ss_mean = ((x_float - x_mean) * (x_float - x_mean)).sum()
@@ -419,6 +403,13 @@ def gmfr(x, y):
     b = np.sqrt(y.var() / x.var())
     a = y_mean - (b * x_mean)
     return a, b
+
+
+def error_matrix(obs, prd):
+    labels = set(np.unique(obs)) | set(np.unique(prd))
+    labels = sorted(list(labels))
+    cm = confusion_matrix(prd, obs, labels=labels)
+    return pd.DataFrame(cm, index=labels, columns=labels)
 
 
 def ac(x, y):
@@ -473,6 +464,7 @@ def ac(x, y):
     return ac_, ac_sys, ac_uns
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

@@ -6,6 +6,11 @@ from pynnmap.misc.utilities import df_to_csv
 
 
 class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
+    _required = [
+        "observed_file",
+        "dependent_predicted_file",
+        "independent_predicted_file",
+    ]
 
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
@@ -14,27 +19,19 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
         self.deviation_variables = parameters.deviation_variables
 
         # Create a list of prediction files - both independent and dependent
+        self.dependent_predicted_file = parameters.dependent_predicted_file
+        self.independent_predicted_file = parameters.independent_predicted_file
         self.predicted_files = [
-            ('dependent', parameters.dependent_predicted_file),
-            ('independent', parameters.independent_predicted_file),
+            ("dependent", self.dependent_predicted_file),
+            ("independent", self.independent_predicted_file),
         ]
 
-        # Ensure all input files are present
-        files = [
-            self.observed_file,
-            parameters.dependent_predicted_file,
-            parameters.independent_predicted_file,
-        ]
-        try:
-            self.check_missing_files(files)
-        except diagnostic.MissingConstraintError as e:
-            e.message += '\nSkipping VariableDeviationOutlierDiagnostic\n'
-            raise e
+        self.check_missing_files()
 
     def run_diagnostic(self):
         # Run this for both independent and dependent predictions
         out_dfs = []
-        for (prd_type, prd_file) in self.predicted_files:
+        for prd_type, prd_file in self.predicted_files:
             # Read the observed and predicted files into data frames
             obs_df = pd.read_csv(self.observed_file, index_col=self.id_field)
             prd_df = pd.read_csv(prd_file, index_col=self.id_field)
@@ -46,18 +43,25 @@ class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
             # Iterate over the list of deviation variables, capturing the plots
             # that exceed the minimum threshold specified
             columns = [
-                self.id_field, 'PREDICTION_TYPE', 'VARIABLE', 'OBSERVED_VALUE',
-                'PREDICTED_VALUE', 'DEVIATION'
+                self.id_field,
+                "PREDICTION_TYPE",
+                "VARIABLE",
+                "OBSERVED_VALUE",
+                "PREDICTED_VALUE",
+                "DEVIATION",
             ]
-            for (variable, min_deviation) in self.deviation_variables:
-                df = pd.DataFrame({
-                    self.id_field: obs_df.index,
-                    'PREDICTION_TYPE': prd_type.upper(),
-                    'VARIABLE': variable,
-                    'OBSERVED_VALUE': obs_df[variable],
-                    'PREDICTED_VALUE': prd_df[variable],
-                    'DEVIATION': obs_df[variable] - prd_df[variable]
-                }, columns=columns)
+            for variable, min_deviation in self.deviation_variables:
+                df = pd.DataFrame(
+                    {
+                        self.id_field: obs_df.index,
+                        "PREDICTION_TYPE": prd_type.upper(),
+                        "VARIABLE": variable,
+                        "OBSERVED_VALUE": obs_df[variable],
+                        "PREDICTED_VALUE": prd_df[variable],
+                        "DEVIATION": obs_df[variable] - prd_df[variable],
+                    },
+                    columns=columns,
+                )
 
                 # Subset to just those deviations over the min_deviation
                 df = df[np.abs(df.DEVIATION) >= min_deviation]

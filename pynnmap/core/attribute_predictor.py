@@ -1,7 +1,14 @@
+from abc import ABC, abstractmethod
+from functools import partial, reduce
+
 import numpy as np
 import pandas as pd
 
-from pynnmap.core.pixel_prediction import PixelPrediction
+from pynnmap.core import get_weights
+from pynnmap.core.pixel_prediction import (
+    PixelPrediction,
+    PlotAttributePrediction,
+)
 from pynnmap.parser.xml_stand_metadata_parser import Flags
 
 
@@ -9,10 +16,38 @@ from pynnmap.parser.xml_stand_metadata_parser import Flags
 MIN_DIST = 0.000000000001
 
 
-class AttributePredictor(object):
+def subset_neighbors(neighbor_data, k=1, fltr=None):
+    plot_predictions = []
+    for id_val, fp in sorted(neighbor_data.items()):
+        pixel_predictions = []
+        for pixel_number, pixel in enumerate(fp.pixels):
+            if fltr:
+                mask = fltr.mask(fp.id, pixel.neighbors)
+                neighbors = pixel.neighbors[mask][:k]
+                distances = pixel.distances[mask][:k]
+            else:
+                neighbors = pixel.neighbors[:k]
+                distances = pixel.distances[:k]
+            pixel_predictions.append(
+                PixelPrediction(id_val, pixel_number, k, neighbors, distances)
+            )
+        plot_predictions.append(pixel_predictions)
+    return plot_predictions
+
+
+class AttributePredictor(ABC):
+    @property
+    @abstractmethod
+    def flags(self):
+        pass
+
+    @property
+    @abstractmethod
+    def stat_func(self):
+        pass
+
     def __init__(self, stand_attributes, independence_filter=None):
         """
-        TODO: Flesh this out
         Parameters
         ----------
         stand_attributes : StandAttributes
@@ -20,8 +55,7 @@ class AttributePredictor(object):
         independence_filter : IndependenceFilter, optional
             Instance that defines non-independence for IDs in the model.
         """
-        flags = Flags.CONTINUOUS | Flags.ACCURACY
-        self.stand_attr_df = stand_attributes.get_attr_df(flags=flags)
+        self.stand_attr_df = stand_attributes.get_attr_df(flags=self.flags)
 
         # For speed, create a lookup of id_field to row index and convert
         # attribute data to a numpy array
@@ -33,50 +67,18 @@ class AttributePredictor(object):
         # Independence filter
         self.independence_filter = independence_filter
 
-    def calculate_predictions(self, neighbor_data, k=1, weights=None):
-        # Iterate over all neighbors and calculate predictions
-        predictions = []
-        for id_val, fp in sorted(neighbor_data.items()):
-            predictions.append(self.calculate_predictions_at_id(fp, k, weights))
-        return predictions
+    def calculate_predictions(self, plot_predictions, k=1, weights=None):
+        return [
+            self.calculate_predictions_at_id(plot, k, weights)
+            for plot in plot_predictions
+        ]
 
-    def get_zonal_pixel_df(self, predictions):
-        zps = []
-        for prd in predictions:
-            zps.append(self.prediction_to_zonal_records(prd))
-        return pd.concat(zps)
-
-    def get_predicted_attributes_df(self, predictions, id_field):
-        d = {}
-        col_names = self.stand_attr_df.columns
-        for prd in predictions:
-            values = np.mean([x.get_predicted_attrs() for x in prd], axis=0)
-            d[prd[0].id] = values
-        prd_df = pd.DataFrame.from_dict(d, orient='index', columns=col_names)
-        prd_df.sort_index(inplace=True)
-        prd_df.index.rename(id_field, inplace=True)
-        return prd_df
-
-    @staticmethod
-    def prediction_to_zonal_records(pp):
-        n_pixels = len(pp)
-        k = len(pp[0].neighbors)
-        n = [pp[i].neighbors[j] for i in range(n_pixels) for j in range(k)]
-        d = [pp[i].distances[j] for i in range(n_pixels) for j in range(k)]
-        return pd.DataFrame({
-            'FCID': np.repeat(pp[0].id, k * n_pixels),
-            'PIXEL_NUMBER': np.repeat(np.arange(n_pixels) + 1, k),
-            'NEIGHBOR': np.tile(np.arange(k) + 1, n_pixels),
-            'NEIGHBOR_ID': n,
-            'DISTANCE': d
-        })
-
-    def calculate_predictions_at_id(self, fp, k, weights):
+    def calculate_predictions_at_id(self, plot, k, weights):
         """
         Parameters
         ----------
-        fp : NNFootprint
-            The footprint for which to calculate model predictions
+        plot : list of PixelPrediction objects
+            The pixel predictions for this plot
         k : int
             The number of neighbors over which to average predicted values
         weights : np.array
@@ -84,51 +86,95 @@ class AttributePredictor(object):
 
         Returns
         -------
-        plot_prediction : array of PixelPrediction objects
+        plot_prediction : PlotAttributePrediction object
             The predictions for all pixels in a plot footprint
         """
-        # Create an empty list which will store all PixelPrediction
-        # instances
-        plot_prediction = []
+        # Create an empty list which will store all attribute predictions
+        # for each pixel
+        pixel_predictions = []
 
         # Determine if weights need to be calculated based on NN distances
-        calc_weights = True if weights is None else False
+        calc_weights = weights is None
 
-        # Iterate over pixels in the footprint
-        for pixel_number, pixel in enumerate(fp.pixels):
-            # Create a PixelPrediction instance
-            pp = PixelPrediction(fp.id, pixel_number, k)
-
-            # Filter the neighbors using the independence mask
-            if self.independence_filter:
-                mask = self.independence_filter.mask(fp.id, pixel.neighbors)
-                pp.neighbors = pixel.neighbors[mask][0:k]
-                pp.distances = pixel.distances[mask][0:k]
-            else:
-                pp.neighbors = pixel.neighbors[0:k]
-                pp.distances = pixel.distances[0:k]
-
-            # Fix distance array for 0.0 values
-            distances = np.where(
-                pp.distances == 0.0, MIN_DIST, pp.distances)
-
-            # Calculate the normalized weight array as the
-            # inverse distance
+        # Iterate over pixels in the plot
+        for pixel in plot:
+            neighbors = pixel.neighbors[:k]
             if calc_weights:
+                # Fix distance array for 0.0 values
+                distances = np.where(
+                    pixel.distances[:k] == 0.0, MIN_DIST, pixel.distances[:k]
+                )
                 weights = 1.0 / distances
                 weights /= weights.sum()
-                weights = weights.reshape(1, len(pp.neighbors)).T
+                weights = weights.reshape(1, len(neighbors)).T
+            else:
+                weights = weights[:k]
 
             # Extract the data rows and attributes and multiply by weights
-            indexes = [self.id_x_index[x] for x in pp.neighbors]
+            # Only do this for the first k neighbors
+            indexes = [self.id_x_index[x] for x in neighbors]
             data_rows = self.attr_arr[indexes]
             arr = (data_rows * weights).sum(axis=0)
 
-            # Calculate the weighted average of all attributes for this pixel
-            pp.set_predicted_attrs(arr)
+            # Add this attribute prediction to the list
+            pixel_predictions.append(arr)
 
-            # Add this pixel prediction to the list
-            plot_prediction.append(pp)
+        # Return a PlotAttributePrediction instance which holds the ID of
+        # the plot and the 2D collection of predictions (pixels x attrs)
+        return PlotAttributePrediction(plot[0].id, pixel_predictions)
 
-        # Return the plot_predictions dict
-        return plot_prediction
+    def get_predicted_attributes_df(self, predictions, id_field):
+        d = {}
+        col_names = self.stand_attr_df.columns
+        if len(col_names) == 0:
+            return None
+        for prd in predictions:
+            values = self.stat_func(prd.attr_arr)
+            d[prd.id] = values
+        prd_df = pd.DataFrame.from_dict(d, orient="index", columns=col_names)
+        prd_df.sort_index(inplace=True)
+        prd_df.index.rename(id_field, inplace=True)
+        return prd_df
+
+
+def majority(a):
+    v, c = np.unique(a, return_counts=True)
+    ind = np.argmax(c)
+    return v[ind]
+
+
+class ContinuousAttributePredictor(AttributePredictor):
+    flags = Flags.CONTINUOUS | Flags.NOT_SPECIES | Flags.ACCURACY
+    stat_func = partial(np.mean, axis=0)
+
+
+class CategoricalAttributePredictor(AttributePredictor):
+    flags = Flags.CATEGORICAL | Flags.ACCURACY
+    stat_func = partial(np.apply_along_axis, majority, 0)
+
+
+class SpeciesAttributePredictor(AttributePredictor):
+    flags = Flags.SPECIES | Flags.ACCURACY
+    stat_func = partial(np.mean, axis=0)
+
+
+def calculate_predicted_attributes(
+    plot_predictions, attr_data, fltr, parser, id_field
+):
+    dfs = []
+    for kls, k, weights in (
+        (ContinuousAttributePredictor, parser.k, get_weights(parser)),
+        (CategoricalAttributePredictor, 1, np.array([1.0])),
+        (SpeciesAttributePredictor, 1, np.array([1.0])),
+    ):
+        predictor = kls(attr_data, fltr)
+        # TODO: No need to create local predictions variable here, do it
+        #  within AttributePredictor class
+        predictions = predictor.calculate_predictions(
+            plot_predictions, k=k, weights=weights
+        )
+        prd_df = predictor.get_predicted_attributes_df(predictions, id_field)
+        if prd_df is not None:
+            dfs.append(prd_df)
+
+    return reduce(lambda df1, df2: pd.merge(df1, df2, on=id_field), dfs)

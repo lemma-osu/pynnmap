@@ -10,20 +10,20 @@ class ParserError(Exception):
 # General utility functions for size and set checking
 def assert_same_size(a, b):
     if a.size != b.size:
-        err_msg = 'The two arrays are not the same size'
+        err_msg = "The two arrays are not the same size"
         raise ParserError(err_msg)
 
 
 def assert_same_set(a, b):
     if not np.all(a == b):
-        err_msg = 'The two arrays are not the same set'
+        err_msg = "The two arrays are not the same set"
         raise ParserError(err_msg)
 
 
 class Parser(object):
     def __init__(self):
         # Set up commonly used regular expressions for parsing
-        self.blank_re = re.compile(r'^\s*$')
+        self.blank_re = re.compile(r"^\s*$")
 
     @staticmethod
     def read_chunks(all_lines, start_re, end_re, skip_lines=0, flush=False):
