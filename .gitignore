@@ -1,20 +1,7 @@
-# Build files
-build
-dist
-*.egg-info
-*.pyc
-
-# Testing
-env
-.cache
+__pycache__/
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
 .coverage
-.tox
-tox.ini
-
-# Miscellaneous files
-.idea
-.vscode
-*.swp
-
-# For now, ignore docs
-docs
+docs/
