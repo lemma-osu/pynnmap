@@ -20,7 +20,7 @@ def assert_same_set(a, b):
         raise ParserError(err_msg)
 
 
-class Parser(object):
+class Parser:
     def __init__(self):
         # Set up commonly used regular expressions for parsing
         self.blank_re = re.compile(r"^\s*$")

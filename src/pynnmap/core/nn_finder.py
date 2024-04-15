@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 from osgeo import gdal, gdalconst
 
-from pynnmap.core import get_id_year_crosswalk
-from pynnmap.core import imputation_model as im
-from pynnmap.misc import footprint
-from pynnmap.ordination_parser import lemma_ordination_parser
+from ..misc import footprint
+from ..ordination_parser import lemma_ordination_parser
+from . import get_id_year_crosswalk
+from . import imputation_model as im
 
 
 def get_year_id_crosswalk(id_x_year):
@@ -109,7 +109,7 @@ def extract_footprints(
     # There will be multiple identical entries for non-temporally varying
     # attributes - they will be overwritten on each pass
     path_to_var = defaultdict(str)
-    for year, d in ord_year_var_dict.items():
+    for d in ord_year_var_dict.values():
         for var, fn in d.items():
             path_to_var[fn] = var
 
@@ -146,7 +146,7 @@ def extract_footprints(
 
         # Extract footprints for any variables that are not common to all
         # years, but specialized for this year
-        for _, fn in ord_year_var_dict[year].items():
+        for fn in ord_year_var_dict[year].values():
             var = path_to_var[fn]
             ds, processed = raster_dict[fn]
             if not processed:
@@ -187,20 +187,20 @@ class EnvironmentalVector:
         return "\n".join((f"{k}: {v}" for k, v in self.d.items()))
 
 
-class NNPixel(object):
+class NNPixel:
     def __init__(self, neighbors, distances):
         self.neighbors = np.copy(neighbors)
         self.distances = np.copy(distances)
 
     def __repr__(self):
-        return "{kls}(\n neighbors={n}\n distances={d}\n)".format(
-            kls=self.__class__.__name__,
-            n=self.neighbors[:5],
-            d=self.distances[:5],
+        return (
+            f"{self.__class__.__name__}\n"
+            f"(neighbors={self.neighbors[:5]}\n"
+            f"distances={self.distances[:5]}\n)"
         )
 
 
-class NNFootprint(object):
+class NNFootprint:
     def __init__(self, id_val):
         self.id = id_val
         self.pixels = []
@@ -307,15 +307,13 @@ class PixelNNFinder(NNFinder):
 
         # Crosswalk of ID to year
         id_x_year = get_id_year_crosswalk(p)
-        id_x_year = {i: id_x_year[i] for i in id_x_year.keys() if i in plot_ids}
+        id_x_year = {i: id_x_year[i] for i in id_x_year if i in plot_ids}
 
         # Get the list of IDs, years, and the crosswalk of years to IDs
         id_vals, years, year_ids = get_year_id_crosswalk(id_x_year)
 
         # Retrieve coordinates from the model plots
-        coord_list = get_model_plots(
-            p.coordinate_file, id_vals, p.plot_id_field
-        )
+        coord_list = get_model_plots(p.coordinate_file, id_vals, p.plot_id_field)
 
         # Retrieve the footprint configurations.  Footprint offsets store the
         # row and column tuples of each pixel within a given footprint.
@@ -326,9 +324,7 @@ class PixelNNFinder(NNFinder):
         )
 
         # Get information about environmental variables by year
-        ord_year_var_dict, raster_counts, raster_dict = get_variable_info(
-            p, years
-        )
+        ord_year_var_dict, raster_counts, raster_dict = get_variable_info(p, years)
 
         # Extract environmental variable footprint data
         return extract_footprints(

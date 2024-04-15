@@ -2,7 +2,7 @@ class MissingParameterException(Exception):
     pass
 
 
-class ParameterParser(object):
+class ParameterParser:
     """
     Abstract base class for parsing model parameters from an
     input file.

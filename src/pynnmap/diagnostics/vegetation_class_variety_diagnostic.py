@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import pandas as pd
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.misc.utilities import df_to_csv
+from ..misc.utilities import df_to_csv
+from . import diagnostic
 
 COARSE_VC_REMAP = {
     1: 1,
@@ -33,7 +35,7 @@ def calculate_vc_variety(vc_records):
 
 
 class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
-    _required = [
+    _required: list[str] = [
         "stand_attr_file",
         "dependent_zonal_pixel_file",
         "independent_zonal_pixel_file",

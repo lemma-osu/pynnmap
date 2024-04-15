@@ -30,6 +30,18 @@ dependencies = [
     "scipy",
 ]
 
+[project.scripts]
+pynnmap = "pynnmap.cli.main:main_group"
+
+[project.entry-points.pynnmap]
+build_attribute_raster = "pynnmap.cli.build_attribute_raster:cli_main"
+build_model = "pynnmap.cli.build_model:build_model"
+cross_validate = "pynnmap.cli.cross_validate:cross_validate"
+find_outliers = "pynnmap.cli.find_outliers:find_outliers"
+impute = "pynnmap.cli.impute:impute"
+new_targets = "pynnmap.cli.new_targets:new_targets"
+run_diagnostics = "pynnmap.cli.run_diagnostics:main"
+
 [project.urls]
 Homepage = "https://github.com/lemma-osu/pynnmap"
 Source = "https://github.com/lemma-osu/pynnmap"
@@ -70,11 +82,11 @@ select = [
     "FA",
     "UP",
     "ISC",
-    "PT",
+    # "PT",
     "NPY",
     "Q",
     "RET",
-    "SIM",
+    # "SIM",
     "PERF",
 ]
 

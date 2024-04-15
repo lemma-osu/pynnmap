@@ -3,7 +3,7 @@ import subprocess
 
 import click
 
-from pynnmap.parser import parameter_parser_factory as ppf
+from ..parser import parameter_parser_factory as ppf
 
 
 @click.command(short_help="Apply model over spatial domain using kNN")

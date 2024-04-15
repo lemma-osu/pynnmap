@@ -2,7 +2,7 @@ import jenkspy
 import numpy as np
 import pandas as pd
 
-from pynnmap.misc.weighted_array import WeightedArray
+from ..misc.weighted_array import WeightedArray
 
 
 def get_global_range(*datasets):
@@ -85,9 +85,7 @@ def approx_quantiles(arr, bin_count):
     dup = uniq[counts > 1]
     if len(dup):
         new = arr[arr != dup[0]]
-        return np.sort(
-            np.hstack((dup[0], approx_quantiles(new, bin_count - 1)))
-        )
+        return np.sort(np.hstack((dup[0], approx_quantiles(new, bin_count - 1))))
     return bins
 
 
@@ -172,7 +170,7 @@ class DataDigitizer:
             self.bins = np.repeat(self.bins, 2)
 
     def bin_data(self, arr):
-        bins_copy = np.array(self.bins, copy=True, dtype=np.float)
+        bins_copy = np.array(self.bins, copy=True, dtype=float)
         if issubclass(self.clf.__class__, RangeIntervals):
             bins_copy[-1] += self.PRECISION
         else:

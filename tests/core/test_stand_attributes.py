@@ -1,36 +1,35 @@
 import pytest
 
 from pynnmap.core.stand_attributes import StandAttributes
-from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
-from pynnmap.parser.xml_stand_metadata_parser import Flags
+from pynnmap.parser.xml_stand_metadata_parser import Flags, XMLStandMetadataParser
 
 
-@pytest.fixture
+@pytest.fixture()
 def attr_fn():
     return "tests/data/stand_attr.csv"
 
 
-@pytest.fixture
+@pytest.fixture()
 def attr_xml_fn():
     return "tests/data/stand_attr.xml"
 
 
-@pytest.fixture
+@pytest.fixture()
 def metadata_parser(attr_xml_fn):
     return XMLStandMetadataParser(attr_xml_fn)
 
 
-@pytest.fixture
+@pytest.fixture()
 def id_field():
     return "FCID"
 
 
-@pytest.fixture
+@pytest.fixture()
 def default_obj(attr_fn, metadata_parser, id_field):
     return StandAttributes(attr_fn, metadata_parser, id_field=id_field)
 
 
-@pytest.fixture
+@pytest.fixture()
 def attr_fn_missing_metadata():
     return "tests/data/stand_attr_missing_metadata.csv"
 

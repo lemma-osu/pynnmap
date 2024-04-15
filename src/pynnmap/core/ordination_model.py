@@ -1,15 +1,11 @@
-from typing import Dict
-import json
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 import numpy as np
-from pydantic.dataclasses import dataclass
 
 
-class Config:
-    arbitrary_types_allowed = True
-
-
-@dataclass(config=Config)
+@dataclass
 class OrdinationModel:
     axis_weights: np.ndarray
     var_names: np.ndarray
@@ -55,13 +51,13 @@ class OrdinationModel:
         return np.dot(self.var_means, self.var_coeff)
 
     @property
-    def plot_id_dict(self) -> Dict[int, int]:
+    def plot_id_dict(self) -> dict[int, int]:
         return {x: idx for idx, x in enumerate(self.plot_ids)}
 
     @property
-    def id_plot_dict(self) -> Dict[int, int]:
+    def id_plot_dict(self) -> dict[int, int]:
         return dict(enumerate(self.plot_ids))
 
     @property
-    def var_name_dict(self) -> Dict[str, int]:
+    def var_name_dict(self) -> dict[str, int]:
         return {x: idx for idx, x in enumerate(self.var_names)}

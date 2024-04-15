@@ -4,13 +4,12 @@ from functools import partial, reduce
 import numpy as np
 import pandas as pd
 
-from pynnmap.core import get_weights
-from pynnmap.core.pixel_prediction import (
+from ..parser.xml_stand_metadata_parser import Flags
+from . import get_weights
+from .pixel_prediction import (
     PixelPrediction,
     PlotAttributePrediction,
 )
-from pynnmap.parser.xml_stand_metadata_parser import Flags
-
 
 # Minimum distance constant
 MIN_DIST = 0.000000000001
@@ -158,9 +157,7 @@ class SpeciesAttributePredictor(AttributePredictor):
     stat_func = partial(np.mean, axis=0)
 
 
-def calculate_predicted_attributes(
-    plot_predictions, attr_data, fltr, parser, id_field
-):
+def calculate_predicted_attributes(plot_predictions, attr_data, fltr, parser, id_field):
     dfs = []
     for kls, k, weights in (
         (ContinuousAttributePredictor, parser.k, get_weights(parser)),

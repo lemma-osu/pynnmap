@@ -1,15 +1,13 @@
 import numpy as np
 import pylab as pl
 
-from pynnmap.misc import statistics
+from ..misc import statistics
 
 # output_type enumeration
 (SCREEN, FILE) = range(2)
 
 
-def draw_scatterplot(
-    x, y, metadata, output_type=SCREEN, output_file=None, **kwargs
-):
+def draw_scatterplot(x, y, metadata, output_type=SCREEN, output_file=None, **kwargs):
     # Unpack the metadata information
     variable = metadata.field_name
     short_desc = metadata.short_description
@@ -40,9 +38,7 @@ def draw_scatterplot(
     this_r2 = statistics.r2(x, y)
 
     # Draw the annotation text on the figure
-    pl.text(
-        0.89, 0.93, "1:1", transform=pl.gca().transAxes, size=4.5, rotation=45
-    )
+    pl.text(0.89, 0.93, "1:1", transform=pl.gca().transAxes, size=4.5, rotation=45)
     pl.text(
         0.05,
         0.93,

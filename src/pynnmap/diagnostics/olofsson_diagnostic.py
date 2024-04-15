@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 from itertools import cycle
 
 import numpy as np
 import pandas as pd
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
-from pynnmap.parser.xml_stand_metadata_parser import Flags
+from ..parser.xml_stand_metadata_parser import Flags, XMLStandMetadataParser
+from . import diagnostic
 
 
 def standardize_by_axis(arr, axis=0):
@@ -16,7 +17,7 @@ def standardize_by_axis(arr, axis=0):
     return n_ij
 
 
-class ErrorAdjustment(object):
+class ErrorAdjustment:
     def __init__(self, error_matrix, mapped_areas):
         self.error_matrix = np.array(error_matrix, dtype=np.float64)
         self.mapped_areas = np.array(mapped_areas)
@@ -32,14 +33,12 @@ class ErrorAdjustment(object):
     def confidence_intervals(self):
         row_sums = self.error_matrix.sum(axis=1, keepdims=True)
         row_sums = np.clip(row_sums, 2, row_sums.max())
-        se_ij = ((self.n_ij * (1.0 - self.n_ij)) / (row_sums - 1)) * (
-            self.w * self.w
-        )
+        se_ij = ((self.n_ij * (1.0 - self.n_ij)) / (row_sums - 1)) * (self.w * self.w)
         return 2.0 * np.sqrt(se_ij.sum(axis=0)) * self.mapped_areas.sum()
 
 
 class OlofssonDiagnostic(diagnostic.Diagnostic):
-    _required = [
+    _required: list[str] = [
         "error_matrix_file",
         "bin_file",
         "regional_accuracy_file",
@@ -79,9 +78,7 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
 
     @staticmethod
     def write_records(fh, attr_name, bin_names, mapped, adjusted, se_adjusted):
-        for record in zip(
-            cycle([attr_name]), bin_names, mapped, adjusted, se_adjusted
-        ):
+        for record in zip(cycle([attr_name]), bin_names, mapped, adjusted, se_adjusted):
             fh.write("{:s},{:s},{:.4f},{:.4f},{:.4f}\n".format(*record))
 
     def attr_missing(self, attr):
@@ -93,14 +90,14 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         fn = attr.field_name
         em_df = self.error_matrix_df
         area_df = self.regional_df
-        em_data = em_df[em_df.VARIABLE == fn]
+        em_data = em_df[fn == em_df.VARIABLE]
         err_matrix = pd.pivot_table(
             em_data,
             index="PREDICTED_CLASS",
             columns="OBSERVED_CLASS",
             values="COUNT",
         )
-        conds = (area_df.VARIABLE == fn) & (area_df.DATASET == "PREDICTED")
+        conds = (fn == area_df.VARIABLE) & (area_df.DATASET == "PREDICTED")
         bin_names = np.array(area_df[conds].BIN_NAME.iloc[2:])
         mapped = np.array(area_df[conds].AREA.iloc[2:])
         olofsson = ErrorAdjustment(err_matrix, mapped)
@@ -118,14 +115,9 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         # and categorical attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
         attrs = mp.filter(
-            Flags.CONTINUOUS
-            | Flags.ACCURACY
-            | Flags.PROJECT
-            | Flags.NOT_SPECIES
+            Flags.CONTINUOUS | Flags.ACCURACY | Flags.PROJECT | Flags.NOT_SPECIES
         )
-        attrs.extend(
-            mp.filter(Flags.CATEGORICAL | Flags.ACCURACY | Flags.PROJECT)
-        )
+        attrs.extend(mp.filter(Flags.CATEGORICAL | Flags.ACCURACY | Flags.PROJECT))
 
         # Write header line
         olofsson_fh = open(self.olofsson_file, "w")

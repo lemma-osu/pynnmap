@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-from pynnmap.core.independence_filter import IndependenceFilter
+
+from .independence_filter import IndependenceFilter
 
 
 def get_id_year_crosswalk(parser):
@@ -18,9 +19,7 @@ def get_independence_filter(parser, no_self_assign_field="LOC_ID"):
     fn = parser.plot_independence_crosswalk_file
     fields = [id_field, no_self_assign_field]
     df = pd.read_csv(fn, usecols=fields, index_col=id_field)
-    return IndependenceFilter.from_common_lookup(
-        df.index, df[no_self_assign_field]
-    )
+    return IndependenceFilter.from_common_lookup(df.index, df[no_self_assign_field])
 
 
 def get_weights(parser):

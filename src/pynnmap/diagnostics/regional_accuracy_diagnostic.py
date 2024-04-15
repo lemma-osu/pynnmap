@@ -1,21 +1,22 @@
+from __future__ import annotations
+
 import os
 
 import numpy as np
 import pandas as pd
 import rasterio
 
-from pynnmap.cli import build_attribute_raster
-from pynnmap.core import get_id_list
-from pynnmap.core.nn_finder import PixelNNFinder
-from pynnmap.core.prediction_output import IndependentOutput
-from pynnmap.diagnostics import diagnostic
-from pynnmap.diagnostics.error_matrix_diagnostic import ErrorMatrixDiagnostic
-from pynnmap.diagnostics.olofsson_diagnostic import OlofssonDiagnostic
-from pynnmap.misc import histogram
-from pynnmap.misc import interval_classification as ic
-from pynnmap.misc.weighted_array import WeightedArray
-from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
-from pynnmap.parser.xml_stand_metadata_parser import Flags
+from ..cli import build_attribute_raster
+from ..core import get_id_list
+from ..core.nn_finder import PixelNNFinder
+from ..core.prediction_output import IndependentOutput
+from ..misc import histogram
+from ..misc import interval_classification as ic
+from ..misc.weighted_array import WeightedArray
+from ..parser.xml_stand_metadata_parser import Flags, XMLStandMetadataParser
+from . import diagnostic
+from .error_matrix_diagnostic import ErrorMatrixDiagnostic
+from .olofsson_diagnostic import OlofssonDiagnostic
 
 
 def get_predicted_raster(attr):
@@ -39,7 +40,7 @@ def get_predicted_raster(attr):
 
 
 class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
-    _required = [
+    _required: list[str] = [
         "area_estimate_file",
         "stand_attribute_file",
         "stand_metadata_file",
@@ -124,14 +125,10 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             histograms = histogram.bin_continuous(*(obs, prd), bins=bins)
         else:
             if attr.codes:
-                code_dict = {
-                    int(code.code_value): code.label for code in attr.codes
-                }
+                code_dict = {int(code.code_value): code.label for code in attr.codes}
             else:
                 code_dict = None
-            histograms = histogram.bin_categorical(
-                *(obs, prd), code_dict=code_dict
-            )
+            histograms = histogram.bin_categorical(*(obs, prd), code_dict=code_dict)
 
         histograms[0].name = "OBSERVED"
         histograms[1].name = "PREDICTED"
@@ -153,22 +150,16 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         # Open the classification bin file and print out the header line
         bin_file = self.parameter_parser.regional_bin_file
         bin_fh = open(bin_file, "w")
-        bin_fh.write(f"VARIABLE,CLASS,LOW,HIGH\n")
+        bin_fh.write("VARIABLE,CLASS,LOW,HIGH\n")
 
         # Get the metadata parser and get the project area attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
         attrs = mp.filter(
-            Flags.CONTINUOUS
-            | Flags.ACCURACY
-            | Flags.PROJECT
-            | Flags.NOT_SPECIES
+            Flags.CONTINUOUS | Flags.ACCURACY | Flags.PROJECT | Flags.NOT_SPECIES
         )
         attrs.extend(
             mp.filter(
-                Flags.CATEGORICAL
-                | Flags.ACCURACY
-                | Flags.PROJECT
-                | Flags.NOT_SPECIES
+                Flags.CATEGORICAL | Flags.ACCURACY | Flags.PROJECT | Flags.NOT_SPECIES
             )
         )
 
@@ -186,9 +177,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             fn = f"./attribute_rasters/{attr.field_name.lower()}.tif"
             if not os.path.exists(fn):
                 print(f"Building {attr.field_name} raster ...")
-                build_attribute_raster.main(
-                    self.parameter_parser, attr.field_name
-                )
+                build_attribute_raster.main(self.parameter_parser, attr.field_name)
 
             # Get predicted areas from predicted rasters that should be
             # pre-generated
@@ -210,9 +199,9 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             for i in range(len(obs_bins.bin_endpoints) - 1):
                 out_list = [
                     attr.field_name,
-                    "{:d}".format(i + 1),
-                    "{:.4f}".format(obs_bins.bin_endpoints[i]),
-                    "{:.4f}".format(obs_bins.bin_endpoints[i + 1]),
+                    f"{i + 1:d}",
+                    f"{obs_bins.bin_endpoints[i]:.4f}",
+                    f"{obs_bins.bin_endpoints[i + 1]:.4f}",
                 ]
                 bin_fh.write(",".join(out_list) + "\n")
 
@@ -229,8 +218,9 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
 
             for b in bins:
                 for i in range(len(b.bin_counts)):
-                    out_data = "{:s},{:s},{:s},{:.3f}\n".format(
-                        attr.field_name, b.name, b.bin_names[i], b.bin_counts[i]
+                    out_data = (
+                        f"{attr.field_name:s},"
+                        f"{b.name:s},{b.bin_names[i]:s},{b.bin_counts[i]:.3f}\n"
                     )
                     stats_fh.write(out_data)
 

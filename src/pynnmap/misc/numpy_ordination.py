@@ -5,7 +5,7 @@ import numpy as np
 ZERO = 0.0001
 
 
-class NumpyCCA(object):
+class NumpyCCA:
     """
     Calculate canonical correspondence analysis using numpy.  This is a
     pretty direct port of vegan (R) by Jari Oksanen.  See 'cca.default'
@@ -128,9 +128,7 @@ class NumpyCCA(object):
         """
         xi = self.site_lc_scores()
         uk = self.species_centroids()
-        xiuk = np.zeros(
-            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64
-        )
+        xiuk = np.zeros((uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64)
         for i, s in enumerate(uk):
             xiuk[i] = xi - s
         y = self.x.T
@@ -173,7 +171,7 @@ class NumpyCCA(object):
         return site_weights, site_n2
 
 
-class NumpyRDA(object):
+class NumpyRDA:
     """
     Calculate redundancy analysis using numpy.  This is a
     pretty direct port of vegan (R) by Jari Oksanen.  See 'rda.default'
@@ -249,9 +247,7 @@ class NumpyRDA(object):
         """
         Return biplot scores of environmental variable by axis
         """
-        biplot_scores = np.corrcoef(
-            self.y_r, self.u[:, 0 : self.rank], rowvar=False
-        )
+        biplot_scores = np.corrcoef(self.y_r, self.u[:, 0 : self.rank], rowvar=False)
         return biplot_scores[0 : self.rank, self.rank :]
 
     def coefficients(self):
@@ -279,9 +275,7 @@ class NumpyRDA(object):
         """
         xi = self.site_lc_scores()
         uk = self.species_centroids()
-        xiuk = np.zeros(
-            (uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64
-        )
+        xiuk = np.zeros((uk.shape[0], xi.shape[0], xi.shape[1]), dtype=np.float64)
         for i, s in enumerate(uk):
             xiuk[i] = xi - s
         y = self.x.T

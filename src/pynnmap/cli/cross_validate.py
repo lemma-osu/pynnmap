@@ -1,9 +1,9 @@
 import click
 
-from pynnmap.core.prediction_output import DependentOutput, IndependentOutput
-from pynnmap.core.nn_finder import PixelNNFinder, PlotNNFinder
-from pynnmap.diagnostics import diagnostic_wrapper as dw
-from pynnmap.parser import parameter_parser_factory as ppf
+from ..core.nn_finder import PixelNNFinder, PlotNNFinder
+from ..core.prediction_output import DependentOutput, IndependentOutput
+from ..diagnostics import diagnostic_wrapper as dw
+from ..parser import parameter_parser_factory as ppf
 
 
 def run_cross_validate(parser, finder):

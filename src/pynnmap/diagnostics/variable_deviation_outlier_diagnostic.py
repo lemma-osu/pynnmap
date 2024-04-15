@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.misc.utilities import df_to_csv
+from ..misc.utilities import df_to_csv
+from . import diagnostic
 
 
 class VariableDeviationOutlierDiagnostic(diagnostic.Diagnostic):
-    _required = [
+    _required: list[str] = [
         "observed_file",
         "dependent_predicted_file",
         "independent_predicted_file",

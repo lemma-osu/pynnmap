@@ -2,14 +2,14 @@ import re
 
 import numpy as np
 
-from pynnmap.misc import parser
+from ..misc import parser
 
 
 class FootprintError(Exception):
     pass
 
 
-class Footprint(object):
+class Footprint:
     def __init__(self, key, kernel, cell_size):
         self.key = key
         kernel = np.array(kernel)
@@ -57,7 +57,7 @@ class Footprint(object):
         """
 
         # Create a blank kernel the appropriate size
-        kernel = np.zeros((self.n_rows, self.n_cols), dtype=np.int)
+        kernel = np.zeros((self.n_rows, self.n_cols), dtype=int)
 
         # Iterate through the offsets, turning on the correct pixels
         for offset in self.offsets:
@@ -121,9 +121,6 @@ class Footprint(object):
 
 
 class FootprintParser(parser.Parser):
-    def __init__(self):
-        super(FootprintParser, self).__init__()
-
     def parse(self, fp_file):
         """
         Parse a footprint file and return the set of all footprints
@@ -138,7 +135,7 @@ class FootprintParser(parser.Parser):
         fp_dict : dict of Footprints
         """
 
-        with open(fp_file, "r") as fp_fh:
+        with open(fp_file) as fp_fh:
             all_lines = fp_fh.readlines()
 
         # Regular expression to match footprint specification starting lines

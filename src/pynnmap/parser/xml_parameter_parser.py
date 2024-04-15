@@ -2,12 +2,10 @@ import contextlib
 import os
 
 import pandas as pd
-from lxml import etree
-from lxml import objectify
+from lxml import etree, objectify
 
-from pynnmap.misc import utilities
-from pynnmap.parser import xml_parser
-from pynnmap.parser import parameter_parser
+from ..misc import utilities
+from . import parameter_parser, xml_parser
 
 
 # Function to extract neighbor weights
@@ -17,18 +15,14 @@ def get_weights(weights_elem, k):
         value = children[0]
         if value == "INVERSE_DISTANCES":
             return None
-        elif value == "EQUAL":
+        if value == "EQUAL":
             return [1.0 / k for _ in range(k)]
-        else:
-            raise ValueError("Weight keyword is not valid")
-    else:
-        w = [float(x) for x in children]
-        return [x / sum(w) for x in w]
+        raise ValueError("Weight keyword is not valid")
+    w = [float(x) for x in children]
+    return [x / sum(w) for x in w]
 
 
-class XMLParameterParser(
-    xml_parser.XMLParser, parameter_parser.ParameterParser
-):
+class XMLParameterParser(xml_parser.XMLParser, parameter_parser.ParameterParser):
     """
     Class for parsing full XML parameter files.  The model XML file must
     validate against the XML schema file, so we use this class to verify
@@ -215,8 +209,7 @@ class XMLParameterParser(
     def mask_raster(self):
         if self.fl_elem.find("mask_raster") is not None:
             return os.path.normpath(str(self.fl_elem.mask_raster))
-        else:
-            return ""
+        return ""
 
     @property
     def projection_file(self):
@@ -308,8 +301,7 @@ class XMLParameterParser(
     def model_project(self):
         if self.mp_elem.find("model_project") is not None:
             return str(self.mp_elem.model_project)
-        else:
-            return ""
+        return ""
 
     @property
     def model_region(self):
@@ -375,9 +367,7 @@ class XMLParameterParser(
                 child.plot_year = rec.PLOT_YEAR
                 child.image_year = rec.IMAGE_YEAR
             except ValueError as e:
-                err_msg = (
-                    "Record does not have PLOT_YEAR or IMAGE_YEAR attributes"
-                )
+                err_msg = "Record does not have PLOT_YEAR or IMAGE_YEAR attributes"
                 raise ValueError(err_msg) from e
         pi_crosswalk_elem = self.model_type_elem.plot_image_crosswalk
         parent = pi_crosswalk_elem.getparent()
@@ -395,9 +385,8 @@ class XMLParameterParser(
         if self.model_type not in self.imagery_model_types:
             py_elem = self.model_type_elem.plot_years
             return [int(x) for x in py_elem.getchildren()]
-        else:
-            pic = self.plot_image_crosswalk
-            return [] if isinstance(pic, str) else [x[0] for x in pic]
+        pic = self.plot_image_crosswalk
+        return [] if isinstance(pic, str) else [x[0] for x in pic]
 
     @plot_years.setter
     def plot_years(self, year_list):
@@ -525,11 +514,7 @@ class XMLParameterParser(
 
     def get_ordination_variable_names(self, model_year=None):
         ord_vars = self.get_ordination_variables(model_year=model_year)
-        return (
-            [str(x[0]) for x in ord_vars]
-            if isinstance(ord_vars, list)
-            else None
-        )
+        return [str(x[0]) for x in ord_vars] if isinstance(ord_vars, list) else None
 
     # -------------------------------------------------------------------------
     # Imputation Parameters
@@ -590,9 +575,7 @@ class XMLParameterParser(
         if self.domain == "list":
             child_elem = (self.domain_element.getchildren())[0]
             if child_elem.tag == "points":
-                points = [
-                    (point.x, point.y) for point in child_elem.getchildren()
-                ]
+                points = [(point.x, point.y) for point in child_elem.getchildren()]
             else:
                 recs = pd.read_csv(str(child_elem))
                 points = [(point.X, point.Y) for point in recs.itertuples()]
@@ -602,14 +585,14 @@ class XMLParameterParser(
     def window_cell_size(self):
         if self.domain == "window":
             return float(self.domain_element.cell_size)
-        else:
-            return None
+        return None
 
     @property
     def envelope(self):
         if self.domain == "window":
             d_elem = self.domain_element
             return [float(x) for x in d_elem.envelope.getchildren()]
+        return None
 
     @envelope.setter
     def envelope(self, env):
@@ -624,15 +607,13 @@ class XMLParameterParser(
     def axes_file(self):
         if self.domain == "window":
             return str(self.domain_element.output.axes_file)
-        else:
-            return None
+        return None
 
     @property
     def neighbor_file(self):
         if self.domain == "window":
             return str(self.domain_element.output.neighbor_file)
-        else:
-            return None
+        return None
 
     def get_neighbor_file(self, idx):
         md = self.model_directory
@@ -643,15 +624,13 @@ class XMLParameterParser(
     def distance_file(self):
         if self.domain == "window":
             return str(self.domain_element.output.distance_file)
-        else:
-            return None
+        return None
 
     @property
     def output_format(self):
         if self.domain == "window":
             return str(self.domain_element.output.output_format)
-        else:
-            return None
+        return None
 
     @property
     def write_axes(self):
@@ -701,8 +680,7 @@ class XMLParameterParser(
     def accuracy_diagnostics_element(self):
         if self.aa_elem.find("diagnostics") is not None:
             return self.aa_elem.diagnostics
-        else:
-            return None
+        return None
 
     @property
     def accuracy_diagnostics(self):
@@ -748,9 +726,7 @@ class XMLParameterParser(
         if self.accuracy_diagnostics:
             ade = self.accuracy_diagnostics_element
             if ade is not None:
-                file_name = str(
-                    ade.error_matrix_accuracy.classification_bin_file
-                )
+                file_name = str(ade.error_matrix_accuracy.classification_bin_file)
                 return self._get_path("error_matrix_bin_file", file_name)
         return None
 
@@ -869,10 +845,9 @@ class XMLParameterParser(
         ade = self.accuracy_diagnostics_element
         if ade is not None:
             return (
-                None
-                if ade.find("riemann_accuracy") is None
-                else ade.riemann_accuracy
+                None if ade.find("riemann_accuracy") is None else ade.riemann_accuracy
             )
+        return None
 
     @property
     def riemann_assessment_year(self):
@@ -891,8 +866,7 @@ class XMLParameterParser(
         if r_elem is not None:
             folder_name = str(r_elem.output_folder)
             return self._get_path("riemann_output_folder", folder_name)
-        else:
-            return ""
+        return ""
 
     @property
     def hex_attribute_file(self):
@@ -900,8 +874,7 @@ class XMLParameterParser(
         if r_elem is not None:
             file_name = str(r_elem.hex_attribute_file)
             return self._get_path("hex_attribute_file", file_name)
-        else:
-            return ""
+        return ""
 
     @property
     def hex_id_file(self):
@@ -909,8 +882,7 @@ class XMLParameterParser(
         if r_elem is not None:
             file_name = str(r_elem.hex_id_file)
             return self._get_path("hex_id_file", file_name)
-        else:
-            return ""
+        return ""
 
     @property
     def hex_statistics_file(self):
@@ -918,8 +890,7 @@ class XMLParameterParser(
         if r_elem is not None:
             file_name = str(r_elem.hex_statistics_file)
             return self._get_path("hex_statistics_file", file_name)
-        else:
-            return ""
+        return ""
 
     @property
     def riemann_hex_resolutions(self):
@@ -956,8 +927,7 @@ class XMLParameterParser(
         if ade is not None:
             if ade.find("validation_accuracy") is not None:
                 return ade.validation_accuracy
-            else:
-                return None
+        return None
 
     @property
     def validation_output_folder(self):
@@ -965,8 +935,7 @@ class XMLParameterParser(
         if v_elem is not None:
             folder_name = str(v_elem.output_folder)
             return self._get_path("validation_output_folder", folder_name)
-        else:
-            return ""
+        return ""
 
     @property
     def validation_attribute_file(self):
@@ -974,8 +943,7 @@ class XMLParameterParser(
         if v_elem is not None:
             file_name = str(v_elem.validation_attribute_file)
             return self._get_path("validation_attribute_file", file_name)
-        else:
-            return ""
+        return ""
 
     @property
     def include_in_report(self):
@@ -996,8 +964,7 @@ class XMLParameterParser(
     def oa_elem(self):
         if self.root.find("outlier_assessment") is not None:
             return self.root.outlier_assessment
-        else:
-            return None
+        return None
 
     @property
     def outlier_assessment_folder(self):
@@ -1011,8 +978,7 @@ class XMLParameterParser(
             return None
         if self.oa_elem.find("diagnostics") is not None:
             return self.oa_elem.diagnostics
-        else:
-            return None
+        return None
 
     @property
     def outlier_diagnostics(self):
@@ -1025,16 +991,14 @@ class XMLParameterParser(
             ode = self.outlier_diagnostics_element
             file_name = str(ode.nn_index_outlier.nn_index_outlier_file)
             return self._get_path("nn_index_outlier_file", file_name)
-        else:
-            return None
+        return None
 
     @property
     def index_threshold(self):
         if self.outlier_diagnostics:
             ode = self.outlier_diagnostics_element
             return float(ode.nn_index_outlier.index_threshold)
-        else:
-            return None
+        return None
 
     @property
     def vegclass_outlier_file(self):
@@ -1042,8 +1006,7 @@ class XMLParameterParser(
             ode = self.outlier_diagnostics_element
             file_name = str(ode.vegclass_outlier.vegclass_outlier_file)
             return self._get_path("vegclass_outlier_file", file_name)
-        else:
-            return None
+        return None
 
     @property
     def vegclass_variety_file(self):
@@ -1051,8 +1014,7 @@ class XMLParameterParser(
             ode = self.outlier_diagnostics_element
             file_name = str(ode.vegclass_variety.vegclass_variety_file)
             return self._get_path("vegclass_variety_file", file_name)
-        else:
-            return None
+        return None
 
     @property
     def deviation_variables(self):
@@ -1075,5 +1037,4 @@ class XMLParameterParser(
         if ode.find("variable_deviation_outlier") is not None:
             file_name = str(ode.variable_deviation_outlier.output_file)
             return self._get_path("variable_deviation_file", file_name)
-        else:
-            return ""
+        return ""

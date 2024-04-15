@@ -97,11 +97,7 @@ def kappa(m):
     diag_sum = np.diag(m).sum()
     total = m.sum()
     chance = (row_sums * col_sums / total).sum()
-    return (
-        (diag_sum - chance) / (total - chance)
-        if (total - chance) > 0.0
-        else 0.0
-    )
+    return (diag_sum - chance) / (total - chance) if (total - chance) > 0.0 else 0.0
 
 
 Classification = namedtuple("Classification", ["value", "name", "fuzzy_values"])
@@ -185,7 +181,7 @@ class Classifier:
         return natural_sort(self.d.keys())
 
 
-class KappaCalculator(object):
+class KappaCalculator:
     """
     Class to create and output kappa statistics from an error matrix
     including methods for fuzzy classification
@@ -234,11 +230,11 @@ class KappaCalculator(object):
             if key == "all":
                 continue
             v = self.kappa_values[key]
-            out_str += "%s,%.4f,%.4f\n" % (str(key), v["kappa"], v["fuzzy"])
+            out_str += f"{key:s},{v['kappa']:.4f},{v['fuzzy']:.4f}\n"
 
         # Print the values for all classes
         v = self.kappa_values["all"]
-        out_str += "%s,%.4f,%.4f\n" % ("ALL", v["kappa"], v["fuzzy"])
+        out_str += f"ALL,{v['kappa']:.4f},{v['fuzzy']:.4f}\n"
 
         return out_str
 
@@ -293,21 +289,13 @@ class KappaCalculator(object):
         for i in range(n_classes):
             j = rev_class_xwalk[i]
             self.kappa_values[j] = {}
-            self.kappa_values[j]["kappa"] = self._get_masked_kappa(
-                err_mat, mask, c=i
-            )
-            self.kappa_values[j]["fuzzy"] = self._get_masked_kappa(
-                err_mat, f_mask, c=i
-            )
+            self.kappa_values[j]["kappa"] = self._get_masked_kappa(err_mat, mask, c=i)
+            self.kappa_values[j]["fuzzy"] = self._get_masked_kappa(err_mat, f_mask, c=i)
 
         # Calculate kappa for the entire matrix
         self.kappa_values["all"] = {}
-        self.kappa_values["all"]["kappa"] = self._get_masked_kappa(
-            err_mat, mask
-        )
-        self.kappa_values["all"]["fuzzy"] = self._get_masked_kappa(
-            err_mat, f_mask
-        )
+        self.kappa_values["all"]["kappa"] = self._get_masked_kappa(err_mat, mask)
+        self.kappa_values["all"]["fuzzy"] = self._get_masked_kappa(err_mat, f_mask)
 
     @staticmethod
     def _get_masked_kappa(err_mat, mask, c=None):
@@ -363,17 +351,17 @@ class KappaCalculator(object):
             return kappa(m2)
 
         # All classes
-        else:
-            # Apply the mask to the data, so that all places where the mask
-            # is True, the counts in those off-diagonal bins get reclassified
-            # into the diagonal bin.  Do this row-wise as we have symmetry in
-            # fuzzy classes.
-            for i in range(err_mat.shape[0]):
-                for j in range(err_mat.shape[0]):
-                    if i != j and mask[i, j]:
-                        err_mat[i, i] += err_mat[i, j]
-                        err_mat[i, j] = 0
-            return kappa(err_mat)
+        #
+        # Apply the mask to the data, so that all places where the mask
+        # is True, the counts in those off-diagonal bins get reclassified
+        # into the diagonal bin.  Do this row-wise as we have symmetry in
+        # fuzzy classes.
+        for i in range(err_mat.shape[0]):
+            for j in range(err_mat.shape[0]):
+                if i != j and mask[i, j]:
+                    err_mat[i, i] += err_mat[i, j]
+                    err_mat[i, j] = 0
+        return kappa(err_mat)
 
     def to_csv(self, kappa_file):
         """
@@ -393,7 +381,7 @@ class KappaCalculator(object):
             kappa_fh.write(self.__repr__())
 
 
-class ErrorMatrix(object):
+class ErrorMatrix:
     """
     Class to create and output an error (confusion) matrix including
     methods for fuzzy classification

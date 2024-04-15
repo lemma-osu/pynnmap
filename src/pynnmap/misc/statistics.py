@@ -2,6 +2,7 @@
 This module defines a number of useful statistical routines for accuracy
 assessment between observed and predicted data sets.
 """
+
 import math
 
 import numpy as np
@@ -110,19 +111,13 @@ class BinaryErrorMatrix:
         self._counts[0, 0] = np.logical_and(x_float, y_float).sum()
 
         # Observed present and predicted absent
-        self._counts[0, 1] = np.logical_and(
-            x_float, np.logical_not(y_float)
-        ).sum()
+        self._counts[0, 1] = np.logical_and(x_float, np.logical_not(y_float)).sum()
 
         # Observed absent and predicted present
-        self._counts[1, 0] = np.logical_and(
-            np.logical_not(x_float), y_float
-        ).sum()
+        self._counts[1, 0] = np.logical_and(np.logical_not(x_float), y_float).sum()
 
         # Observed absent and predicted absent
-        self._counts[1, 1] = np.logical_not(
-            np.logical_or(x_float, y_float)
-        ).sum()
+        self._counts[1, 1] = np.logical_not(np.logical_or(x_float, y_float)).sum()
 
         # Total number of plots
         self._total = self._counts.sum()
@@ -176,8 +171,7 @@ class BinaryErrorMatrix:
         denominator = self._counts[0, 1] * self._counts[1, 0]
         if denominator == 0.0:
             return 1.0
-        else:
-            return (self._counts[0, 0] * self._counts[1, 1]) / denominator
+        return (self._counts[0, 0] * self._counts[1, 1]) / denominator
 
     def tss(self):
         """True skill statistic"""
@@ -193,11 +187,7 @@ class BinaryErrorMatrix:
             (p[1, 1] + p[0, 1]) * (p[1, 1] + p[1, 0])
         )
         p_correct = p[0, 0] + p[1, 1]
-        return (
-            (p_correct - p_chance) / (1.0 - p_chance)
-            if p_chance != 1.0
-            else 0.0
-        )
+        return (p_correct - p_chance) / (1.0 - p_chance) if p_chance != 1.0 else 0.0
 
 
 def _convert_to_float_array(x):

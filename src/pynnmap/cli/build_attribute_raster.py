@@ -8,10 +8,8 @@ import rasterio
 from affine import Affine
 from rasterio.windows import Window
 
-from pynnmap.parser import parameter_parser_factory as ppf
-from pynnmap.parser import xml_stand_metadata_parser as xsmp
+from ..parser import parameter_parser_factory as ppf
 from . import scalars
-
 
 # Weights
 K7_WEIGHTS = np.array([0.6321, 0.2325, 0.0855, 0.0315, 0.0116, 0.0043, 0.0016])
@@ -80,9 +78,7 @@ def weighted(id_arrs, attr_arr, weights):
 def generate_row_blocks(src, bounds):
     w = src.window(*bounds)
     c, r, w, h = map(int, w.flatten())
-    return (
-        Window.from_slices((r + x, r + x + 1), (c, c + w)) for x in range(h)
-    )
+    return (Window.from_slices((r + x, r + x + 1), (c, c + w)) for x in range(h))
 
 
 def process_raster(
@@ -111,7 +107,7 @@ def process_raster(
     for nn_window, nf_window, mask_window in zipped:
         # Extract the arrays
         nn_arrs = get_nn_arrays(nn_rasters, nn_window)
-        nf_arr = get_array(nf_raster, nf_window).astype(np.bool)
+        nf_arr = get_array(nf_raster, nf_window).astype(bool)
         mask_arr = get_array(mask_raster, mask_window)
 
         # Calculate the weighted value
@@ -130,9 +126,7 @@ def process_raster(
         out_arr = np.ma.masked_array(out_arr, mask=mask)
 
         # Write out array
-        out_raster.write(
-            out_arr.filled(nd).astype(dtype), 1, window=mask_window
-        )
+        out_raster.write(out_arr.filled(nd).astype(dtype), 1, window=mask_window)
 
 
 def main(params, attribute, model_fn="model.xml", k=None):

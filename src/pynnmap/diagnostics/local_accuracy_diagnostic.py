@@ -1,13 +1,12 @@
+from __future__ import annotations
+
 from collections import namedtuple
 
 import numpy as np
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.misc import statistics
-from pynnmap.misc import utilities
-from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
-from pynnmap.parser.xml_stand_metadata_parser import Flags
-
+from ..misc import statistics, utilities
+from ..parser.xml_stand_metadata_parser import Flags, XMLStandMetadataParser
+from . import diagnostic
 
 # Namedtuple to capture the local statistics
 LocalStatistics = namedtuple(
@@ -17,7 +16,7 @@ LocalStatistics = namedtuple(
 
 
 class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
-    _required = ["observed_file", "predicted_file", "stand_metadata_file"]
+    _required: list[str] = ["observed_file", "predicted_file", "stand_metadata_file"]
 
     def __init__(
         self,
@@ -95,11 +94,11 @@ class LocalAccuracyDiagnostic(diagnostic.Diagnostic):
                 # Print this out to the stats file
                 out_list = [
                     attr.field_name,
-                    "{:.6f}".format(stats.pearson_r),
-                    "{:.6f}".format(stats.spearman_r),
-                    "{:.6f}".format(stats.rmse),
-                    "{:.6f}".format(stats.std_rmse),
-                    "{:.6f}".format(stats.bias),
-                    "{:.6f}".format(stats.r2),
+                    f"{stats.pearson_r:.6f}",
+                    f"{stats.spearman_r:.6f}",
+                    f"{stats.rmse:.6f}",
+                    f"{stats.std_rmse:.6f}",
+                    f"{stats.bias:.6f}",
+                    f"{stats.r2:.6f}",
                 ]
                 stats_fh.write(",".join(out_list) + "\n")

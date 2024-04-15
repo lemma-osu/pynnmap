@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import itertools
+
 import numpy as np
 import pandas as pd
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.misc import interval_classification as ic
-from pynnmap.misc import utilities
-from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
-from pynnmap.parser.xml_stand_metadata_parser import Flags
+from ..misc import interval_classification as ic
+from ..misc import utilities
+from ..parser.xml_stand_metadata_parser import Flags, XMLStandMetadataParser
+from . import diagnostic
 
 
 def create_existing_bins(bin_file):
@@ -32,7 +34,7 @@ def get_error_matrix(obs_vals, prd_vals, intervals, return_bins=True):
 
 
 class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
-    _required = ["observed_file", "predicted_file", "stand_metadata_file"]
+    _required: list[str] = ["observed_file", "predicted_file", "stand_metadata_file"]
 
     _classifier = {
         "EQUAL_INTERVAL": ic.EqualIntervals,
@@ -107,19 +109,17 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
     def run_attr(self, attr, clf, return_bins=True):
         obs_vals = getattr(self.obs_df, attr.field_name)
         prd_vals = getattr(self.prd_df, attr.field_name)
-        return get_error_matrix(
-            obs_vals, prd_vals, clf, return_bins=return_bins
-        )
+        return get_error_matrix(obs_vals, prd_vals, clf, return_bins=return_bins)
 
     def run_diagnostic(self):
         # Open the error matrix file and print out the header line
         err_matrix_fh = open(self.error_matrix_file, "w")
-        err_matrix_fh.write(f"VARIABLE,OBSERVED_CLASS,PREDICTED_CLASS,COUNT\n")
+        err_matrix_fh.write("VARIABLE,OBSERVED_CLASS,PREDICTED_CLASS,COUNT\n")
 
         # Open the bin file and print out the header line
         if self.output_bin_file:
             bin_fh = open(self.output_bin_file, "w")
-            bin_fh.write(f"VARIABLE,CLASS,LOW,HIGH\n")
+            bin_fh.write("VARIABLE,CLASS,LOW,HIGH\n")
 
         # Read in the stand attribute metadata and get continuous
         # and categorical attributes
@@ -165,7 +165,7 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
                     out_list = [
                         attr.field_name,
                         f"{labels[i]}",
-                        "{:.4f}".format(start),
-                        "{:.4f}".format(end),
+                        f"{start:.4f}",
+                        f"{end:.4f}",
                     ]
                     bin_fh.write(",".join(out_list) + "\n")

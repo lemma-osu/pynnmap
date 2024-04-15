@@ -1,6 +1,6 @@
 import os
 
-from pynnmap.parser.xml_parameter_parser import XMLParameterParser
+from .xml_parameter_parser import XMLParameterParser
 
 
 def get_parameter_parser(parameter_file):

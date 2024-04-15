@@ -1,8 +1,10 @@
-from pynnmap.misc import utilities
+from __future__ import annotations
+
+from ..misc import utilities
 
 
-class Diagnostic(object):
-    _required = None
+class Diagnostic:
+    _required: list[str] = []
 
     def run_diagnostic(self):
         raise NotImplementedError

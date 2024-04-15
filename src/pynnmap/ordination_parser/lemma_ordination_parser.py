@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 import re
 import sys
-from typing import Sequence, Tuple
+from typing import Sequence
 
 import numpy as np
 
-from pynnmap.core.ordination_model import OrdinationModel
-from pynnmap.misc import parser
+from ..core.ordination_model import OrdinationModel
+from ..misc import parser
 
 
 class LemmaOrdinationParser(parser.Parser):
@@ -16,7 +18,7 @@ class LemmaOrdinationParser(parser.Parser):
         delimiter : str, optional
             Delimiter that separates fields in data sections
         """
-        super(LemmaOrdinationParser, self).__init__()
+        super().__init__()
         self.delimiter = delimiter
 
     def parse(self, ordination_file):
@@ -35,7 +37,7 @@ class LemmaOrdinationParser(parser.Parser):
         model : OrdinationModel instance
         """
         # Read the ordination file into a list
-        with open(ordination_file, "r") as ordination_fh:
+        with open(ordination_file) as ordination_fh:
             all_lines = ordination_fh.readlines()
 
         # Axis weights derived from eigenvalues
@@ -67,25 +69,19 @@ class LemmaOrdinationParser(parser.Parser):
         try:
             parser.assert_same_size(axis_weights, var_coeff[0])
         except parser.ParserError as e:
-            err_msg = (
-                "Number of axes differ between eigenvalues and coefficients"
-            )
+            err_msg = "Number of axes differ between eigenvalues and coefficients"
             raise parser.ParserError(err_msg) from e
 
         try:
             parser.assert_same_size(axis_weights, plot_scores[0])
         except parser.ParserError as e:
-            err_msg = (
-                "Number of axes differ between eigenvalues and plot scores"
-            )
+            err_msg = "Number of axes differ between eigenvalues and plot scores"
             raise parser.ParserError(err_msg) from e
 
         try:
             parser.assert_same_size(axis_weights, biplot_scores[0])
         except parser.ParserError as e:
-            err_msg = (
-                "Number of axes differ between eigenvalues and biplot scores"
-            )
+            err_msg = "Number of axes differ between eigenvalues and biplot scores"
             raise parser.ParserError(err_msg) from e
 
         return OrdinationModel(
@@ -134,7 +130,7 @@ class LemmaOrdinationParser(parser.Parser):
 
     def _get_coefficients(
         self, all_lines: Sequence[str]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Read in variable coefficients from ordination file (the result of
         multiple linear regression fit) and return variable names as a
@@ -171,9 +167,7 @@ class LemmaOrdinationParser(parser.Parser):
                 coefficients.append([float(x) for x in data[1:]])
         return np.array(var_names), np.array(coefficients)
 
-    def _get_means(
-        self, all_lines: Sequence[str]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _get_means(self, all_lines: Sequence[str]) -> tuple[np.ndarray, np.ndarray]:
         """
         Read in variable means from ordination file and return variable names
         as a 1 x n_variables array and variable means as a 1 x n_variables
@@ -210,7 +204,7 @@ class LemmaOrdinationParser(parser.Parser):
 
     def _get_species_scores(
         self, all_lines: Sequence[str]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Read in species scores from ordination file and return species names
         as a 1 x n_species array and species centroids as a n_species x
@@ -246,9 +240,7 @@ class LemmaOrdinationParser(parser.Parser):
                 species_scores.append([float(x) for x in data[1:]])
         return np.array(species_names), np.array(species_scores)
 
-    def _get_plots(
-        self, all_lines: Sequence[str]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _get_plots(self, all_lines: Sequence[str]) -> tuple[np.ndarray, np.ndarray]:
         """
         Read in plot IDs and scores from ordination file and return plot IDs as
         a 1 x n_plots array and plot scores as a n_plots x n_axes array.
@@ -293,7 +285,7 @@ class LemmaOrdinationParser(parser.Parser):
 
     def _get_biplot_scores(
         self, all_lines: Sequence[str]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Read in variable biplot scores from ordination file and return
         variable names as a 1 x n_variables array and ordination variable

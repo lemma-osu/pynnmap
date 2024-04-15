@@ -1,30 +1,27 @@
+from __future__ import annotations
+
 import os
 
 import numpy as np
 import pandas as pd
 
-from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
-from pynnmap.core.nn_finder import PixelNNFinder
-from pynnmap.core.stand_attributes import StandAttributes
-from pynnmap.diagnostics import diagnostic
-from pynnmap.diagnostics import local_accuracy_diagnostic as lad
-from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
-from pynnmap.misc.utilities import df_to_csv
-from pynnmap.parser import parameter_parser as pp
-from pynnmap.parser import xml_stand_metadata_parser as xsmp
+from ..core.attribute_predictor import ContinuousAttributePredictor
+from ..core.nn_finder import PixelNNFinder
+from ..core.stand_attributes import StandAttributes
+from ..misc.utilities import df_to_csv
+from ..parser import parameter_parser as pp
+from ..parser import xml_stand_metadata_parser as xsmp
+from . import diagnostic
+from . import local_accuracy_diagnostic as lad
+from . import vegetation_class_diagnostic as vcd
 
 
 class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
-    _required = [
-        "observed_file",
-        "stand_metadata_file",
-    ]
+    _required: list[str] = ["observed_file", "stand_metadata_file"]
 
     def __init__(self, **kwargs):
         if "parameters" not in kwargs:
-            raise NotImplementedError(
-                "Only ParameterParser objects may be passed."
-            )
+            raise NotImplementedError("Only ParameterParser objects may be passed.")
 
         p = kwargs["parameters"]
         if not isinstance(p, pp.ParameterParser):
@@ -88,9 +85,7 @@ class ValidationPlotsAccuracyDiagnostic(diagnostic.Diagnostic):
         )
 
         # Get the predicted attributes
-        df = attr_predictor.get_predicted_attributes_df(
-            predictions, self.id_field
-        )
+        df = attr_predictor.get_predicted_attributes_df(predictions, self.id_field)
 
         df_to_csv(df, self.predicted_file, index=True)
 

@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.misc import statistics
-from pynnmap.parser import xml_stand_metadata_parser as xsmp
+from ..misc import statistics
+from ..parser import xml_stand_metadata_parser as xsmp
+from . import diagnostic
 
 
 class SpeciesAccuracyDiagnostic(diagnostic.Diagnostic):
-    _required = ["observed_file", "predicted_file", "stand_metadata_file"]
+    _required: list[str] = ["observed_file", "predicted_file", "stand_metadata_file"]
 
     def __init__(
         self,
@@ -43,9 +45,7 @@ class SpeciesAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Subset the observed data just to the IDs that are in the
         # predicted file
-        obs_keep = np.in1d(
-            getattr(obs, self.id_field), getattr(prd, self.id_field)
-        )
+        obs_keep = np.in1d(getattr(obs, self.id_field), getattr(prd, self.id_field))
         obs = obs[obs_keep]
 
         # Read in the stand attribute metadata

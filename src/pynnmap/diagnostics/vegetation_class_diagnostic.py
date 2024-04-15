@@ -1,18 +1,20 @@
+from __future__ import annotations
+
 import os
 
 import numpy as np
 import pandas as pd
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.misc import classification_accuracy as ca
-from pynnmap.misc.utilities import df_to_csv
+from ..misc import classification_accuracy as ca
+from ..misc.utilities import df_to_csv
+from . import diagnostic
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 VEGCLASS_XML = os.path.join(BASEDIR, "vegclass.xml")
 
 
 class VegetationClassDiagnostic(diagnostic.Diagnostic):
-    _required = ["observed_file", "predicted_file"]
+    _required: list[str] = ["observed_file", "predicted_file"]
 
     qmd_breaks = np.array([0.0, 2.5, 25.0, 37.5, 50.0, 75.0])
     qmd_classes = np.array([1, 2, 3, 4, 5, 6])
@@ -136,9 +138,7 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
 
         # Subset the observed data just to the IDs that are in the
         # predicted file
-        obs_keep = np.in1d(
-            getattr(obs, self.id_field), getattr(prd, self.id_field)
-        )
+        obs_keep = np.in1d(getattr(obs, self.id_field), getattr(prd, self.id_field))
         obs = obs[obs_keep]
 
         # Calculate VEGCLASS for both the observed and predicted data

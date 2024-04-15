@@ -1,9 +1,9 @@
 import click
 
-from pynnmap.cli.cross_validate import run_cross_validate
-from pynnmap.core.nn_finder import PixelNNFinder
-from pynnmap.diagnostics import diagnostic_wrapper as dw
-from pynnmap.parser import parameter_parser_factory as ppf
+from ..core.nn_finder import PixelNNFinder
+from ..diagnostics import diagnostic_wrapper as dw
+from ..parser import parameter_parser_factory as ppf
+from .cross_validate import run_cross_validate
 
 
 @click.command(short_help="Find plot outliers based on user-defined tests")

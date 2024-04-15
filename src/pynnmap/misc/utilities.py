@@ -3,8 +3,7 @@ from urllib.request import urlopen
 
 import numpy as np
 import pandas as pd
-from lxml import etree
-from lxml import objectify
+from lxml import etree, objectify
 
 
 def df_to_csv(df, csv_file, index=False, n_dec=4):
@@ -31,15 +30,13 @@ def df_to_csv(df, csv_file, index=False, n_dec=4):
     # Strip any whitespace from character fields
     def strip_ws(x):
         return (
-            x.str.strip()
-            if x.dtype == "object" and isinstance(x.iloc[0], str)
-            else x
+            x.str.strip() if x.dtype == "object" and isinstance(x.iloc[0], str) else x
         )
 
     df = df.apply(strip_ws)
 
     # Convert to CSV
-    frmt = "%.{}f".format(n_dec)
+    frmt = f"%.{n_dec}f"
     df.to_csv(csv_file, index=index, float_format=frmt)
 
 
@@ -84,9 +81,7 @@ def pretty_print(node):
     return etree.tostring(node, pretty_print=True)
 
 
-def subset_lines_from_regex(
-    all_lines, start_re, end_re, skip_lines=0, flush=False
-):
+def subset_lines_from_regex(all_lines, start_re, end_re, skip_lines=0, flush=False):
     """
     Read a subset of a list (usually a file held in memory) based on a
     start and end regular expression.  The function returns all chunks

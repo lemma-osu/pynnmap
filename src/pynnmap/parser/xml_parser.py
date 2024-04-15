@@ -1,6 +1,6 @@
 from lxml import objectify
 
-from pynnmap.misc import utilities
+from ..misc import utilities
 
 
 class XMLParser:

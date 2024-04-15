@@ -1,8 +1,7 @@
 import click
 
-from pynnmap.core import ordination
-from pynnmap.parser import parameter_parser_factory as ppf
-
+from ..core import ordination
+from ..parser import parameter_parser_factory as ppf
 
 # Dictionary of ordination program and distance metric to type
 # of ordination object to instantiate

@@ -1,4 +1,4 @@
-from pynnmap.parser import xml_parser
+from ..parser import xml_parser
 
 
 class XMLContact:
@@ -95,23 +95,6 @@ class XMLOrdinationVariable:
 
 
 class XMLReportMetadataParser(xml_parser.XMLParser):
-    def __init__(self, xml_file_name):
-        """
-        Initialize the XMLReportMetadataParser object by setting a
-        reference to the XML parameter file.
-
-        Parameters
-        ----------
-        xml_file_name : file
-            name and location of XML report metadata parameter file
-
-        Returns
-        -------
-        None
-        """
-
-        super(XMLReportMetadataParser, self).__init__(xml_file_name)
-
     @property
     def model_region_area(self):
         return float(self.root.overview.model_region_area)
@@ -144,9 +127,7 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def plot_data_sources(self):
         try:
             data_sources_elem = self.root.plot_data_sources
-            return [
-                XMLPlotDataSource(x) for x in data_sources_elem.iterchildren()
-            ]
+            return [XMLPlotDataSource(x) for x in data_sources_elem.iterchildren()]
         except AttributeError:
             return []
 
@@ -154,9 +135,7 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def species_names(self):
         try:
             species_names_elem = self.root.species_names
-            return [
-                XMLSpeciesName(x) for x in species_names_elem.iterchildren()
-            ]
+            return [XMLSpeciesName(x) for x in species_names_elem.iterchildren()]
         except AttributeError:
             return []
 
@@ -169,8 +148,6 @@ class XMLReportMetadataParser(xml_parser.XMLParser):
     def ordination_variables(self):
         try:
             ord_var_elem = self.root.ordination_variables
-            return [
-                XMLOrdinationVariable(x) for x in ord_var_elem.iterchildren()
-            ]
+            return [XMLOrdinationVariable(x) for x in ord_var_elem.iterchildren()]
         except AttributeError:
             return []

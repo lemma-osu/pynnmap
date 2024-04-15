@@ -2,11 +2,11 @@ import re
 
 import numpy as np
 
-from pynnmap.misc import interval_classification as ic
-from pynnmap.misc.weighted_array import WeightedArray
+from ..misc import interval_classification as ic
+from ..misc.weighted_array import WeightedArray
 
 
-class HistogramBC(object):
+class HistogramBC:
     """
     Class to store the bins (B) and counts (C) of data that has been
     binned into histograms.  This should be an abstract super class.
@@ -47,10 +47,7 @@ class ContinuousHistogramBC(HistogramBC):
     """
 
     def __init__(self, bin_counts, bin_endpoints, name="SERIES"):
-        # Call the HistogramBC constructor first
-        super(ContinuousHistogramBC, self).__init__(
-            bin_counts, bin_endpoints, name
-        )
+        super().__init__(bin_counts, bin_endpoints, name)
 
         # Create class labels from the endpoints of the bins
         self.bin_names = []
@@ -73,10 +70,7 @@ class CategoricalHistogramBC(HistogramBC):
     """
 
     def __init__(self, bin_counts, bin_endpoints, bin_names, name="SERIES"):
-        # Call the HistogramBC constructor first
-        super(CategoricalHistogramBC, self).__init__(
-            bin_counts, bin_endpoints, name
-        )
+        super().__init__(bin_counts, bin_endpoints, name)
 
         # Create class labels from the passed argument
         self.bin_names = list(bin_names)
@@ -151,11 +145,7 @@ def bin_categorical(*datasets, code_dict=None):
         # Figure out the unique values in these datasets
         all_unique = []
         for ds in datasets:
-            a = (
-                np.unique(ds.values)
-                if isinstance(ds, WeightedArray)
-                else np.unique(ds)
-            )
+            a = np.unique(ds.values) if isinstance(ds, WeightedArray) else np.unique(ds)
             all_unique.extend(list(a))
         codes = np.unique([int(x) for x in all_unique])
         code_dict = {i: str(i) for i in codes}
@@ -185,8 +175,6 @@ def bin_categorical(*datasets, code_dict=None):
         # Create a new CategoricalHistogramBC instance and append
         # to histogram_data
         code_names = [code_dict[k] for k in sorted(code_dict.keys())]
-        histogram_data.append(
-            CategoricalHistogramBC(counts, endpoints, code_names)
-        )
+        histogram_data.append(CategoricalHistogramBC(counts, endpoints, code_names))
 
     return histogram_data

@@ -1,22 +1,20 @@
+from __future__ import annotations
+
 import os
-from collections import namedtuple, OrderedDict
+from collections import OrderedDict, namedtuple
 
 import numpy as np
 import pandas as pd
 
-from pynnmap.core import (
-    get_independence_filter,
-    get_id_list,
-)
-from pynnmap.core.attribute_predictor import ContinuousAttributePredictor
-from pynnmap.core.nn_finder import PixelNNFinder
-from pynnmap.core.prediction_output import subset_neighbors
-from pynnmap.core.stand_attributes import StandAttributes
-from pynnmap.diagnostics import diagnostic
-from pynnmap.misc.utilities import df_to_csv
-from pynnmap.parser import xml_stand_metadata_parser as xsmp
-from pynnmap.parser.xml_stand_metadata_parser import Flags
-
+from ..core import get_id_list, get_independence_filter
+from ..core.attribute_predictor import ContinuousAttributePredictor
+from ..core.nn_finder import PixelNNFinder
+from ..core.prediction_output import subset_neighbors
+from ..core.stand_attributes import StandAttributes
+from ..misc.utilities import df_to_csv
+from ..parser import xml_stand_metadata_parser as xsmp
+from ..parser.xml_stand_metadata_parser import Flags
+from . import diagnostic
 
 RiemannComparison = namedtuple(
     "RiemannComparison", ["prefix", "obs_file", "prd_file", "id_field", "k"]
@@ -35,7 +33,7 @@ class ECDF:
             return (self.observations <= x).mean()
 
 
-class RiemannVariable(object):
+class RiemannVariable:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -111,7 +109,7 @@ class RiemannVariable(object):
 
 
 class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
-    _required = ["hex_attribute_file", "hex_id_file"]
+    _required: list[str] = ["hex_attribute_file", "hex_id_file"]
 
     def __init__(self, parameter_parser):
         self.parameter_parser = p = parameter_parser
@@ -178,9 +176,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         # Create a plot attribute predictor instance
         model_attr_fn = p.stand_attribute_file
         model_attr_data = StandAttributes(model_attr_fn, mp, id_field=id_field)
-        plot_attr_predictor = ContinuousAttributePredictor(
-            model_attr_data, fltr
-        )
+        plot_attr_predictor = ContinuousAttributePredictor(model_attr_data, fltr)
 
         # Iterate over values of k to calculate plot-pixel values
         for k, w in k_values:
@@ -192,7 +188,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 w = np.array(w).reshape(1, len(w)).T
 
             # Construct the output file name
-            file_name = "plot_pixel_predicted_k{k}.csv".format(k=k)
+            file_name = f"plot_pixel_predicted_k{k}.csv"
             output_file = os.path.join(root_dir, "plot_pixel", file_name)
 
             # Subset neighbors to just this k
@@ -251,7 +247,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 agg_df = grouped.agg(stat_fields).rename(
                     columns={id_field: "PLOT_COUNT"}
                 )
-                agg_df = agg_df[agg_df.PLOT_COUNT >= min_plots_per_hex]
+                agg_df = agg_df[min_plots_per_hex <= agg_df.PLOT_COUNT]
                 df_to_csv(agg_df, obs_out_file, index=True)
 
             # Iterate over values of k for the predicted values
@@ -274,7 +270,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                     agg_df = grouped.agg(stat_fields).rename(
                         columns={id_field: "PLOT_COUNT"}
                     )
-                    agg_df = agg_df[agg_df.PLOT_COUNT >= min_plots_per_hex]
+                    agg_df = agg_df[min_plots_per_hex <= agg_df.PLOT_COUNT]
                     df_to_csv(agg_df, prd_out_file, index=True)
 
         # Calculate the ECDF and AC statistics
@@ -300,9 +296,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             for k, _ in k_values:
                 prd_file = f"{prefix}_predicted_k{k}_mean.csv"
                 prd_file = os.path.join(root_dir, prefix, prd_file)
-                r = RiemannComparison(
-                    prefix, obs_file, prd_file, hex_id_field, k
-                )
+                r = RiemannComparison(prefix, obs_file, prd_file, hex_id_field, k)
                 compare_list.append(r)
 
         # Add the plot_pixel comparisons to this list

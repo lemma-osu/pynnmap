@@ -3,14 +3,11 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 
-from pynnmap.core import get_independence_filter
-from pynnmap.core.attribute_predictor import (
-    subset_neighbors,
-    calculate_predicted_attributes,
-)
-from pynnmap.core.stand_attributes import StandAttributes
-from pynnmap.misc.utilities import df_to_csv
-from pynnmap.parser import xml_stand_metadata_parser as xsmp
+from ..misc.utilities import df_to_csv
+from ..parser import xml_stand_metadata_parser as xsmp
+from . import get_independence_filter
+from .attribute_predictor import calculate_predicted_attributes, subset_neighbors
+from .stand_attributes import StandAttributes
 
 
 class PredictionOutput(ABC):

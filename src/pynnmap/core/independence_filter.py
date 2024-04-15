@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 
-class IndependenceFilter(object):
+class IndependenceFilter:
     def __init__(self, d):
         self._filter = d
 
@@ -15,9 +15,9 @@ class IndependenceFilter(object):
         zipped = list(zip(id_list, lookup_list))
         d = dict(zipped)
         reverse_d = defaultdict(list)
-        for i, l in zipped:
-            reverse_d[l].append(i)
-        d2 = {i: reverse_d[l] for i, l in d.items()}
+        for id_, lookup in zipped:
+            reverse_d[lookup].append(id_)
+        d2 = {id_: reverse_d[lookup] for id_, lookup in d.items()}
         return cls(d2)
 
     def mask(self, target, seq):

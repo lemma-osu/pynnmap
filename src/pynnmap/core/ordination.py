@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import os
 from dataclasses import dataclass
-from typing import List
 
 import numpy as np
 import pandas as pd
 
-from pynnmap.misc import numpy_ordination
+from ..misc import numpy_ordination
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 VEGAN_SCRIPT = os.path.join(BASEDIR, "gnn_vegan.r")
@@ -15,7 +16,7 @@ VEGAN_SCRIPT = os.path.join(BASEDIR, "gnn_vegan.r")
 class OrdinationParameters:
     spp_file: str
     env_file: str
-    variables: List[str]
+    variables: list[str]
     id_field: str
     species_downweighting: bool
     species_transform: str
@@ -34,7 +35,7 @@ class OrdinationParameters:
         )
 
 
-class Ordination(object):
+class Ordination:
     def __init__(self, parameters: OrdinationParameters):
         self.parameters = parameters
 

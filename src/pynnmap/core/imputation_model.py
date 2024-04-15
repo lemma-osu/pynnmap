@@ -2,10 +2,8 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 
-class ImputationModel(object):
-    def __init__(
-        self, ord_model, n_axes=8, use_weightings=True, max_neighbors=100
-    ):
+class ImputationModel:
+    def __init__(self, ord_model, n_axes=8, use_weightings=True, max_neighbors=100):
         # Ensure that n_axes isn't larger than the number of axes in our
         # ordination model
         self.n_axes = n_axes
@@ -22,14 +20,12 @@ class ImputationModel(object):
         if use_weightings:
             self.ax_weights = np.diag(np.sqrt(ord_model.axis_weights[:n_axes]))
         else:
-            self.ax_weights = np.diag(np.ones(n_axes, dtype=np.float))
+            self.ax_weights = np.diag(np.ones(n_axes, dtype=float))
 
         # Set up the ANN model
         # Use the parameter 'max_neighbors' to determine how many neighbors
         # to return
-        plot_scores = np.dot(
-            ord_model.plot_scores[:, 0:n_axes], self.ax_weights
-        )
+        plot_scores = np.dot(ord_model.plot_scores[:, 0:n_axes], self.ax_weights)
         self.nn_finder = NearestNeighbors(n_neighbors=max_neighbors)
         self.nn_finder.fit(plot_scores)
 

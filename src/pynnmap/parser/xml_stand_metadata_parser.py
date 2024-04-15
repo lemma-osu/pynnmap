@@ -1,7 +1,7 @@
-from pynnmap.parser import xml_parser
+from ..parser import xml_parser
 
 
-class Flags(object):
+class Flags:
     CONTINUOUS = 1
     CATEGORICAL = 2
     CHARACTER = 4
@@ -43,7 +43,7 @@ class XMLFuzzyClass:
         return self.root.fuzzy_class
 
 
-class XMLAttributeField(object):
+class XMLAttributeField:
     def __init__(self, elem):
         self.root = elem
 

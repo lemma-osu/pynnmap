@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import pandas as pd
 
-from pynnmap.diagnostics import diagnostic
-from pynnmap.diagnostics import vegetation_class_diagnostic as vcd
-from pynnmap.misc.utilities import df_to_csv
+from ..misc.utilities import df_to_csv
+from . import diagnostic
+from . import vegetation_class_diagnostic as vcd
 
 # Define the classes of vegetation class outliers.  Red outliers represent
 # large differences between observed and predicted vegetation classes, with
@@ -54,15 +56,15 @@ def find_vegclass_outlier_class(rec):
     observed, predicted = rec["OBSERVED"], rec["PREDICTED"]
     if predicted in YELLOW_OUTLIERS[observed]:
         return "yellow"
-    elif predicted in ORANGE_OUTLIERS[observed]:
+    if predicted in ORANGE_OUTLIERS[observed]:
         return "orange"
-    elif predicted in RED_OUTLIERS[observed]:
+    if predicted in RED_OUTLIERS[observed]:
         return "red"
     return "green"
 
 
 class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
-    _required = [
+    _required: list[str] = [
         "observed_file",
         "dependent_predicted_file",
         "independent_predicted_file",
@@ -83,9 +85,7 @@ class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
 
         # Create a instance of the VegetationClassDiagnostic to calculate
         # vegetation class
-        self.vc_calc = vcd.VegetationClassDiagnostic.from_parameter_parser(
-            parameters
-        )
+        self.vc_calc = vcd.VegetationClassDiagnostic.from_parameter_parser(parameters)
 
         self.check_missing_files()
 
@@ -104,9 +104,7 @@ class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
             prd_df.reset_index(inplace=True)
 
             # Calculate VEGCLASS for both the observed and predicted data
-            vc_df = self.vc_calc.vegclass_aa(
-                obs_df, prd_df, id_field=self.id_field
-            )
+            vc_df = self.vc_calc.vegclass_aa(obs_df, prd_df, id_field=self.id_field)
             vc_df.columns = [self.id_field, "OBSERVED", "PREDICTED"]
 
             # Find the outliers
