@@ -210,7 +210,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Create the fields for which to extract statistics at the hexagon
         # levels
-        mean_list = [(id_field, len), *[(x, np.mean) for x in attrs]]
+        mean_list = [(id_field, len), *[(x, "mean") for x in attrs]]
         mean_dict = OrderedDict(mean_list)
 
         sd_list = [(id_field, len), *[(x, lambda i: np.std(i)) for x in attrs]]
@@ -278,12 +278,6 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         # and predicted data.  We do this at each value of k and for each
         # hex resolution level.
 
-        # Open the stats file
-        stats_file = p.hex_statistics_file
-        stats_fh = open(stats_file, "w")
-        header_fields = ["LEVEL", "K", "VARIABLE", "STATISTIC", "VALUE"]
-        stats_fh.write(",".join(header_fields) + "\n")
-
         # Create a list of RiemannComparison instances which store the
         # information needed to do comparisons between observed and predicted
         # files for any level or value of k
@@ -310,6 +304,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             compare_list.append(r)
 
         # Do all the comparisons
+        statistics_data = []
         for c in compare_list:
             obs_data = pd.read_csv(c.obs_file)
             prd_data = pd.read_csv(c.prd_file)
@@ -328,6 +323,12 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                 rv = RiemannVariable(arr1, arr2)
 
                 gmfr_stats = rv.gmfr_statistics()
+                ks_stats = rv.ks_statistics()
+                statistics_data.append((c, attr, gmfr_stats, ks_stats))
+
+        with open(p.hex_statistics_file, "w") as statistics_fh:
+            statistics_fh.write("LEVEL,K,VARIABLE,STATISTIC,VALUE\n")
+            for c, attr, gmfr_stats, ks_stats in statistics_data:
                 for stat in ("gmfr_a", "gmfr_b", "ac", "ac_sys", "ac_uns"):
                     stat_line = "%s,%d,%s,%s,%.4f\n" % (
                         c.prefix.upper(),
@@ -336,9 +337,8 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                         stat.upper(),
                         gmfr_stats[stat],
                     )
-                    stats_fh.write(stat_line)
+                    statistics_fh.write(stat_line)
 
-                ks_stats = rv.ks_statistics()
                 for stat in ("ks_max", "ks_mean"):
                     stat_line = "%s,%d,%s,%s,%.4f\n" % (
                         c.prefix.upper(),
@@ -347,4 +347,4 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
                         stat.upper(),
                         ks_stats[stat],
                     )
-                    stats_fh.write(stat_line)
+                    statistics_fh.write(stat_line)

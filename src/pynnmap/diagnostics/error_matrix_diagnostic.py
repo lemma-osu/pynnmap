@@ -112,15 +112,6 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
         return get_error_matrix(obs_vals, prd_vals, clf, return_bins=return_bins)
 
     def run_diagnostic(self):
-        # Open the error matrix file and print out the header line
-        err_matrix_fh = open(self.error_matrix_file, "w")
-        err_matrix_fh.write("VARIABLE,OBSERVED_CLASS,PREDICTED_CLASS,COUNT\n")
-
-        # Open the bin file and print out the header line
-        if self.output_bin_file:
-            bin_fh = open(self.output_bin_file, "w")
-            bin_fh.write("VARIABLE,CLASS,LOW,HIGH\n")
-
         # Read in the stand attribute metadata and get continuous
         # and categorical attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
@@ -128,6 +119,8 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
         attrs.extend(mp.filter(Flags.CATEGORICAL | Flags.ACCURACY))
 
         # For each attribute, calculate the statistics
+        error_matrix_data = []
+        bin_data = []
         for attr in attrs:
             if self.attr_missing(attr):
                 continue
@@ -144,28 +137,41 @@ class ErrorMatrixDiagnostic(diagnostic.Diagnostic):
                     continue
                 clf = self.clf_dict[attr.field_name]
                 err_mat = self.run_attr(attr, clf, return_bins=False)
+                bins = None
 
-            rows, cols = err_mat.shape
             labels = list(err_mat.index)
-            for j, i in itertools.product(range(cols), range(rows)):
-                out_list = [
-                    attr.field_name,
-                    f"{labels[i]}",
-                    f"{labels[j]}",
-                    f"{err_mat.iat[i, j]}",
-                ]
-                err_matrix_fh.write(",".join(out_list) + "\n")
+            error_matrix_data.append((attr.field_name, err_mat))
+            bin_data.append((attr.field_name, labels, bins))
 
-            if self.output_bin_file:
-                for i in range(len(labels)):
-                    try:
-                        start, end = bins[i], bins[i + 1]
-                    except IndexError:
-                        start, end = bins[i], bins[i] + 1
+        with open(self.error_matrix_file, "w") as error_matrix_fh:
+            error_matrix_fh.write("VARIABLE,OBSERVED_CLASS,PREDICTED_CLASS,COUNT\n")
+            for attr_name, err_mat in error_matrix_data:
+                rows, cols = err_mat.shape
+                labels = list(err_mat.index)
+                for j, i in itertools.product(range(cols), range(rows)):
                     out_list = [
-                        attr.field_name,
+                        attr_name,
                         f"{labels[i]}",
-                        f"{start:.4f}",
-                        f"{end:.4f}",
+                        f"{labels[j]}",
+                        f"{err_mat.iat[i, j]}",
                     ]
-                    bin_fh.write(",".join(out_list) + "\n")
+                    error_matrix_fh.write(",".join(out_list) + "\n")
+
+        if self.output_bin_file:
+            with open(self.output_bin_file, "w") as bin_fh:
+                bin_fh.write("VARIABLE,CLASS,LOW,HIGH\n")
+                for attr_name, labels, bins in bin_data:
+                    if bins is None:
+                        continue
+                    for i in range(len(labels)):
+                        try:
+                            start, end = bins[i], bins[i + 1]
+                        except IndexError:
+                            start, end = bins[i], bins[i] + 1
+                        out_list = [
+                            attr_name,
+                            f"{labels[i]}",
+                            f"{start:.4f}",
+                            f"{end:.4f}",
+                        ]
+                        bin_fh.write(",".join(out_list) + "\n")

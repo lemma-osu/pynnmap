@@ -76,17 +76,12 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
             p.olofsson_file,
         )
 
-    @staticmethod
-    def write_records(fh, attr_name, bin_names, mapped, adjusted, se_adjusted):
-        for record in zip(cycle([attr_name]), bin_names, mapped, adjusted, se_adjusted):
-            fh.write("{:s},{:s},{:.4f},{:.4f},{:.4f}\n".format(*record))
-
     def attr_missing(self, attr):
         if attr.field_name not in self.error_matrix_df.VARIABLE.values:
             return True
         return attr.field_name not in self.regional_df.VARIABLE.values
 
-    def run_attr(self, attr, fh):
+    def run_attr(self, attr):
         fn = attr.field_name
         em_df = self.error_matrix_df
         area_df = self.regional_df
@@ -101,14 +96,12 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         bin_names = np.array(area_df[conds].BIN_NAME.iloc[2:])
         mapped = np.array(area_df[conds].AREA.iloc[2:])
         olofsson = ErrorAdjustment(err_matrix, mapped)
-        self.write_records(
-            fh,
-            fn,
-            bin_names,
-            mapped,
-            olofsson.adjusted_areas(),
-            olofsson.confidence_intervals(),
-        )
+        return [fn, bin_names, mapped, olofsson]
+
+    @staticmethod
+    def write_records(fh, attr_name, bin_names, mapped, adjusted, se_adjusted):
+        for record in zip(cycle([attr_name]), bin_names, mapped, adjusted, se_adjusted):
+            fh.write("{:s},{:s},{:.4f},{:.4f},{:.4f}\n".format(*record))
 
     def run_diagnostic(self):
         # Read in the stand attribute metadata and get continuous
@@ -119,12 +112,22 @@ class OlofssonDiagnostic(diagnostic.Diagnostic):
         )
         attrs.extend(mp.filter(Flags.CATEGORICAL | Flags.ACCURACY | Flags.PROJECT))
 
-        # Write header line
-        olofsson_fh = open(self.olofsson_file, "w")
-        olofsson_fh.write("VARIABLE,CLASS,MAPPED,ADJUSTED,CI_ADJUSTED\n")
-
         # For each attribute, calculate the statistics
+        statistics_data = []
         for attr in attrs:
             if self.attr_missing(attr):
                 continue
-            self.run_attr(attr, olofsson_fh)
+            statistics_data.append(self.run_attr(attr))
+
+        with open(self.olofsson_file, "w") as olofsson_fh:
+            olofsson_fh.write("VARIABLE,CLASS,MAPPED,ADJUSTED,CI_ADJUSTED\n")
+            for data in statistics_data:
+                attr_name, bin_names, mapped, olofsson = data
+                self.write_records(
+                    olofsson_fh,
+                    attr_name,
+                    bin_names,
+                    mapped,
+                    olofsson.adjusted_areas(),
+                    olofsson.confidence_intervals(),
+                )

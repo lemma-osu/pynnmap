@@ -141,17 +141,6 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         # Get the weights for the observed data
         obs_weights = obs_area.HECTARES
 
-        # Open the output file and print out the header line
-        statistics_file = self.parameter_parser.regional_accuracy_file
-        stats_fh = open(statistics_file, "w")
-        header_fields = ["VARIABLE", "DATASET", "BIN_NAME", "AREA"]
-        stats_fh.write(",".join(header_fields) + "\n")
-
-        # Open the classification bin file and print out the header line
-        bin_file = self.parameter_parser.regional_bin_file
-        bin_fh = open(bin_file, "w")
-        bin_fh.write("VARIABLE,CLASS,LOW,HIGH\n")
-
         # Get the metadata parser and get the project area attributes
         mp = XMLStandMetadataParser(self.stand_metadata_file)
         attrs = mp.filter(
@@ -166,6 +155,8 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
         # Iterate over all fields and print out the area histogram statistics
         prd_ns_ha = 0.0
         needs_conversion = (False, True)
+        statistics_data = []
+        bin_data = []
         for attr in attrs:
             print(attr.field_name)
 
@@ -196,14 +187,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             # in constructing the error matrix for Olofsson error-based
             # area adjustment
             obs_bins = bins[0]
-            for i in range(len(obs_bins.bin_endpoints) - 1):
-                out_list = [
-                    attr.field_name,
-                    f"{i + 1:d}",
-                    f"{obs_bins.bin_endpoints[i]:.4f}",
-                    f"{obs_bins.bin_endpoints[i + 1]:.4f}",
-                ]
-                bin_fh.write(",".join(out_list) + "\n")
+            bin_data.append((attr.field_name, obs_bins.bin_endpoints))
 
             # If bins need to be converted to hectares, do that here
             for d, convert_flag in zip(bins, needs_conversion):
@@ -216,13 +200,30 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             self.insert_class(bins[1], "Unsampled", prd_ns_ha)
             self.insert_class(bins[1], "Nonforest", prd_nf_ha)
 
-            for b in bins:
-                for i in range(len(b.bin_counts)):
-                    out_data = (
-                        f"{attr.field_name:s},"
-                        f"{b.name:s},{b.bin_names[i]:s},{b.bin_counts[i]:.3f}\n"
-                    )
-                    stats_fh.write(out_data)
+            statistics_data.append((attr.field_name, bins))
+
+        with open(self.parameter_parser.regional_accuracy_file, "w") as statistics_fh:
+            statistics_fh.write("VARIABLE,DATASET,BIN_NAME,AREA\n")
+            for attr_name, bins in statistics_data:
+                for b in bins:
+                    for i in range(len(b.bin_counts)):
+                        out_data = (
+                            f"{attr_name:s},"
+                            f"{b.name:s},{b.bin_names[i]:s},{b.bin_counts[i]:.3f}\n"
+                        )
+                        statistics_fh.write(out_data)
+
+        with open(self.parameter_parser.regional_bin_file, "w") as bin_fh:
+            bin_fh.write("VARIABLE,CLASS,LOW,HIGH\n")
+            for attr_name, bin_endpoints in bin_data:
+                for i in range(len(bin_endpoints) - 1):
+                    out_list = [
+                        attr_name,
+                        f"{i + 1:d}",
+                        f"{bin_endpoints[i]:.4f}",
+                        f"{bin_endpoints[i + 1]:.4f}",
+                    ]
+                    bin_fh.write(",".join(out_list) + "\n")
 
     def exclude_forest_minority(self, current_ids):
         ae_df = pd.read_csv(

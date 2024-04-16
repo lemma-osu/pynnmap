@@ -481,14 +481,15 @@ class XMLParameterParser(xml_parser.XMLParser, parameter_parser.ParameterParser)
             return str(ov_elem.getchildren()[0])
         if model_year is None:
             model_year = self.model_year
-        v_list = []
-        for v in ov_elem.getchildren():
-            if v.get("variable_type") == "STATIC":
-                v_list.append((str(v.variable_name), str(v.variable_path)))
-            elif v.get("variable_type") == "TEMPORAL":
-                if int(v.get("model_year")) == model_year:
-                    v_list.append((str(v.variable_name), str(v.variable_path)))
-        return v_list
+        return [
+            (str(x.variable_name), str(x.variable_path))
+            for x in ov_elem.getchildren()
+            if x.get("variable_type") == "STATIC"
+            or (
+                x.get("variable_type") == "TEMPORAL"
+                and int(x.get("model_year")) == model_year
+            )
+        ]
 
     def set_ordination_variables(self, records):
         new_ov_elem = objectify.Element("ordination_variables")
@@ -924,9 +925,8 @@ class XMLParameterParser(xml_parser.XMLParser, parameter_parser.ParameterParser)
     @property
     def validation_element(self):
         ade = self.accuracy_diagnostics_element
-        if ade is not None:
-            if ade.find("validation_accuracy") is not None:
-                return ade.validation_accuracy
+        if ade is not None and ade.find("validation_accuracy") is not None:
+            return ade.validation_accuracy
         return None
 
     @property

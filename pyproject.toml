@@ -82,11 +82,11 @@ select = [
     "FA",
     "UP",
     "ISC",
-    # "PT",
+    "PT",
     "NPY",
     "Q",
     "RET",
-    # "SIM",
+    "SIM",
     "PERF",
 ]
 

@@ -55,12 +55,12 @@ def test_num_rows(default_obj):
 
 
 def test_incorrect_id_field(attr_fn, metadata_parser):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Index .* invalid"):
         _ = StandAttributes(attr_fn, metadata_parser, id_field="FOO")
 
 
 def test_missing_metadata(attr_fn_missing_metadata, metadata_parser, id_field):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Metadata fields .* are missing"):
         _ = StandAttributes(
             attr_fn_missing_metadata, metadata_parser, id_field=id_field
         )
