@@ -4,7 +4,8 @@ from collections import defaultdict
 
 import numpy as np
 import pandas as pd
-from osgeo import gdal, gdalconst
+import rasterio
+from rasterio.windows import Window
 
 from ..misc import footprint
 from ..ordination_parser import lemma_ordination_parser
@@ -78,23 +79,20 @@ def get_variable_info(parser, years):
             try:
                 raster_counts[path] += 1
             except KeyError:
-                ds = gdal.Open(path, gdalconst.GA_ReadOnly)
+                ds = rasterio.open(path)
                 raster_dict[path] = [ds, False]
                 raster_counts[path] = 1
     return ord_year_var_dict, raster_counts, raster_dict
 
 
-def get_footprint_values(ds, windows, band=1):
-    gt = ds.GetGeoTransform()
-    band = ds.GetRasterBand(band)
-    return {k: get_footprint_value(v, band, gt) for k, v in windows.items()}
+def get_footprint_values(ds: rasterio.DatasetReader, windows, band=1):
+    return {k: get_footprint_value(v, ds, band=band) for k, v in windows.items()}
 
 
-def get_footprint_value(window, band, gt):
+def get_footprint_value(window, ds: rasterio.DatasetReader, band: int = 1):
     x_min, y_max, x_size, y_size = window
-    col = int((x_min - gt[0]) / gt[1])
-    row = int((y_max - gt[3]) / gt[5])
-    return band.ReadAsArray(col, row, x_size, y_size)
+    row, col = ds.index(x_min, y_max)
+    return ds.read(band, window=Window(col, row, x_size, y_size))
 
 
 def extract_footprints(

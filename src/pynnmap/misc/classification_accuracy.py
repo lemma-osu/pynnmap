@@ -230,7 +230,7 @@ class KappaCalculator:
             if key == "all":
                 continue
             v = self.kappa_values[key]
-            out_str += f"{key:s},{v['kappa']:.4f},{v['fuzzy']:.4f}\n"
+            out_str += f"{key:d},{v['kappa']:.4f},{v['fuzzy']:.4f}\n"
 
         # Print the values for all classes
         v = self.kappa_values["all"]
