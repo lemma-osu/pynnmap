@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "Python based nearest neighbor mapping"
 readme = "README.md"
 license = ""
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     { name = "Matt Gregory", email = "matt.gregory@oregonstate.edu" },
     { name = "Heather Roberts", email = "heather.roberts@oregonstate.edu" },
@@ -17,6 +17,7 @@ dependencies = [
     "affine",
     "click",
     "click_plugins",
+    "importlib_metadata",
     "jenkspy",
     "lxml",
     "matplotlib",
@@ -65,11 +66,18 @@ dependencies = ["pytest", "pytest-cov"]
 all = "pytest . {args} --doctest-modules"
 coverage = "pytest . --cov=src/pynnmap {args} --doctest-modules"
 
+[tool.hatch.envs.test_matrix]
+template = "test"
+
+[[tool.hatch.envs.test_matrix.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12"]
+
 [tool.pytest.ini_options]
 pythonpath = "src/"
+testpaths = ["tests/"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 fix = true
 show-fixes = true
 

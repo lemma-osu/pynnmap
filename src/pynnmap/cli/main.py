@@ -1,7 +1,6 @@
-from importlib.metadata import entry_points
-
 import click
 from click_plugins import with_plugins
+from importlib_metadata import entry_points
 
 from ..__about__ import __version__
 
