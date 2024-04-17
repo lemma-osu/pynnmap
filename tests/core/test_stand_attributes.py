@@ -1,36 +1,35 @@
 import pytest
 
 from pynnmap.core.stand_attributes import StandAttributes
-from pynnmap.parser.xml_stand_metadata_parser import XMLStandMetadataParser
-from pynnmap.parser.xml_stand_metadata_parser import Flags
+from pynnmap.parser.xml_stand_metadata_parser import Flags, XMLStandMetadataParser
 
 
-@pytest.fixture
+@pytest.fixture()
 def attr_fn():
     return "tests/data/stand_attr.csv"
 
 
-@pytest.fixture
+@pytest.fixture()
 def attr_xml_fn():
     return "tests/data/stand_attr.xml"
 
 
-@pytest.fixture
+@pytest.fixture()
 def metadata_parser(attr_xml_fn):
     return XMLStandMetadataParser(attr_xml_fn)
 
 
-@pytest.fixture
+@pytest.fixture()
 def id_field():
     return "FCID"
 
 
-@pytest.fixture
+@pytest.fixture()
 def default_obj(attr_fn, metadata_parser, id_field):
     return StandAttributes(attr_fn, metadata_parser, id_field=id_field)
 
 
-@pytest.fixture
+@pytest.fixture()
 def attr_fn_missing_metadata():
     return "tests/data/stand_attr_missing_metadata.csv"
 
@@ -56,12 +55,12 @@ def test_num_rows(default_obj):
 
 
 def test_incorrect_id_field(attr_fn, metadata_parser):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Index .* invalid"):
         _ = StandAttributes(attr_fn, metadata_parser, id_field="FOO")
 
 
 def test_missing_metadata(attr_fn_missing_metadata, metadata_parser, id_field):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Metadata fields .* are missing"):
         _ = StandAttributes(
             attr_fn_missing_metadata, metadata_parser, id_field=id_field
         )

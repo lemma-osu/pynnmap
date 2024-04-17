@@ -1,3 +1,102 @@
-[tool.black]
-line-length = 80
-preview = true
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pynnmap"
+dynamic = ["version"]
+description = "Python based nearest neighbor mapping"
+readme = "README.md"
+license = ""
+requires-python = ">=3.9"
+authors = [
+    { name = "Matt Gregory", email = "matt.gregory@oregonstate.edu" },
+    { name = "Heather Roberts", email = "heather.roberts@oregonstate.edu" },
+]
+dependencies = [
+    "affine",
+    "click",
+    "click_plugins",
+    "importlib_metadata",
+    "jenkspy",
+    "lxml",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "patsy",
+    "pydantic",
+    "rasterio",
+    "rpy2",
+    "scikit-learn",
+    "scipy",
+]
+
+[project.scripts]
+pynnmap = "pynnmap.cli.main:main_group"
+
+[project.entry-points.pynnmap]
+build_attribute_raster = "pynnmap.cli.build_attribute_raster:main"
+build_model = "pynnmap.cli.build_model:main"
+cross_validate = "pynnmap.cli.cross_validate:main"
+find_outliers = "pynnmap.cli.find_outliers:main"
+impute = "pynnmap.cli.impute:main"
+new_targets = "pynnmap.cli.new_targets:main"
+run_diagnostics = "pynnmap.cli.run_diagnostics:main"
+
+[project.urls]
+Homepage = "https://github.com/lemma-osu/pynnmap"
+Source = "https://github.com/lemma-osu/pynnmap"
+
+[tool.hatch.version]
+path = "src/pynnmap/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pynnmap"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src"]
+
+[tool.hatch.envs.default]
+dependencies = ["pre-commit"]
+
+[tool.hatch.envs.test]
+dependencies = ["pytest", "pytest-cov"]
+
+[tool.hatch.envs.test.scripts]
+all = "pytest . {args} --doctest-modules"
+coverage = "pytest . --cov=src/pynnmap {args} --doctest-modules"
+
+[tool.hatch.envs.test_matrix]
+template = "test"
+
+[[tool.hatch.envs.test_matrix.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12"]
+
+[tool.pytest.ini_options]
+pythonpath = "src/"
+testpaths = ["tests/"]
+
+[tool.ruff]
+target-version = "py39"
+fix = true
+show-fixes = true
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "I",
+    "F",
+    "B",
+    "FA",
+    "UP",
+    "ISC",
+    "PT",
+    "NPY",
+    "Q",
+    "RET",
+    "SIM",
+    "PERF",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pynnmap"]

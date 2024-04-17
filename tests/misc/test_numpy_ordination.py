@@ -1,7 +1,8 @@
-import pytest
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
+import pytest
 from patsy import dmatrix
 
 from pynnmap.misc.numpy_ordination import NumpyCCA
@@ -9,7 +10,20 @@ from pynnmap.misc.numpy_ordination import NumpyCCA
 RESOURCE_DIR = Path(__file__).parent / "../data"
 
 
-@pytest.fixture
+def svd_flip_axes(arr1, arr2):
+    """Check if two arrays are equal, allowing for sign differences in columns."""
+    if arr1.shape[1] != arr2.shape[1]:
+        raise ValueError("Arrays must have the same number of columns")
+
+    for i in range(arr1.shape[1]):
+        if not np.allclose(arr1[:, i], arr2[:, i]) and not np.allclose(
+            arr1[:, i], -arr2[:, i]
+        ):
+            return False
+    return True
+
+
+@pytest.fixture()
 def model_data():
     def get_df(fn):
         return pd.read_csv(fn, index_col="ID")
@@ -25,23 +39,23 @@ def model_data():
     return X, np.array(Y)
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_model(model_data):
     X, Y = model_data
     return NumpyCCA(Y, X)
 
 
-@pytest.fixture
+@pytest.fixture()
 def eigenvalues():
     return np.array([0.31874900, 0.23718475, 0.13216523, 0.09167888])
 
 
-@pytest.fixture
+@pytest.fixture()
 def environmental_means():
     return np.array([4.6849635, 0.3109489, 0.2204380, 0.2978102])
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_Y_r():
     return np.array(
         [
@@ -69,7 +83,7 @@ def cca_Y_r():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_q():
     return np.array(
         [
@@ -97,7 +111,7 @@ def cca_q():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_r():
     return np.array(
         [
@@ -109,7 +123,7 @@ def cca_r():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_u():
     return np.array(
         [
@@ -137,7 +151,7 @@ def cca_u():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_wa():
     return np.array(
         [
@@ -165,7 +179,7 @@ def cca_wa():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_v():
     return np.array(
         [
@@ -203,7 +217,7 @@ def cca_v():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_biplot():
     return np.array(
         [
@@ -215,7 +229,7 @@ def cca_biplot():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_coefficients():
     # R - coef(ord)
     return np.array(
@@ -228,7 +242,7 @@ def cca_coefficients():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_species_scores():
     # R - scores(ord, choices=1:4)
     return np.array(
@@ -267,7 +281,7 @@ def cca_species_scores():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def cca_species_tolerances():
     # R - tolerance(ord, choices = 1:4, useN2 = FALSE)
     return np.array(
@@ -344,29 +358,27 @@ def test_cca_qr(cca_model: NumpyCCA, cca_q: np.ndarray, cca_r: np.ndarray):
 
 
 def test_cca_u(cca_model: NumpyCCA, cca_u: np.ndarray):
-    assert np.allclose(cca_model.u, cca_u)
+    assert svd_flip_axes(cca_model.u, cca_u)
 
 
 def test_cca_wa(cca_model: NumpyCCA, cca_wa: np.ndarray):
-    assert np.allclose(cca_model.wa, cca_wa)
+    assert svd_flip_axes(cca_model.wa, cca_wa)
 
 
 def test_cca_v(cca_model: NumpyCCA, cca_v: np.ndarray):
-    assert np.allclose(cca_model.v, cca_v)
+    assert svd_flip_axes(cca_model.v, cca_v)
 
 
 def test_cca_biplot(cca_model: NumpyCCA, cca_biplot: np.ndarray):
-    assert np.allclose(cca_model.biplot_scores(), cca_biplot)
+    assert svd_flip_axes(cca_model.biplot_scores(), cca_biplot)
 
 
 def test_cca_coefficients(cca_model: NumpyCCA, cca_coefficients: np.ndarray):
-    assert np.allclose(cca_model.coefficients(), cca_coefficients)
+    assert svd_flip_axes(cca_model.coefficients(), cca_coefficients)
 
 
-def test_cca_species_scores(
-    cca_model: NumpyCCA, cca_species_scores: np.ndarray
-):
-    assert np.allclose(cca_model.species_centroids(), cca_species_scores)
+def test_cca_species_scores(cca_model: NumpyCCA, cca_species_scores: np.ndarray):
+    assert svd_flip_axes(cca_model.species_centroids(), cca_species_scores)
 
 
 def test_cca_species_tolerances(
@@ -376,32 +388,8 @@ def test_cca_species_tolerances(
 
 
 def test_site_lc_scores(cca_model: NumpyCCA, cca_u: np.ndarray):
-    assert np.allclose(cca_model.site_lc_scores(), cca_u)
+    assert svd_flip_axes(cca_model.site_lc_scores(), cca_u)
 
 
 def test_site_wa_scores(cca_model: NumpyCCA, cca_wa: np.ndarray):
-    assert np.allclose(cca_model.site_wa_scores(), cca_wa)
-
-
-# properties, methods from NumpyCCA
-# y_r - Tested
-# q - Tested
-# r - Tested
-# u_raw - Tested (by way of biplot_scores)
-# rank - Tested
-# eigenvalues - Tested
-# env_means - Tested
-# u - Tested
-# v - Tested
-# wa - Tested
-# u_eig - Might not be needed
-# v_eig - Might not be needed
-# wa_eig - Might not be needed
-# biplot_scores() - Tested
-# coefficients() - Tested
-# species_centroids() - Tested (might rename to species_scores?)
-# species_tolerances() - Tested
-# species_information()
-# site_lc_scores() - Tested (redundant with u)
-# site_wa_scores() - Tested (redundant with wa)
-# site_information()
+    assert svd_flip_axes(cca_model.site_wa_scores(), cca_wa)
