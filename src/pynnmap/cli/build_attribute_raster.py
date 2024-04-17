@@ -129,7 +129,7 @@ def process_raster(
         out_raster.write(out_arr.filled(nd).astype(dtype), 1, window=mask_window)
 
 
-def main(params, attribute, model_fn="model.xml", k=None):
+def _main(params, attribute, model_fn="model.xml", k=None):
     attr_name = attribute.lower()
 
     # Get the value of k if not defined
@@ -200,7 +200,7 @@ def main(params, attribute, model_fn="model.xml", k=None):
     show_default=True,
     help="Number of neighbors",
 )
-def cli_main(parameter_file, attribute, k):
+def main(parameter_file, attribute, k):
     # Read in the parameters
     params = ppf.get_parameter_parser(parameter_file)
-    main(params, attribute, parameter_file, k)
+    _main(params, attribute, parameter_file, k)

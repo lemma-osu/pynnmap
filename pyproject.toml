@@ -35,12 +35,12 @@ dependencies = [
 pynnmap = "pynnmap.cli.main:main_group"
 
 [project.entry-points.pynnmap]
-build_attribute_raster = "pynnmap.cli.build_attribute_raster:cli_main"
-build_model = "pynnmap.cli.build_model:build_model"
-cross_validate = "pynnmap.cli.cross_validate:cross_validate"
-find_outliers = "pynnmap.cli.find_outliers:find_outliers"
-impute = "pynnmap.cli.impute:impute"
-new_targets = "pynnmap.cli.new_targets:new_targets"
+build_attribute_raster = "pynnmap.cli.build_attribute_raster:main"
+build_model = "pynnmap.cli.build_model:main"
+cross_validate = "pynnmap.cli.cross_validate:main"
+find_outliers = "pynnmap.cli.find_outliers:main"
+impute = "pynnmap.cli.impute:main"
+new_targets = "pynnmap.cli.new_targets:main"
 run_diagnostics = "pynnmap.cli.run_diagnostics:main"
 
 [project.urls]

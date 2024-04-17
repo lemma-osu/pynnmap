@@ -14,9 +14,11 @@ ORD_DICT = {
 }
 
 
-@click.command(short_help="Build transformation model from spp/env data")
+@click.command(
+    name="build-model", short_help="Build transformation model from spp/env data"
+)
 @click.argument("parameter-file", type=click.Path(exists=True), required=True)
-def build_model(parameter_file):
+def main(parameter_file):
     # Read in the parameters
     p = ppf.get_parameter_parser(parameter_file)
 

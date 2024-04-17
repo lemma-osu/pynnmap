@@ -6,9 +6,11 @@ from ..parser import parameter_parser_factory as ppf
 from .cross_validate import run_cross_validate
 
 
-@click.command(short_help="Find plot outliers based on user-defined tests")
+@click.command(
+    name="find-outliers", short_help="Find plot outliers based on user-defined tests"
+)
 @click.argument("parameter-file", type=click.Path(exists=True), required=True)
-def find_outliers(parameter_file):
+def main(parameter_file):
     # Get the model parameters
     parser = ppf.get_parameter_parser(parameter_file)
 

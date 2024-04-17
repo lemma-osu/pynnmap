@@ -21,7 +21,7 @@ def run_cross_validate(parser, finder):
     output.write_nn_index_file(neighbor_data, parser.dependent_nn_index_file)
 
 
-@click.command(short_help="Accuracy assessment for model plots")
+@click.command(name="cross-validate", short_help="Accuracy assessment for model plots")
 @click.option(
     "--scale",
     type=click.Choice(["PIXEL", "PLOT"], case_sensitive=False),
@@ -29,7 +29,7 @@ def run_cross_validate(parser, finder):
     help="Calculate accuracy at pixel or plot scale",
 )
 @click.argument("parameter-file", type=click.Path(exists=True), required=True)
-def cross_validate(scale, parameter_file):
+def main(scale, parameter_file):
     # Get the model parameters
     pixel_scale = scale == "PIXEL"
     parser = ppf.get_parameter_parser(parameter_file)

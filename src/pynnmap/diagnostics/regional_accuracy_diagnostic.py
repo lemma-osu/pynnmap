@@ -168,7 +168,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             fn = f"./attribute_rasters/{attr.field_name.lower()}.tif"
             if not os.path.exists(fn):
                 print(f"Building {attr.field_name} raster ...")
-                build_attribute_raster.main(self.parameter_parser, attr.field_name)
+                build_attribute_raster._main(self.parameter_parser, attr.field_name)
 
             # Get predicted areas from predicted rasters that should be
             # pre-generated
