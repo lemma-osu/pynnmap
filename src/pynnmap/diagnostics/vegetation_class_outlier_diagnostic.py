@@ -72,7 +72,7 @@ class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
 
     def __init__(self, parameters):
         self.observed_file = parameters.stand_attribute_file
-        self.vegclass_outlier_file = parameters.vegclass_outlier_file
+        self.outlier_filename = parameters.vegclass_outlier_file
         self.id_field = parameters.plot_id_field
 
         # Create a list of predicted files - both independent and dependent
@@ -127,4 +127,4 @@ class VegetationClassOutlierDiagnostic(diagnostic.Diagnostic):
 
         # Merge together the dfs and export
         out_df = pd.concat(out_dfs)
-        df_to_csv(out_df, self.vegclass_outlier_file)
+        df_to_csv(out_df, self.outlier_filename)
