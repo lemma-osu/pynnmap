@@ -11,7 +11,7 @@ class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
 
     def __init__(self, parameters):
         self.nn_index_file = parameters.dependent_nn_index_file
-        self.nn_index_outlier_file = parameters.nn_index_outlier_file
+        self.outlier_filename = parameters.nn_index_outlier_file
         self.index_threshold = parameters.index_threshold
         self.id_field = parameters.plot_id_field
 
@@ -26,4 +26,4 @@ class NNIndexOutlierDiagnostic(diagnostic.Diagnostic):
         in_df = in_df[self.index_threshold <= in_df.AVERAGE_POSITION]
 
         # Write out the resulting recarray
-        df_to_csv(in_df, self.nn_index_outlier_file)
+        df_to_csv(in_df, self.outlier_filename)
