@@ -45,7 +45,7 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
         p = parameters
         self.stand_attr_file = p.stand_attribute_file
         self.id_field = p.plot_id_field
-        self.output_filename = p.vegclass_variety_file
+        self.outlier_filename = p.vegclass_variety_file
 
         # Create a list of zonal_pixel files - both independent and dependent
         self.dependent_zonal_pixel_file = p.dependent_zonal_pixel_file
@@ -96,4 +96,4 @@ class VegetationClassVarietyDiagnostic(diagnostic.Diagnostic):
 
         # Merge together the dfs and export
         out_df = pd.concat(dfs)
-        df_to_csv(out_df, self.output_filename)
+        df_to_csv(out_df, self.outlier_filename)
