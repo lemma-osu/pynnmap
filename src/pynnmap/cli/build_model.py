@@ -11,6 +11,7 @@ ORD_DICT = {
     ("vegan", "DBRDA"): ordination.VeganDBRDAOrdination,
     ("numpy", "CCA"): ordination.NumpyCCAOrdination,
     ("numpy", "RDA"): ordination.NumpyRDAOrdination,
+    ("sknnr", "CCA"): ordination.SknnrCCAOrdination,
 }
 
 
