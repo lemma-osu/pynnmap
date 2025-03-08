@@ -28,6 +28,7 @@ dependencies = [
     "rpy2",
     "scikit-learn",
     "scipy",
+    "sknnr",
 ]
 
 [project.scripts]
@@ -56,10 +57,15 @@ packages = ["src/pynnmap"]
 include = ["/src"]
 
 [tool.hatch.envs.default]
-dependencies = ["pre-commit"]
+dependencies = [
+    "pre-commit",
+]
 
 [tool.hatch.envs.test]
-dependencies = ["pytest", "pytest-cov"]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+]
 
 [tool.hatch.envs.test.scripts]
 all = "pytest . {args} --doctest-modules"
