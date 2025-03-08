@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+from sknnr.transformers import CCATransformer
 
 from ..misc import numpy_ordination
 
@@ -212,3 +213,133 @@ class NumpyCCAOrdination(NumpyOrdination):
 class NumpyRDAOrdination(NumpyOrdination):
     ordination_cls = numpy_ordination.NumpyRDA
     ordination_prefix = "RDA"
+
+
+class SknnrCCAOrdination(Ordination):
+    def run(self):
+        # Read in the species and environment matrices
+        spp_df = pd.read_csv(self.parameters.spp_file)
+        env_df = pd.read_csv(self.parameters.env_file)
+
+        # Extract the plot IDs from both the species and environment matrices
+        # and ensure that they are equal
+        spp_plot_ids = spp_df[self.parameters.id_field]
+        env_plot_ids = env_df[self.parameters.id_field]
+        if not np.all(spp_plot_ids == env_plot_ids):
+            err_msg = "Species and environment plot IDs do not match"
+            raise ValueError(err_msg)
+
+        # Drop the ID column from both dataframes
+        spp_df.drop(labels=[self.parameters.id_field], axis=1, inplace=True)
+        env_df.drop(labels=[self.parameters.id_field], axis=1, inplace=True)
+
+        # For the environment matrix, only keep the variables specified
+        env_df = env_df[self.parameters.variables]
+
+        # Convert these matrices to pure floating point arrays
+        spp = spp_df.values.astype(float)
+        env = env_df.values.astype(float)
+
+        # Apply transformation if desired
+        if self.parameters.species_transform == "SQRT":
+            spp = np.sqrt(spp)
+        elif self.parameters.species_transform == "LOG":
+            spp = np.log(spp)
+
+        # Create the transformation object
+        cca = CCATransformer().fit(env, spp)
+        prefix = "CCA"
+        rank = cca.ordination_.rank
+
+        def header_str(prefix, rank):
+            return ",".join([f"{prefix}{i+1}" for i in range(rank)])
+
+        with open(self.parameters.ordination_file, "w") as ordination_fh:
+            # Eigenvalues
+            ordination_fh.write("### Eigenvalues ###\n")
+            for i, e in enumerate(cca.ordination_.eigenvalues):
+                ordination_fh.write(f"{prefix}{i+1},{e:.8f}\n")
+            ordination_fh.write("\n")
+
+            # Print out variable means
+            ordination_fh.write("### Variable Means ###\n")
+            for i, m in enumerate(cca.ordination_.env_center):
+                ordination_fh.write(f"{self.parameters.variables[i]},{m:.5f}\n")
+            ordination_fh.write("\n")
+
+            # Print out environmental coefficients loadings
+            ordination_fh.write("### Coefficient Loadings ###\n")
+            ordination_fh.write(f"VARIABLE,{header_str(prefix, rank)}\n")
+            for i, c in enumerate(cca.ordination_.coefficients):
+                coeff = ",".join([f"{x:.11f}" for x in c])
+                ordination_fh.write(f"{self.parameters.variables[i]},{coeff}\n")
+            ordination_fh.write("\n")
+
+            # Print out biplot scores
+            ordination_fh.write("### Biplot Scores ###\n")
+            ordination_fh.write(f"VARIABLE,{header_str(prefix, rank)}\n")
+            for i, b in enumerate(cca.ordination_.biplot_scores):
+                scores = ",".join([f"{x:.9f}" for x in b])
+                ordination_fh.write(f"{self.parameters.variables[i]},{scores}\n")
+            ordination_fh.write("\n")
+
+            # Print out species centroids
+            ordination_fh.write("### Species Centroids ###\n")
+            ordination_fh.write(f"SPECIES,{header_str(prefix, rank)}\n")
+            for i, c in enumerate(cca.ordination_.species_scores):
+                scores = ",".join([f"{x:.9f}" for x in c])
+                ordination_fh.write(f"{spp_df.columns[i]},{scores}\n")
+            ordination_fh.write("\n")
+
+            # Print out species tolerances
+            ordination_fh.write("### Species Tolerances ###\n")
+            ordination_fh.write(f"SPECIES,{header_str(prefix, rank)}\n")
+            for i, t in enumerate(cca.ordination_.species_tolerances):
+                scores = ",".join([f"{x:.6f}" for x in t])
+                ordination_fh.write(f"{spp_df.columns[i]},{scores}\n")
+            ordination_fh.write("\n")
+
+            # TODO: This belongs in sknnr
+            species_weights = np.sum(spp, axis=0)
+            a = np.square(np.divide(spp, species_weights))
+            species_n2 = 1.0 / a.sum(axis=0)
+
+            # Print out miscellaneous species information
+            ordination_fh.write("### Miscellaneous Species Information ###\n")
+            ordination_fh.write("SPECIES,WEIGHT,N2\n")
+            for i in range(len(species_weights)):
+                column = spp_df.columns[i]
+                weight = f"{species_weights[i]:.5f}"
+                n2 = f"{species_n2[i]:.5f}"
+                ordination_fh.write(f"{column},{weight},{n2}\n")
+            ordination_fh.write("\n")
+
+            # Print out site LC scores
+            ordination_fh.write("### Site LC Scores ###\n")
+            ordination_fh.write(f"ID,{header_str(prefix, rank)}\n")
+            for i, s in enumerate(cca.ordination_.site_lc_scores):
+                scores = ",".join([f"{x:.11f}" for x in s])
+                ordination_fh.write(f"{spp_plot_ids[i]},{scores}\n")
+            ordination_fh.write("\n")
+
+            # Print out site WA scores
+            ordination_fh.write("### Site WA Scores ###\n")
+            ordination_fh.write(f"ID,{header_str(prefix, rank)}\n")
+            for i, s in enumerate(cca.ordination_.site_wa_scores):
+                scores = ",".join([f"{x:.10f}" for x in s])
+                ordination_fh.write(f"{spp_plot_ids[i]},{scores}\n")
+            ordination_fh.write("\n")
+
+            # TODO: This belongs in sknnr
+            site_weights = np.sum(spp, axis=1)
+            a = np.square(np.divide(spp, np.expand_dims(site_weights, axis=1)))
+            site_n2 = 1.0 / a.sum(axis=1)
+
+            # Miscellaneous site information
+            ordination_fh.write("### Miscellaneous Site Information ###\n")
+            ordination_fh.write("ID,WEIGHT,N2\n")
+            for i in range(len(site_weights)):
+                plot = spp_plot_ids[i]
+                weight = f"{site_weights[i]:.6f}"
+                n2 = f"{site_n2[i]:.6f}"
+                ordination_fh.write(f"{plot},{weight},{n2}\n")
