@@ -205,11 +205,6 @@ class NumpyOrdination(Ordination):
                 numpy_fh.write(f"{plot},{weight},{n2}\n")
 
 
-class NumpyCCAOrdination(NumpyOrdination):
-    ordination_cls = numpy_ordination.NumpyCCA
-    ordination_prefix = "CCA"
-
-
 class NumpyRDAOrdination(NumpyOrdination):
     ordination_cls = numpy_ordination.NumpyRDA
     ordination_prefix = "RDA"
