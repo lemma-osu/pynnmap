@@ -177,7 +177,7 @@ class ConstrainedOrdinationOutputWriterMixin:
     def write_eigenvalues(self, fh, eigenvalues):
         fh.write("### Eigenvalues ###\n")
         for i, e in enumerate(eigenvalues):
-            fh.write(f"{self.prefix}{i+1},{e:.10f}\n")
+            fh.write(f"{self.prefix}{i+1},{e:.8f}\n")
         fh.write("\n")
 
     def write_variable_means(self, fh, env_names, variable_means):
@@ -191,8 +191,8 @@ class ConstrainedOrdinationOutputWriterMixin:
         fh.write("SPECIES,WEIGHT,N2\n")
         for i in range(len(species_weights)):
             column = species_names[i]
-            weight = f"{species_weights[i]:.10f}"
-            n2 = f"{species_n2[i]:.10f}"
+            weight = f"{species_weights[i]:.5f}"
+            n2 = f"{species_n2[i]:.5f}"
             fh.write(f"{column},{weight},{n2}\n")
         fh.write("\n")
 
@@ -201,8 +201,8 @@ class ConstrainedOrdinationOutputWriterMixin:
         fh.write("ID,WEIGHT,N2\n")
         for i in range(len(site_weights)):
             plot = plot_ids[i]
-            weight = f"{site_weights[i]:.10f}"
-            n2 = f"{site_n2[i]:.10f}"
+            weight = f"{site_weights[i]:.6f}"
+            n2 = f"{site_n2[i]:.6f}"
             fh.write(f"{plot},{weight},{n2}\n")
 
     def write_cca_section(
