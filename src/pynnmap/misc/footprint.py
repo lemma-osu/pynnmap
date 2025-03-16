@@ -1,6 +1,7 @@
 import re
 
 import numpy as np
+from numpy.typing import NDArray
 
 from ..misc import parser
 
@@ -10,7 +11,7 @@ class FootprintError(Exception):
 
 
 class Footprint:
-    def __init__(self, key, kernel, cell_size):
+    def __init__(self, key: str, kernel: NDArray, cell_size: float):
         self.key = key
         kernel = np.array(kernel)
         self.cell_size = cell_size
@@ -39,9 +40,9 @@ class Footprint:
         out_str = ""
         out_str += self.__class__.__name__ + "\n"
         out_str += f'Key = "{self.key}"\n'
-        out_str += "Cellsize = %.2f\n" % self.cell_size
-        out_str += "Number of rows = %d\n" % self.n_rows
-        out_str += "Number of columns = %d\n" % self.n_cols
+        out_str += f"Cellsize = {self.cell_size:.2f}\n"
+        out_str += f"Number of rows = {self.n_rows}\n"
+        out_str += f"Number of columns = {self.n_cols}\n"
         out_str += str(self.kernel())
         return out_str
 
@@ -95,7 +96,7 @@ class Footprint:
             fp_coords.append((x_off, y_off))
         return fp_coords
 
-    def window(self, point):
+    def window(self, point: tuple[float, float]) -> tuple[float, float, int, int]:
         """
         Given a 2D coordinate, return the upper left corner coordinate and
         footprint window size.  This is used for more efficient extraction of
@@ -121,7 +122,7 @@ class Footprint:
 
 
 class FootprintParser(parser.Parser):
-    def parse(self, fp_file):
+    def parse(self, fp_file: str) -> dict[str, Footprint]:
         """
         Parse a footprint file and return the set of all footprints
 
@@ -144,19 +145,30 @@ class FootprintParser(parser.Parser):
         # Get all footprints from and write them to individual Footprint
         # instances.  Push each of these to a footprint dictionary (fp_dict)
         fp_dict = {}
-        key = None
-        cell_size = None
         chunks = self.read_chunks(
             all_lines, fp_start, self.blank_re, skip_lines=0, flush=True
         )
         for chunk in chunks:
             pixels = []
+            key = None
+            cell_size = None
             for i, line in enumerate(chunk):
                 if i == 0:
-                    key, n_rows, n_cols, cell_size = line.strip().split()
+                    parts = line.strip().split()
+                    if len(parts) != 4:
+                        raise ValueError(f"Invalid header format in chunk: {line}")
+                    key, _, _, cell_size_str = parts
+                    key = str(key)
+                    try:
+                        cell_size = float(cell_size_str)
+                    except ValueError as exc:
+                        raise ValueError(f"Invalid cell size: {cell_size_str}") from exc
+
                 else:
                     pixels.append([int(x) for x in line.strip().split()])
-            fp_dict[key] = Footprint(key, np.array(pixels), float(cell_size))
+            if key is None or cell_size is None:
+                raise ValueError("Missing key or cell size for this chunk.")
 
-        # Return this dictionary
+            fp_dict[key] = Footprint(key, np.array(pixels), cell_size)
+
         return fp_dict

@@ -1,20 +1,39 @@
+from __future__ import annotations
+
 import copy
 from abc import ABC, abstractmethod
 from collections import defaultdict
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
 import rasterio
+from numpy.typing import NDArray
 from rasterio.windows import Window
 
 from ..misc import footprint
 from ..ordination_parser import lemma_ordination_parser
 from . import get_id_year_crosswalk
-from . import imputation_model as im
+from .imputation_model import ImputationModel
 
 
-def get_year_id_crosswalk(id_x_year):
-    # Create a dictionary of all plots associated with each model year
+@dataclass
+class DatasetStatus:
+    """
+    Simple dataclass to store the handle of a rasterio.Dataset and
+    whether it has been processed for all footprints.
+    """
+
+    dataset: rasterio.DatasetReader
+    processed: bool
+
+
+def get_year_id_crosswalk(
+    id_x_year: dict[int, int],
+) -> tuple[NDArray, NDArray, dict[int, list[int]]]:
+    """
+    Create a dictionary of all plots associated with each model year.
+    """
     id_vals, years = id_x_year.keys(), id_x_year.values()
     id_vals, years = map(lambda x: np.unique(list(x)), (id_vals, years))
     year_ids = defaultdict(list)
@@ -23,31 +42,49 @@ def get_year_id_crosswalk(id_x_year):
     return id_vals, years, year_ids
 
 
-def get_model_plots(coordinate_file, id_vals, id_field):
+def get_model_plots(
+    coordinate_file: str, id_vals: NDArray, id_field: str
+) -> pd.DataFrame:
+    """
+    Get the coordinates for the plots in id_vals.
+    """
     coords = pd.read_csv(coordinate_file)
     id_arr = getattr(coords, id_field)
     return coords[np.isin(id_arr, id_vals)]
 
 
-def parse_footprints(coord_list, fp_file, id_field):
-    fp_parser = footprint.FootprintParser()
-    fp_dict = fp_parser.parse(fp_file)
-    fp_offsets = {}
-    fp_windows = {}
-    for rec in coord_list.itertuples():
+def parse_footprints(
+    coordinate_df: pd.DataFrame, footprint_path: str, id_field: str
+) -> dict[int, tuple[float, float, int, int]]:
+    """
+    Parse the footprint file and return a dictionary of footprint windows
+    in the format of (x_min, y_max, x_size, y_size) keyed by ID.
+    """
+    footprint_parser = footprint.FootprintParser()
+    footprint_dict = footprint_parser.parse(footprint_path)
+    footprint_windows = {}
+    for rec in coordinate_df.itertuples():
         id_val = getattr(rec, id_field)
         ds, x, y = rec.DATA_SOURCE, rec.X_COORD, rec.Y_COORD
-        fp_offsets[id_val] = fp_dict[ds].offsets
-        fp_windows[id_val] = fp_dict[ds].window((x, y))
-    return fp_offsets, fp_windows
+        footprint_windows[id_val] = footprint_dict[ds].window((x, y))
+    return footprint_windows
 
 
-def get_variable_info(parser, years):
+def get_variable_info(
+    parser, years: NDArray
+) -> tuple[
+    dict[int, dict[str, str]],
+    dict[str, int],
+    dict[str, DatasetStatus],
+]:
+    """
+    Get information about the ordination variables for each year.
+    """
     # This section extracts the ordination variable information from the
     # model XML files and creates a dict of year/variable combinations.
     # Once this dict is created, we only need to extract the spatial data
     # from the unique set of values in this dict and use this crosswalk
-    # to get to those values.  This should be efficient from GDAL's
+    # to get to those values.  This should be efficient from a spatial processing
     # perspective to avoid cache thrashing.
     #
     # However, because we don't need all ordination variable's values for
@@ -59,12 +96,12 @@ def get_variable_info(parser, years):
     #
     # For all other variables, we wait until we have a subset of the coords
     # to extract the spatial data
-    ord_year_var_dict = {}
-    raster_counts = {}
-    raster_dict = {}
+    ordination_year_variable_dict: dict[int, dict[str, str]] = {}
+    raster_counts: dict[str, int] = {}
+    raster_dict: dict[str, DatasetStatus] = {}
 
     for year in years:
-        ord_year_var_dict[year] = {}
+        ordination_year_variable_dict[year] = {}
 
         # Get the ordination variables specialized for this year
         ord_vars = parser.get_ordination_variables(year)
@@ -72,7 +109,7 @@ def get_variable_info(parser, years):
         for var, path in ord_vars:
             # For this year, variable combination, store the path to the
             # variable
-            ord_year_var_dict[year][var] = path
+            ordination_year_variable_dict[year][var] = path
 
             # Record this variable in the counts and push to the raster
             # list if it's a new variable
@@ -80,60 +117,82 @@ def get_variable_info(parser, years):
                 raster_counts[path] += 1
             except KeyError:
                 ds = rasterio.open(path)
-                raster_dict[path] = [ds, False]
+                raster_dict[path] = DatasetStatus(ds, False)
                 raster_counts[path] = 1
-    return ord_year_var_dict, raster_counts, raster_dict
+    return ordination_year_variable_dict, raster_counts, raster_dict
 
 
-def get_footprint_values(ds: rasterio.DatasetReader, windows, band=1):
+def get_footprint_values(
+    ds: rasterio.DatasetReader,
+    windows: dict[int, tuple[float, float, int, int]],
+    band: int = 1,
+) -> dict[int, NDArray]:
+    """
+    Get the footprint values for a given dataset and set of windows.
+    """
     return {k: get_footprint_value(v, ds, band=band) for k, v in windows.items()}
 
 
-def get_footprint_value(window, ds: rasterio.DatasetReader, band: int = 1):
+def get_footprint_value(
+    window: tuple[float, float, int, int], ds: rasterio.DatasetReader, band: int = 1
+) -> NDArray:
+    """
+    Get the footprint value for a given dataset and window.
+    """
     x_min, y_max, x_size, y_size = window
     row, col = ds.index(x_min, y_max)
     return ds.read(band, window=Window(col, row, x_size, y_size))
 
 
+class EnvironmentalVector:
+    def __init__(self, d: dict[str, float]):
+        self.d = d
+
+    def __repr__(self):
+        return "\n".join((f"{k}: {v}" for k, v in self.d.items()))
+
+
 def extract_footprints(
-    raster_counts,
-    raster_dict,
-    years,
-    fp_windows,
-    year_ids,
-    ord_year_var_dict,
-):
-    # Create a reverse dictionary of path name to variable name
-    # There will be multiple identical entries for non-temporally varying
-    # attributes - they will be overwritten on each pass
-    path_to_var = defaultdict(str)
-    for d in ord_year_var_dict.values():
-        for var, fn in d.items():
-            path_to_var[fn] = var
+    raster_counts: dict[str, int],
+    raster_dict: dict[str, DatasetStatus],
+    years: NDArray,
+    fp_windows: dict[int, tuple[float, float, int, int]],
+    year_ids: dict[int, list[int]],
+    ord_year_var_dict: dict[int, dict[str, str]],
+) -> dict[int, list[EnvironmentalVector]]:
+    """
+    Extract the footprints for all environmental variables across all plot
+    windows.
+    """
+    # Create a reverse dictionary of path name to variable name / year.
+    path_to_var = defaultdict(set)
+    for year, variable_information in ord_year_var_dict.items():
+        for variable, path_name in variable_information.items():
+            path_to_var[path_name].add((variable, year))
 
     # Extract footprint information for every ordination variable that is
     # common to all years and store in a dict keyed by ID and raster
     # file name
-    fp_value_dict = defaultdict(dict)
+    fp_value_dict: dict[int, dict[str, float]] = defaultdict(dict)
     for fn, count in raster_counts.items():
-        var = path_to_var[fn]
         if count == len(years):
             print(fn)
-            ds, processed = raster_dict[fn]
 
             # Get the footprint window values for this dataset
-            fp_values = get_footprint_values(ds, fp_windows)
+            fp_values = get_footprint_values(raster_dict[fn].dataset, fp_windows)
 
-            # Change the flag for this dataset to 'processed'
-            raster_dict[fn][1] = True
+            # Change the processed flag for this dataset to True
+            raster_dict[fn].processed = True
 
             # Store these footprint values in a dictionary keyed by
             # id and variable file name
-            for id_val, fp in fp_values.items():
-                fp_value_dict[id_val][var] = fp
+            unique_variables = {x[0] for x in path_to_var[fn]}
+            for variable in unique_variables:
+                for id_val, fp in fp_values.items():
+                    fp_value_dict[id_val][variable] = fp
 
             # Close this dataset - no longer needed
-            raster_dict[fn][0] = None
+            raster_dict[fn].dataset.close()
 
     # Main loop to iterate over all years
     for year in years:
@@ -145,29 +204,33 @@ def extract_footprints(
         # Extract footprints for any variables that are not common to all
         # years, but specialized for this year
         for fn in ord_year_var_dict[year].values():
-            var = path_to_var[fn]
-            ds, processed = raster_dict[fn]
-            if not processed:
+            if not raster_dict[fn].processed:
                 print(fn)
 
                 # Extract footprint values for this dataset
-                fp_values = get_footprint_values(ds, windows)
+                fp_values = get_footprint_values(raster_dict[fn].dataset, windows)
 
-                # Set the processed flag to True
-                raster_dict[fn][1] = True
+                # Store these values - it's possible that a path is used more
+                # than once for different variables.  Ensure that the values
+                # extracted are used only for the correct variable and year
+                unique_variables = {x[0] for x in path_to_var[fn]}
+                for variable in unique_variables:
+                    variable_years = {x[1] for x in path_to_var[fn] if x[0] == variable}
+                    if year in variable_years:
+                        for id_val, fp in fp_values.items():
+                            fp_value_dict[id_val][variable] = fp
 
-                # Store these values
-                for id_val, fp in fp_values.items():
-                    fp_value_dict[id_val][var] = fp
-
-                # Close the dataset - no longer needed
-                raster_dict[fn][0] = None
+    # Close the temporally varying datasets
+    datasets = [x.dataset for x in raster_dict.values()]
+    for dataset in datasets:
+        if not dataset.closed:
+            dataset.close()
 
     # Reorder this such that each ID has a list of EnvironmentalVectors
     # associated with it keyed by variable name
     env_dict = defaultdict(list)
     for id_val, val in fp_value_dict.items():
-        pixel_data = defaultdict(dict)
+        pixel_data: dict[int, dict[str, float]] = defaultdict(dict)
         for var, fp in val.items():
             arr = fp.flatten()
             for i, pixel_val in enumerate(arr):
@@ -177,16 +240,8 @@ def extract_footprints(
     return env_dict
 
 
-class EnvironmentalVector:
-    def __init__(self, d):
-        self.d = d
-
-    def __repr__(self):
-        return "\n".join((f"{k}: {v}" for k, v in self.d.items()))
-
-
 class NNPixel:
-    def __init__(self, neighbors, distances):
+    def __init__(self, neighbors: NDArray, distances: NDArray) -> None:
         self.neighbors = np.copy(neighbors)
         self.distances = np.copy(distances)
 
@@ -199,14 +254,14 @@ class NNPixel:
 
 
 class NNFootprint:
-    def __init__(self, id_val):
+    def __init__(self, id_val: int) -> None:
         self.id = id_val
-        self.pixels = []
+        self.pixels: list[NNPixel] = []
 
     def __repr__(self):
         return "\n".join([repr(x) for x in self.pixels])
 
-    def append(self, pixel):
+    def append(self, pixel: NNPixel) -> None:
         self.pixels.append(pixel)
 
 
@@ -229,7 +284,7 @@ class NNFinder(ABC):
             err_msg += "supported"
             raise NotImplementedError(err_msg)
 
-    def calculate_neighbors_cross_validation(self):
+    def calculate_neighbors_cross_validation(self) -> dict[int, NNFootprint]:
         """
         Wrapper around get_predicted_neighbors_at_ids optimized for cross-
         validation (ie. using plots that went into model development).
@@ -248,17 +303,17 @@ class NNFinder(ABC):
         # Call the main function
         return self.calculate_neighbors_at_ids(plot_ids)
 
-    def calculate_neighbors_at_ids(self, plot_ids):
+    def calculate_neighbors_at_ids(self, plot_ids: NDArray) -> dict[int, NNFootprint]:
         p = self.parameter_parser
 
         # Get the ordination model
         lop = lemma_ordination_parser.LemmaOrdinationParser()
-        ord_model = lop.parse(p.get_ordination_file())
+        ordination_model = lop.parse(p.get_ordination_file())
 
         # Create the imputation model based on the ordination model and the
         # imputation parameters
-        imp_model = im.ImputationModel(
-            ord_model,
+        imputation_model = ImputationModel(
+            ordination_model,
             n_axes=p.number_axes,
             use_weightings=p.use_axis_weighting,
             max_neighbors=p.max_neighbors,
@@ -268,15 +323,25 @@ class NNFinder(ABC):
         env_data = self.get_environmental_data(plot_ids)
 
         # Get neighbors for all plots
-        return self.get_neighbors(env_data, ord_model, imp_model)
+        variable_names = [str(x) for x in ordination_model.var_names]
+        return self.get_neighbors(env_data, imputation_model, variable_names)
 
     @abstractmethod
-    def get_environmental_data(self, plot_ids):
+    def get_environmental_data(
+        self, plot_ids: NDArray
+    ) -> dict[int, list[EnvironmentalVector]]:
         pass
 
     @staticmethod
-    def get_neighbors(env_data, ord_model, imp_model):
-        var_names = ord_model.var_names
+    def get_neighbors(
+        env_data: dict[int, list[EnvironmentalVector]],
+        imputation_model: ImputationModel,
+        variable_names: list[str],
+    ) -> dict[int, NNFootprint]:
+        """
+        Return neighbors and distances for all pixels in env_data given
+        the imputation model.
+        """
         neighbor_data = {}
         for id_val in sorted(env_data.keys()):
             # Set up an output instance to capture each pixel's neighbors
@@ -285,11 +350,11 @@ class NNFinder(ABC):
 
             # Run over observations for this plot
             for ev in env_data[id_val]:
-                v = np.array([ev.d[x] for x in var_names])
+                v = np.array([ev.d[x] for x in variable_names])
                 v = v[np.newaxis, :]
 
                 # Run the imputation
-                nn_ids, nn_dists = imp_model.get_neighbors(v, id_val=id_val)
+                nn_ids, nn_dists = imputation_model.get_neighbors(v, id_val=id_val)
 
                 # Append this pixel to the NNFootprint object
                 obj.append(NNPixel(nn_ids, nn_dists))
@@ -300,7 +365,13 @@ class NNFinder(ABC):
 
 
 class PixelNNFinder(NNFinder):
-    def get_environmental_data(self, plot_ids):
+    def get_environmental_data(
+        self, plot_ids: NDArray
+    ) -> dict[int, list[EnvironmentalVector]]:
+        """
+        Get the environmental data for each plot ID at the pixel scale by
+        extracting the footprint data for each plot from model covariates.
+        """
         p = self.parameter_parser
 
         # Crosswalk of ID to year
@@ -317,9 +388,7 @@ class PixelNNFinder(NNFinder):
         # row and column tuples of each pixel within a given footprint.
         # Footprint windows store the upper left coordinate and window size for
         # extraction from GDAL datasets
-        fp_offsets, fp_windows = parse_footprints(
-            coord_list, p.footprint_file, p.plot_id_field
-        )
+        fp_windows = parse_footprints(coord_list, p.footprint_file, p.plot_id_field)
 
         # Get information about environmental variables by year
         ord_year_var_dict, raster_counts, raster_dict = get_variable_info(p, years)
@@ -336,7 +405,13 @@ class PixelNNFinder(NNFinder):
 
 
 class PlotNNFinder(NNFinder):
-    def get_environmental_data(self, plot_ids):
+    def get_environmental_data(
+        self, plot_ids: NDArray
+    ) -> dict[int, list[EnvironmentalVector]]:
+        """
+        Get the environmental data for each plot ID at the plot scale by
+        using the values in the environmental matrix file.
+        """
         # Get the environmental matrix and subset down to plot_ids
         p = self.parameter_parser
         env_df = pd.read_csv(p.environmental_matrix_file)

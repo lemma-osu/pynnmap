@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import numpy as np
+from numpy.typing import NDArray
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -37,7 +40,9 @@ class ImputationModel:
         # Lookup of index to plot ID to get correct neighbor IDs
         self.ipd = ord_model.id_plot_dict
 
-    def get_neighbors(self, env_values, id_val=None):
+    def get_neighbors(
+        self, env_values: NDArray, id_val: int | None = None
+    ) -> tuple[NDArray, NDArray]:
         """
         Given the vector of env_values, return the sorted neighbors and
         distances for this vector.  If id is specified, ensure that if the
