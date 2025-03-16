@@ -4,14 +4,14 @@ import pandas as pd
 from .independence_filter import IndependenceFilter
 
 
-def get_id_year_crosswalk(parser):
+def get_id_year_crosswalk(parser) -> dict[int, int]:
     id_field = parser.plot_id_field
     xwalk_df = pd.read_csv(parser.plot_year_crosswalk_file, low_memory=False)
     if parser.model_type in parser.imagery_model_types:
         s = pd.Series(xwalk_df.IMAGE_YEAR.values, index=xwalk_df[id_field])
     else:
         s = pd.Series(parser.model_year, index=xwalk_df[id_field])
-    return dict(s.to_dict())
+    return s.to_dict()
 
 
 def get_independence_filter(parser, no_self_assign_field="LOC_ID"):

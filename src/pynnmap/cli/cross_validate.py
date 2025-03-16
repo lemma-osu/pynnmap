@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import click
 
 from ..core.nn_finder import PixelNNFinder, PlotNNFinder
@@ -6,19 +8,19 @@ from ..diagnostics import diagnostic_wrapper as dw
 from ..parser import parameter_parser_factory as ppf
 
 
-def run_cross_validate(parser, finder):
+def run_cross_validate(parser, finder: PixelNNFinder | PlotNNFinder) -> None:
     # Run cross-validation to create the neighbor/distance information
     neighbor_data = finder.calculate_neighbors_cross_validation()
 
     # Calculate independent and dependent predictive accuracy
-    output = IndependentOutput(parser, neighbor_data)
-    output.write_zonal_records(parser.independent_zonal_pixel_file)
-    output.write_attribute_predictions(parser.independent_predicted_file)
+    independent_output = IndependentOutput(parser, neighbor_data)
+    independent_output.write_zonal_records(parser.independent_zonal_pixel_file)
+    independent_output.write_attribute_predictions(parser.independent_predicted_file)
 
-    output = DependentOutput(parser, neighbor_data)
-    output.write_zonal_records(parser.dependent_zonal_pixel_file)
-    output.write_attribute_predictions(parser.dependent_predicted_file)
-    output.write_nn_index_file(neighbor_data, parser.dependent_nn_index_file)
+    dependent_output = DependentOutput(parser, neighbor_data)
+    dependent_output.write_zonal_records(parser.dependent_zonal_pixel_file)
+    dependent_output.write_attribute_predictions(parser.dependent_predicted_file)
+    dependent_output.write_nn_index_file(neighbor_data, parser.dependent_nn_index_file)
 
 
 @click.command(name="cross-validate", short_help="Accuracy assessment for model plots")
