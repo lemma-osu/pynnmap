@@ -114,6 +114,8 @@ class VeganDBRDAOrdination(VeganOrdination):
 
 @dataclass
 class ConstrainedOrdinationResults:
+    prefix: str
+    rank: int
     species_names: list[str]
     env_names: list[str]
     site_ids: list[int]
@@ -130,80 +132,21 @@ class ConstrainedOrdinationResults:
     site_weights: NDArray
     site_n2: NDArray
 
-
-class ConstrainedOrdinationOutputWriterMixin:
-    def write_output(
-        self, ordination: ConstrainedOrdinationResults, ordination_file_name: str
-    ):
+    def write_output(self, ordination_file_name: str):
         with open(ordination_file_name, "w") as ordination_fh:
-            self.write_eigenvalues(ordination_fh, ordination.eigenvalues)
-            self.write_variable_means(
-                ordination_fh, ordination.env_names, ordination.env_means
-            )
-            self.write_coefficients(
-                ordination_fh, ordination.env_names, ordination.coefficients
-            )
-            self.write_biplot_scores(
-                ordination_fh, ordination.env_names, ordination.biplot_scores
-            )
-            self.write_species_centroids(
-                ordination_fh, ordination.species_names, ordination.species_centroids
-            )
-            self.write_species_tolerances(
-                ordination_fh, ordination.species_names, ordination.species_tolerances
-            )
-            self.write_species_information(
-                ordination_fh,
-                ordination.species_names,
-                ordination.species_weights,
-                ordination.species_n2,
-            )
-            self.write_site_lc_scores(
-                ordination_fh, ordination.site_ids, ordination.site_lc_scores
-            )
-            self.write_site_wa_scores(
-                ordination_fh, ordination.site_ids, ordination.site_wa_scores
-            )
-            self.write_site_information(
-                ordination_fh,
-                ordination.site_ids,
-                ordination.site_weights,
-                ordination.site_n2,
-            )
+            self.write_eigenvalues(ordination_fh)
+            self.write_variable_means(ordination_fh)
+            self.write_coefficients(ordination_fh)
+            self.write_biplot_scores(ordination_fh)
+            self.write_species_centroids(ordination_fh)
+            self.write_species_tolerances(ordination_fh)
+            self.write_species_information(ordination_fh)
+            self.write_site_lc_scores(ordination_fh)
+            self.write_site_wa_scores(ordination_fh)
+            self.write_site_information(ordination_fh)
 
     def header_str(self):
-        return ",".join([f"{self.prefix}{i+1}" for i in range(self.rank)])
-
-    def write_eigenvalues(self, fh, eigenvalues):
-        fh.write("### Eigenvalues ###\n")
-        for i, e in enumerate(eigenvalues):
-            fh.write(f"{self.prefix}{i+1},{e:.8f}\n")
-        fh.write("\n")
-
-    def write_variable_means(self, fh, env_names, variable_means):
-        fh.write("### Variable Means ###\n")
-        for i, m in enumerate(variable_means):
-            fh.write(f"{env_names[i]},{m:.5f}\n")
-        fh.write("\n")
-
-    def write_species_information(self, fh, species_names, species_weights, species_n2):
-        fh.write("### Miscellaneous Species Information ###\n")
-        fh.write("SPECIES,WEIGHT,N2\n")
-        for i in range(len(species_weights)):
-            column = species_names[i]
-            weight = f"{species_weights[i]:.5f}"
-            n2 = f"{species_n2[i]:.5f}"
-            fh.write(f"{column},{weight},{n2}\n")
-        fh.write("\n")
-
-    def write_site_information(self, fh, plot_ids, site_weights, site_n2):
-        fh.write("### Miscellaneous Site Information ###\n")
-        fh.write("ID,WEIGHT,N2\n")
-        for i in range(len(site_weights)):
-            plot = plot_ids[i]
-            weight = f"{site_weights[i]:.6f}"
-            n2 = f"{site_n2[i]:.6f}"
-            fh.write(f"{plot},{weight},{n2}\n")
+        return ",".join([f"{self.prefix}{i + 1}" for i in range(self.rank)])
 
     def write_cca_section(
         self,
@@ -223,81 +166,112 @@ class ConstrainedOrdinationOutputWriterMixin:
             fh.write(f"{row_ids[i]},{data_str}\n")
         fh.write("\n")
 
-    def write_coefficients(self, fh, env_names, data: NDArray):
+    def write_eigenvalues(self, fh):
+        fh.write("### Eigenvalues ###\n")
+        for i, e in enumerate(self.eigenvalues):
+            fh.write(f"{self.prefix}{i + 1},{e:.8f}\n")
+        fh.write("\n")
+
+    def write_variable_means(self, fh):
+        fh.write("### Variable Means ###\n")
+        for i, m in enumerate(self.env_means):
+            fh.write(f"{self.env_names[i]},{m:.5f}\n")
+        fh.write("\n")
+
+    def write_coefficients(self, fh):
         self.write_cca_section(
             fh,
             heading="Coefficient Loadings",
             row_column_name="VARIABLE",
-            row_ids=env_names,
-            data=data,
+            row_ids=self.env_names,
+            data=self.coefficients,
             n_decimals=11,
         )
 
-    def write_biplot_scores(self, fh, env_names, data: NDArray):
+    def write_biplot_scores(self, fh):
         self.write_cca_section(
             fh,
             heading="Biplot Scores",
             row_column_name="VARIABLE",
-            row_ids=env_names,
-            data=data,
+            row_ids=self.env_names,
+            data=self.biplot_scores,
             n_decimals=9,
         )
 
-    def write_species_centroids(self, fh, species_names, data: NDArray):
+    def write_species_centroids(self, fh):
         self.write_cca_section(
             fh,
             heading="Species Centroids",
             row_column_name="SPECIES",
-            row_ids=species_names,
-            data=data,
+            row_ids=self.species_names,
+            data=self.species_centroids,
             n_decimals=9,
         )
 
-    def write_species_tolerances(self, fh, species_names, data: NDArray):
+    def write_species_tolerances(self, fh):
         self.write_cca_section(
             fh,
             heading="Species Tolerances",
             row_column_name="SPECIES",
-            row_ids=species_names,
-            data=data,
+            row_ids=self.species_names,
+            data=self.species_tolerances,
             n_decimals=6,
         )
 
-    def write_site_lc_scores(self, fh, plot_ids, data: NDArray):
+    def write_species_information(self, fh):
+        fh.write("### Miscellaneous Species Information ###\n")
+        fh.write("SPECIES,WEIGHT,N2\n")
+        for i in range(len(self.species_weights)):
+            column = self.species_names[i]
+            weight = f"{self.species_weights[i]:.5f}"
+            n2 = f"{self.species_n2[i]:.5f}"
+            fh.write(f"{column},{weight},{n2}\n")
+        fh.write("\n")
+
+    def write_site_lc_scores(self, fh):
         self.write_cca_section(
             fh,
             heading="Site LC Scores",
             row_column_name="ID",
-            row_ids=plot_ids,
-            data=data,
+            row_ids=self.site_ids,
+            data=self.site_lc_scores,
             n_decimals=11,
         )
 
-    def write_site_wa_scores(self, fh, plot_ids, data: NDArray):
+    def write_site_wa_scores(self, fh):
         self.write_cca_section(
             fh,
             heading="Site WA Scores",
             row_column_name="ID",
-            row_ids=plot_ids,
-            data=data,
+            row_ids=self.site_ids,
+            data=self.site_wa_scores,
             n_decimals=10,
         )
 
+    def write_site_information(self, fh):
+        fh.write("### Miscellaneous Site Information ###\n")
+        fh.write("ID,WEIGHT,N2\n")
+        for i in range(len(self.site_weights)):
+            plot = self.site_ids[i]
+            weight = f"{self.site_weights[i]:.6f}"
+            n2 = f"{self.site_n2[i]:.6f}"
+            fh.write(f"{plot},{weight},{n2}\n")
 
-class NumpyOrdination(Ordination, ConstrainedOrdinationOutputWriterMixin):
+
+class NumpyOrdination(Ordination):
     def run(self):
         # Convert the species and environment matrices to numpy arrays
         spp, env, species_names, site_ids = self.process_input()
 
         # Create the ordination object
         ordination = self.ordination_cls(spp, env)
-        self.prefix = self.ordination_prefix
-        self.rank = ordination.rank
 
         # Write out the results
         species_weights, species_n2 = ordination.species_information()
         site_weights, site_n2 = ordination.site_information()
         ordination_results = ConstrainedOrdinationResults(
+            prefix=self.ordination_prefix,
+            rank=ordination.rank,
             eigenvalues=ordination.eigenvalues,
             env_means=ordination.env_means,
             species_names=species_names,
@@ -314,7 +288,7 @@ class NumpyOrdination(Ordination, ConstrainedOrdinationOutputWriterMixin):
             site_weights=site_weights,
             site_n2=site_n2,
         )
-        self.write_output(ordination_results, self.parameters.ordination_file)
+        ordination_results.write_output(self.parameters.ordination_file)
 
 
 class NumpyCCAOrdination(NumpyOrdination):
@@ -327,15 +301,13 @@ class NumpyRDAOrdination(NumpyOrdination):
     ordination_prefix = "RDA"
 
 
-class SknnrCCAOrdination(Ordination, ConstrainedOrdinationOutputWriterMixin):
+class SknnrCCAOrdination(Ordination):
     def run(self):
         # Convert the species and environment matrices to numpy arrays
         spp, env, species_names, site_ids = self.process_input()
 
         # Create the transformation object
         cca = CCATransformer().fit(env, spp)
-        self.prefix = "CCA"
-        self.rank = cca.ordination_.rank
 
         # TODO: This belongs in sknnr
         species_weights = np.sum(spp, axis=0)
@@ -348,6 +320,8 @@ class SknnrCCAOrdination(Ordination, ConstrainedOrdinationOutputWriterMixin):
         site_n2 = 1.0 / a.sum(axis=1)
 
         ordination_results = ConstrainedOrdinationResults(
+            prefix="CCA",
+            rank=cca.ordination_.rank,
             eigenvalues=cca.ordination_.eigenvalues,
             env_means=cca.ordination_.env_center,
             species_names=species_names,
@@ -364,4 +338,4 @@ class SknnrCCAOrdination(Ordination, ConstrainedOrdinationOutputWriterMixin):
             site_weights=site_weights,
             site_n2=site_n2,
         )
-        self.write_output(ordination_results, self.parameters.ordination_file)
+        ordination_results.write_output(self.parameters.ordination_file)
