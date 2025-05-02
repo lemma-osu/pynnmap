@@ -309,16 +309,6 @@ class SknnrCCAOrdination(Ordination):
         # Create the transformation object
         cca = CCATransformer().fit(env, spp)
 
-        # TODO: This belongs in sknnr
-        species_weights = np.sum(spp, axis=0)
-        a = np.square(np.divide(spp, species_weights))
-        species_n2 = 1.0 / a.sum(axis=0)
-
-        # TODO: This belongs in sknnr
-        site_weights = np.sum(spp, axis=1)
-        a = np.square(np.divide(spp, np.expand_dims(site_weights, axis=1)))
-        site_n2 = 1.0 / a.sum(axis=1)
-
         ordination_results = ConstrainedOrdinationResults(
             prefix="CCA",
             rank=cca.ordination_.rank,
@@ -331,11 +321,11 @@ class SknnrCCAOrdination(Ordination):
             biplot_scores=cca.ordination_.biplot_scores,
             species_centroids=cca.ordination_.species_scores,
             species_tolerances=cca.ordination_.species_tolerances,
-            species_weights=species_weights,
-            species_n2=species_n2,
+            species_weights=cca.ordination_.species_weights,
+            species_n2=cca.ordination_.species_n2,
             site_lc_scores=cca.ordination_.site_lc_scores,
             site_wa_scores=cca.ordination_.site_wa_scores,
-            site_weights=site_weights,
-            site_n2=site_n2,
+            site_weights=cca.ordination_.site_weights,
+            site_n2=cca.ordination_.site_n2,
         )
         ordination_results.write_output(self.parameters.ordination_file)
