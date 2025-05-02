@@ -460,7 +460,11 @@ class XMLParameterParser(xml_parser.XMLParser, parameter_parser.ParameterParser)
             return None
 
     def get_ordination_file(self):
-        file_xwalk = {"vegan": "vegan_file", "numpy": "numpy_file"}
+        file_xwalk = {
+            "vegan": "vegan_file",
+            "numpy": "numpy_file",
+            "sknnr": "sknnr_file",
+        }
         ord_program = self.ordination_program
         program_elem = self.ordination_program_element
         try:
