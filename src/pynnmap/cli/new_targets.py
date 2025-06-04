@@ -3,14 +3,14 @@ from __future__ import annotations
 import click
 import pandas as pd
 
-from ..core.nn_finder import PixelNNFinder, PlotNNFinder
+from ..core.nn_finder import PixelNNFinder
 from ..core.prediction_output import DependentOutput, IndependentOutput
 from ..parser import parameter_parser_factory as ppf
 
 
 def run_new_targets(
     parser,
-    finder: PixelNNFinder | PlotNNFinder,
+    finder: PixelNNFinder,
     target_fcids: list[int],
     output_predicted_prefix: str,
     output_zonal_prefix: str,
@@ -35,12 +35,6 @@ def run_new_targets(
 @click.command(
     name="new-targets", short_help="Run accuracy assessment on independent plots"
 )
-@click.option(
-    "--scale",
-    type=click.Choice(["PIXEL", "PLOT"], case_sensitive=False),
-    default="PIXEL",
-    help="Calculate accuracy at pixel or plot scale",
-)
 @click.argument("parameter-file", type=click.Path(exists=True), required=True)
 @click.argument("target-plot-file", type=click.Path(exists=True), required=True)
 @click.argument("output-predicted-prefix", type=click.STRING, required=True)
@@ -50,14 +44,12 @@ def main(
     target_plot_file,
     output_predicted_prefix,
     output_zonal_prefix,
-    scale,
 ):
     # Get the model parameters
-    pixel_scale = scale == "PIXEL"
     parser = ppf.get_parameter_parser(parameter_file)
 
     # Create a NNFinder derived object - either pixel or plot
-    finder = PixelNNFinder(parser) if pixel_scale else PlotNNFinder(parser)
+    finder = PixelNNFinder(parser)
 
     # Read in the target IDs
     id_field = parser.plot_id_field
