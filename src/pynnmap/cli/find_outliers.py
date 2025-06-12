@@ -14,11 +14,17 @@ def main(parameter_file):
     # Get the model parameters
     parser = ppf.get_parameter_parser(parameter_file)
 
-    # Create a PixelNNFinder object
-    finder = PixelNNFinder(parser)
+    # Traditional route - extracting spatial information from plot locations
+    if not parser.environmental_pixel_file:
+        # Create a PixelNNFinder object
+        finder = PixelNNFinder(parser)
 
-    # Run cross-validation to create the neighbor/distance information
-    run_cross_validate(parser, finder)
+        # Run cross-validation to create the neighbor/distance information
+        run_cross_validate(parser, finder)
+
+    # Fast route - using pre-stored spatial information at pixel locations
+    else:
+        pass
 
     # Run outlier analysis
     diagnostic_wrapper = dw.DiagnosticWrapper(parser)

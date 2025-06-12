@@ -36,11 +36,17 @@ def main(scale, parameter_file):
     pixel_scale = scale == "PIXEL"
     parser = ppf.get_parameter_parser(parameter_file)
 
-    # Create a NNFinder derived object - either pixel or plot
-    finder = PixelNNFinder(parser) if pixel_scale else PlotNNFinder(parser)
+    # Traditional route - extracting spatial information from plot locations
+    if not parser.environmental_pixel_file:
+        # Create a NNFinder derived object - either pixel or plot
+        finder = PixelNNFinder(parser) if pixel_scale else PlotNNFinder(parser)
 
-    # Run cross-validation to create the neighbor/distance information
-    run_cross_validate(parser, finder)
+        # Run cross-validation to create the neighbor/distance information
+        run_cross_validate(parser, finder)
+
+    # Fast route - using pre-stored spatial information at pixel locations
+    else:
+        pass
 
     # Calculate all accuracy diagnostics
     diagnostic_wrapper = dw.DiagnosticWrapper(parser)
