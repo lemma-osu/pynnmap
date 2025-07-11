@@ -404,6 +404,33 @@ class PixelNNFinder(NNFinder):
         )
 
 
+class StoredPixelNNFinder(NNFinder):
+    """
+    A NNFinder that uses pre-stored spatial information at pixel locations.
+    """
+
+    def get_environmental_data(
+        self, plot_ids: NDArray
+    ) -> dict[int, list[EnvironmentalVector]]:
+        """
+        Get the environmental data for each plot ID at the pixel scale by
+        using the values in the environmental pixel file.
+        """
+        # Get the environmental pixel matrix and subset down to plot_ids
+        p = self.parameter_parser
+        subset_plot_df = pd.DataFrame({p.plot_id_field: plot_ids})
+        env_pixel_df = pd.read_csv(p.environmental_pixel_file)
+        env_pixel_df = subset_plot_df.merge(env_pixel_df, on=p.plot_id_field)
+
+        # Create an EnvironmentalVector for each plot_id
+        return {
+            plot_id: [
+                EnvironmentalVector(row) for row in group.to_dict(orient="records")
+            ]
+            for plot_id, group in env_pixel_df.groupby(p.plot_id_field)
+        }
+
+
 class PlotNNFinder(NNFinder):
     def get_environmental_data(
         self, plot_ids: NDArray

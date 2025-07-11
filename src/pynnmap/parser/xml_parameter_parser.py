@@ -265,6 +265,12 @@ class XMLParameterParser(xml_parser.XMLParser, parameter_parser.ParameterParser)
         return os.path.normpath(str(self.fl_elem.footprint_file))
 
     @property
+    def environmental_pixel_file(self):
+        if self.fl_elem.find("environmental_pixel_file") is not None:
+            return os.path.normpath(str(self.fl_elem.environmental_pixel_file))
+        return ""
+
+    @property
     def independent_predicted_file(self):
         file_name = str(self.fl_elem.independent_predicted_file)
         return self._get_path("independent_predicted_file", file_name)
