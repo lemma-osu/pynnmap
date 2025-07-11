@@ -8,6 +8,30 @@ from ..diagnostics import diagnostic_wrapper as dw
 from ..parser import parameter_parser_factory as ppf
 
 
+def run_cross_validate(
+    parser, nn_finder: PixelNNFinder | PlotNNFinder | StoredPixelNNFinder
+) -> None:
+    """
+    Run cross-validation to create the neighbor/distance information.
+    """
+    # Calculate neighbors and distances
+    neighbor_data = nn_finder.calculate_neighbors_cross_validation()
+
+    # Calculate independent and dependent predictive accuracy
+    independent_output = IndependentOutput(parser, neighbor_data)
+    independent_output.write_zonal_records(parser.independent_zonal_pixel_file)
+    independent_output.write_attribute_predictions(parser.independent_predicted_file)
+
+    dependent_output = DependentOutput(parser, neighbor_data)
+    dependent_output.write_zonal_records(parser.dependent_zonal_pixel_file)
+    dependent_output.write_attribute_predictions(parser.dependent_predicted_file)
+    dependent_output.write_nn_index_file(neighbor_data, parser.dependent_nn_index_file)
+
+    # Calculate all accuracy diagnostics
+    diagnostic_wrapper = dw.DiagnosticWrapper(parser)
+    diagnostic_wrapper.run_accuracy_diagnostics()
+
+
 @click.command(name="cross-validate", short_help="Accuracy assessment for model plots")
 @click.option(
     "--scale",
@@ -33,17 +57,7 @@ def main(scale, parameter_file):
         nn_finder = PlotNNFinder(parser)
 
     # Run cross-validation to create the neighbor/distance information
-    neighbor_data = nn_finder.calculate_neighbors_cross_validation()
-
-    # Calculate independent and dependent predictive accuracy
-    independent_output = IndependentOutput(parser, neighbor_data)
-    independent_output.write_zonal_records(parser.independent_zonal_pixel_file)
-    independent_output.write_attribute_predictions(parser.independent_predicted_file)
-
-    dependent_output = DependentOutput(parser, neighbor_data)
-    dependent_output.write_zonal_records(parser.dependent_zonal_pixel_file)
-    dependent_output.write_attribute_predictions(parser.dependent_predicted_file)
-    dependent_output.write_nn_index_file(neighbor_data, parser.dependent_nn_index_file)
+    run_cross_validate(parser, nn_finder)
 
     # Calculate all accuracy diagnostics
     diagnostic_wrapper = dw.DiagnosticWrapper(parser)

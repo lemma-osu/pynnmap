@@ -1,6 +1,6 @@
 import click
 
-from ..core.nn_finder import PixelNNFinder
+from ..core.nn_finder import PixelNNFinder, StoredPixelNNFinder
 from ..diagnostics import diagnostic_wrapper as dw
 from ..parser import parameter_parser_factory as ppf
 from .cross_validate import run_cross_validate
@@ -14,17 +14,15 @@ def main(parameter_file):
     # Get the model parameters
     parser = ppf.get_parameter_parser(parameter_file)
 
-    # Traditional route - extracting spatial information from plot locations
-    if not parser.environmental_pixel_file:
-        # Create a PixelNNFinder object
-        finder = PixelNNFinder(parser)
+    # Determine the NNFinder type
+    nn_finder = (
+        PixelNNFinder(parser)
+        if not parser.environmental_pixel_file
+        else StoredPixelNNFinder(parser)
+    )
 
-        # Run cross-validation to create the neighbor/distance information
-        run_cross_validate(parser, finder)
-
-    # Fast route - using pre-stored spatial information at pixel locations
-    else:
-        pass
+    # Run cross-validation to create the neighbor/distance information
+    run_cross_validate(parser, nn_finder)
 
     # Run outlier analysis
     diagnostic_wrapper = dw.DiagnosticWrapper(parser)
