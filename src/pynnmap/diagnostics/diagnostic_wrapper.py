@@ -50,7 +50,7 @@ class DiagnosticWrapper:
                 diagnostic = kls.from_parameter_parser(p)
                 diagnostic.run_diagnostic()
             except utilities.MissingConstraintError as e:
-                print(e)
+                print(e.message)
 
     def run_outlier_diagnostics(self):
         p = self.parameter_parser
