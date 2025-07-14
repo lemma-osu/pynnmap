@@ -141,7 +141,7 @@ def get_footprint_value(
     """
     x_min, y_max, x_size, y_size = window
     row, col = ds.index(x_min, y_max)
-    return ds.read(band, window=Window(col, row, x_size, y_size))
+    return ds.read(band, window=Window(col, row, x_size, y_size), masked=True)
 
 
 class EnvironmentalVector:
@@ -236,6 +236,9 @@ def extract_footprints(
             for i, pixel_val in enumerate(arr):
                 pixel_data[i][var] = pixel_val
         for d in pixel_data.values():
+            # If d has any masked values, skip this pixel
+            if any(np.ma.is_masked(v) for v in d.values()):
+                continue
             env_dict[id_val].append(EnvironmentalVector(d))
     return env_dict
 
@@ -421,6 +424,9 @@ class StoredPixelNNFinder(NNFinder):
         subset_plot_df = pd.DataFrame({p.plot_id_field: plot_ids})
         env_pixel_df = pd.read_csv(p.environmental_pixel_file)
         env_pixel_df = subset_plot_df.merge(env_pixel_df, on=p.plot_id_field)
+
+        # Remove any rows that have any NA values
+        env_pixel_df = env_pixel_df.dropna()
 
         # Create an EnvironmentalVector for each plot_id
         return {

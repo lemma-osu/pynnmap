@@ -27,10 +27,6 @@ def run_cross_validate(
     dependent_output.write_attribute_predictions(parser.dependent_predicted_file)
     dependent_output.write_nn_index_file(neighbor_data, parser.dependent_nn_index_file)
 
-    # Calculate all accuracy diagnostics
-    diagnostic_wrapper = dw.DiagnosticWrapper(parser)
-    diagnostic_wrapper.run_accuracy_diagnostics()
-
 
 @click.command(name="cross-validate", short_help="Accuracy assessment for model plots")
 @click.option(
