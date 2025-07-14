@@ -143,9 +143,9 @@ def subset_lines_from_regex(all_lines, start_re, end_re, skip_lines=0, flush=Fal
 
 
 class MissingConstraintError(Exception):
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
+    """Raised when required files for a diagnostic are missing."""
+
+    ...
 
 
 def check_missing_files(files):
