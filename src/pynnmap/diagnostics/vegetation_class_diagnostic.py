@@ -132,17 +132,18 @@ class VegetationClassDiagnostic(diagnostic.Diagnostic):
         return obs_vc.merge(prd_vc, on=id_field)
 
     def run_diagnostic(self):
-        # Read the observed and predicted files into numpy recarrays
-        obs = pd.read_csv(self.observed_file, low_memory=False)
-        prd = pd.read_csv(self.predicted_file, low_memory=False)
+        # Read the observed and predicted files into dataframes
+        obs_df = pd.read_csv(self.observed_file, low_memory=False)
+        prd_df = pd.read_csv(self.predicted_file, low_memory=False)
 
         # Subset the observed data just to the IDs that are in the
         # predicted file
-        obs_keep = np.in1d(getattr(obs, self.id_field), getattr(prd, self.id_field))
-        obs = obs[obs_keep]
+        keep = np.isin(getattr(obs_df, self.id_field), getattr(prd_df, self.id_field))
+        obs_df = obs_df[keep].copy()
+        prd_df = prd_df.copy()
 
         # Calculate VEGCLASS for both the observed and predicted data
-        vc_df = self.vegclass_aa(obs, prd, id_field=self.id_field)
+        vc_df = self.vegclass_aa(obs_df, prd_df, id_field=self.id_field)
         vc_df.columns = [self.id_field, "OBSERVED", "PREDICTED"]
         df_to_csv(vc_df, self.vegclass_file)
 
