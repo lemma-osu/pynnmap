@@ -250,6 +250,6 @@ def build_obs_prd_dataframes(obs_fn, prd_fn, common_field):
     # Subset the dataframes just to the IDs that are in both data frames
     obs_ids = getattr(obs_df, common_field)
     prd_ids = getattr(prd_df, common_field)
-    obs_keep = np.in1d(obs_ids, prd_ids)
-    prd_keep = np.in1d(prd_ids, obs_ids)
+    obs_keep = np.isin(obs_ids, prd_ids)
+    prd_keep = np.isin(prd_ids, obs_ids)
     return obs_df[obs_keep], prd_df[prd_keep]
