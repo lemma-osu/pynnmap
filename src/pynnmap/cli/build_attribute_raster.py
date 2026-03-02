@@ -24,7 +24,9 @@ def get_weights(k):
 
 def create_neighbor_rasters(p, model_fn="model.xml"):
     os.chdir(p.model_directory)
-    subprocess.call(f"gnnrun {model_fn}")
+    result = subprocess.call(f"gnnrun {model_fn}")
+    if result != 0:
+        raise RuntimeError(f"gnnrun failed with exit code {result}")
 
 
 def get_attribute_df(csv_fn, attr, id_field="FCID"):
@@ -138,9 +140,7 @@ def _main(params, attribute, model_fn="model.xml", k=None):
 
     # Build the neighbor rasters if not present
     nn_files = [params.get_neighbor_file(idx) for idx in range(1, k + 1)]
-    try:
-        _ = [rasterio.open(x) for x in nn_files]
-    except rasterio.errors.RasterioIOError:
+    if not all(os.path.exists(x) for x in nn_files):
         create_neighbor_rasters(params, model_fn=model_fn)
 
     # Obtain the weights
