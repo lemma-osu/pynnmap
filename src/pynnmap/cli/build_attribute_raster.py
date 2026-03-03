@@ -29,6 +29,19 @@ def create_neighbor_rasters(p, model_fn="model.xml"):
         raise RuntimeError(f"gnnrun failed with exit code {result.returncode}")
 
 
+def validate_neighbor_rasters(nn_files):
+    """Check if all neighbor rasters exist and are readable."""
+    for nn_file in nn_files:
+        if not os.path.exists(nn_file):
+            return False
+        try:
+            with rasterio.open(nn_file) as src:
+                _ = src.profile
+        except Exception:
+            return False
+    return True
+
+
 def get_attribute_df(csv_fn, attr, id_field="FCID"):
     return pd.read_csv(csv_fn, usecols=[id_field, attr.upper()])
 
@@ -140,7 +153,7 @@ def _main(params, attribute, model_fn="model.xml", k=None):
 
     # Build the neighbor rasters if not present
     nn_files = [params.get_neighbor_file(idx) for idx in range(1, k + 1)]
-    if not all(os.path.exists(x) for x in nn_files):
+    if not validate_neighbor_rasters(nn_files):
         create_neighbor_rasters(params, model_fn=model_fn)
 
     # Obtain the weights
