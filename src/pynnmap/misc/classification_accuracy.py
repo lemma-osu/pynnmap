@@ -72,7 +72,7 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
     ).reshape(n, n)
 
     # Create the dictionary of class value to row/column number
-    class_xwalk = dict(zip(classes, range(n)))
+    class_xwalk = dict(zip(classes.tolist(), range(n)))
 
     return err_mat, class_xwalk
 

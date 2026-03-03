@@ -45,7 +45,7 @@ class SpeciesAccuracyDiagnostic(diagnostic.Diagnostic):
 
         # Subset the observed data just to the IDs that are in the
         # predicted file
-        obs_keep = np.in1d(getattr(obs, self.id_field), getattr(prd, self.id_field))
+        obs_keep = np.isin(getattr(obs, self.id_field), getattr(prd, self.id_field))
         obs = obs[obs_keep]
 
         # Read in the stand attribute metadata
