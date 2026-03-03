@@ -23,10 +23,10 @@ def get_weights(k):
 
 
 def create_neighbor_rasters(p, model_fn="model.xml"):
-    os.chdir(p.model_directory)
-    result = subprocess.call(f"gnnrun {model_fn}")
-    if result != 0:
-        raise RuntimeError(f"gnnrun failed with exit code {result}")
+    args = ["gnnrun", model_fn]
+    result = subprocess.run(args, cwd=p.model_directory, check=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"gnnrun failed with exit code {result.returncode}")
 
 
 def get_attribute_df(csv_fn, attr, id_field="FCID"):
