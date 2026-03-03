@@ -159,7 +159,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
         # Write out the plot_pixel observed file
         file_name = "plot_pixel_observed.csv"
         output_file = os.path.join(root_dir, "plot_pixel", file_name)
-        plot_pixel_obs = attr_data.get_attr_df(flags=flags).astype(np.float64)
+        plot_pixel_obs = attr_data.get_attr_df(flags=flags).astype(np.float64).copy()
         df_to_csv(plot_pixel_obs, output_file, index=True)
 
         # Get the IDs on which to run AA
