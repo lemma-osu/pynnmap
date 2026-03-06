@@ -231,7 +231,7 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             # Create a crosswalk between the id_field and the hex_id_field
             s1 = self.hex_id_xwalk[id_field]
             s2 = self.hex_id_xwalk[hex_id_field]
-            id_x_hex = dict(zip(s1, s2))
+            id_x_hex = dict(zip(s1, s2, strict=True))
 
             # Iterate over all sets of statistics and write a unique file
             # for each set
@@ -330,21 +330,15 @@ class RiemannAccuracyDiagnostic(diagnostic.Diagnostic):
             statistics_fh.write("LEVEL,K,VARIABLE,STATISTIC,VALUE\n")
             for c, attr, gmfr_stats, ks_stats in statistics_data:
                 for stat in ("gmfr_a", "gmfr_b", "ac", "ac_sys", "ac_uns"):
-                    stat_line = "%s,%d,%s,%s,%.4f\n" % (
-                        c.prefix.upper(),
-                        c.k,
-                        attr,
-                        stat.upper(),
-                        gmfr_stats[stat],
+                    stat_line = (
+                        f"{c.prefix.upper()},{c.k},{attr},"
+                        f"{stat.upper()},{gmfr_stats[stat]:.4f}\n"
                     )
                     statistics_fh.write(stat_line)
 
                 for stat in ("ks_max", "ks_mean"):
-                    stat_line = "%s,%d,%s,%s,%.4f\n" % (
-                        c.prefix.upper(),
-                        c.k,
-                        attr,
-                        stat.upper(),
-                        ks_stats[stat],
+                    stat_line = (
+                        f"{c.prefix.upper()},{c.k},{attr},"
+                        f"{stat.upper()},{ks_stats[stat]:.4f}\n"
                     )
                     statistics_fh.write(stat_line)

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import rasterio
+from numpy.ma import MaskedArray
 from numpy.typing import NDArray
 from rasterio.windows import Window
 
@@ -34,8 +35,8 @@ def get_year_id_crosswalk(
     """
     Create a dictionary of all plots associated with each model year.
     """
-    id_vals, years = id_x_year.keys(), id_x_year.values()
-    id_vals, years = map(lambda x: np.unique(list(x)), (id_vals, years))
+    id_vals = np.unique(list(id_x_year.keys()))
+    years = np.unique(list(id_x_year.values()))
     year_ids = defaultdict(list)
     for id_val, year in id_x_year.items():
         year_ids[year].append(id_val)
@@ -126,7 +127,7 @@ def get_footprint_values(
     ds: rasterio.DatasetReader,
     windows: dict[int, tuple[float, float, int, int]],
     band: int = 1,
-) -> dict[int, NDArray]:
+) -> dict[int, MaskedArray]:
     """
     Get the footprint values for a given dataset and set of windows.
     """
@@ -135,7 +136,7 @@ def get_footprint_values(
 
 def get_footprint_value(
     window: tuple[float, float, int, int], ds: rasterio.DatasetReader, band: int = 1
-) -> NDArray:
+) -> MaskedArray:
     """
     Get the footprint value for a given dataset and window.
     """
@@ -173,7 +174,7 @@ def extract_footprints(
     # Extract footprint information for every ordination variable that is
     # common to all years and store in a dict keyed by ID and raster
     # file name
-    fp_value_dict: dict[int, dict[str, float]] = defaultdict(dict)
+    fp_value_dict: dict[int, dict[str, MaskedArray]] = defaultdict(dict)
     for fn, count in raster_counts.items():
         if count == len(years):
             print(fn)
@@ -230,7 +231,7 @@ def extract_footprints(
     # associated with it keyed by variable name
     env_dict = defaultdict(list)
     for id_val, val in fp_value_dict.items():
-        pixel_data: dict[int, dict[str, float]] = defaultdict(dict)
+        pixel_data: dict[int, dict[str, MaskedArray]] = defaultdict(dict)
         for var, fp in val.items():
             arr = fp.flatten()
             for i, pixel_val in enumerate(arr):

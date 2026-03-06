@@ -66,13 +66,13 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
     # One liner for calculating error matrix
     # http://stackoverflow.com/questions/10958702/
     # python-one-liner-for-a-confusion-contingency-matrix-needed
-    paired = list(zip(obs_data, prd_data))
+    paired = list(zip(obs_data, prd_data, strict=True))
     err_mat = np.array(
         [paired.count(x) for x in itertools.product(classes, repeat=2)]
     ).reshape(n, n)
 
     # Create the dictionary of class value to row/column number
-    class_xwalk = dict(zip(classes.tolist(), range(n)))
+    class_xwalk = dict(zip(classes.tolist(), range(n), strict=True))
 
     return err_mat, class_xwalk
 
@@ -442,34 +442,34 @@ class ErrorMatrix:
         for i in range(num_classes):
             out_list = [
                 class_labels[i],
-                *["%d" % x for x in self.err_mat[i, :]],
-                "%d" % self.r_totals[i],
-                "%.3f" % self.r_percent_correct[i],
-                "%.3f" % self.r_percent_f_correct[i],
+                *[f"{x:d}" for x in self.err_mat[i, :]],
+                f"{self.r_totals[i]:d}",
+                f"{self.r_percent_correct[i]:.3f}",
+                f"{self.r_percent_f_correct[i]:.3f}",
             ]
             out_str += ",".join(out_list) + "\n"
 
         # Column totals
         out_list = [
             class_labels[num_classes],
-            *["%d" % x for x in self.c_totals],
-            *["%d" % self.m_total, "", ""],
+            *[f"{x:d}" for x in self.c_totals],
+            *[f"{self.m_total:d}", "", ""],
         ]
         out_str += ",".join(out_list) + "\n"
 
         # Column correct
         out_list = [
             class_labels[num_classes + 1],
-            *["%.3f" % x for x in self.c_percent_correct],
-            *["", "%.3f" % self.m_percent_correct, ""],
+            *[f"{x:.3f}" for x in self.c_percent_correct],
+            *["", f"{self.m_percent_correct:.3f}", ""],
         ]
         out_str += ",".join(out_list) + "\n"
 
         # Column fuzzy correct
         out_list = [
             class_labels[num_classes + 2],
-            *["%.3f" % x for x in self.c_percent_f_correct],
-            *["", "", "%.3f" % self.m_percent_f_correct],
+            *[f"{x:.3f}" for x in self.c_percent_f_correct],
+            *["", "", f"{self.m_percent_f_correct:.3f}"],
         ]
         out_str += ",".join(out_list) + "\n"
 

@@ -23,7 +23,7 @@ def svd_flip_axes(arr1, arr2):
     return True
 
 
-@pytest.fixture()
+@pytest.fixture
 def model_data():
     def get_df(fn):
         return pd.read_csv(fn, index_col="ID")
@@ -39,23 +39,23 @@ def model_data():
     return X, np.array(Y)
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_model(model_data):
     X, Y = model_data
     return NumpyCCA(Y, X)
 
 
-@pytest.fixture()
+@pytest.fixture
 def eigenvalues():
     return np.array([0.31874900, 0.23718475, 0.13216523, 0.09167888])
 
 
-@pytest.fixture()
+@pytest.fixture
 def environmental_means():
     return np.array([4.6849635, 0.3109489, 0.2204380, 0.2978102])
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_Y_r():
     return np.array(
         [
@@ -83,7 +83,7 @@ def cca_Y_r():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_q():
     return np.array(
         [
@@ -111,7 +111,7 @@ def cca_q():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_r():
     return np.array(
         [
@@ -123,7 +123,7 @@ def cca_r():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_u():
     return np.array(
         [
@@ -151,7 +151,7 @@ def cca_u():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_wa():
     return np.array(
         [
@@ -179,7 +179,7 @@ def cca_wa():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_v():
     return np.array(
         [
@@ -217,7 +217,7 @@ def cca_v():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_biplot():
     return np.array(
         [
@@ -229,7 +229,7 @@ def cca_biplot():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_coefficients():
     # R - coef(ord)
     return np.array(
@@ -242,7 +242,7 @@ def cca_coefficients():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_species_scores():
     # R - scores(ord, choices=1:4)
     return np.array(
@@ -281,7 +281,7 @@ def cca_species_scores():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cca_species_tolerances():
     # R - tolerance(ord, choices = 1:4, useN2 = FALSE)
     return np.array(

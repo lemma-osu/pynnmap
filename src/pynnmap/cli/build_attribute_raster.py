@@ -118,7 +118,7 @@ def process_raster(
     nd = out_raster.nodata
 
     # Iterate over rows
-    zipped = zip(nn_windows, nf_windows, mask_windows)
+    zipped = zip(nn_windows, nf_windows, mask_windows, strict=True)
     for nn_window, nf_window, mask_window in zipped:
         # Extract the arrays
         nn_arrs = get_nn_arrays(nn_rasters, nn_window)

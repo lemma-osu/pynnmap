@@ -42,21 +42,21 @@ def draw_scatterplot(x, y, metadata, output_type=SCREEN, output_file=None, **kwa
     pl.text(
         0.05,
         0.93,
-        "Correlation coefficient:  %.4f" % this_corr,
+        f"Correlation coefficient:  {this_corr:.4f}",
         transform=pl.gca().transAxes,
         size=4.5,
     )
     pl.text(
         0.05,
         0.89,
-        "Normalized RMSE: %.4f" % this_rmse,
+        f"Normalized RMSE: {this_rmse:.4f}",
         transform=pl.gca().transAxes,
         size=4.5,
     )
     pl.text(
         0.05,
         0.85,
-        "R-square: %.4f" % this_r2,
+        f"R-square: {this_r2:.4f}",
         transform=pl.gca().transAxes,
         size=4.5,
     )
