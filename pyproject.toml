@@ -7,7 +7,7 @@ name = "pynnmap"
 dynamic = ["version"]
 description = "Python based nearest neighbor mapping"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 authors = [
     { name = "Matt Gregory", email = "matt.gregory@oregonstate.edu" },
     { name = "Heather Roberts", email = "heather.roberts@oregonstate.edu" },
@@ -75,14 +75,14 @@ coverage = "pytest . --cov=src/pynnmap {args} --doctest-modules"
 template = "test"
 
 [[tool.hatch.envs.test_matrix.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12"]
+python = ["3.11", "3.12", "3.13", "3.14"]
 
 [tool.pytest.ini_options]
 pythonpath = "src/"
 testpaths = ["tests/"]
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py311"
 fix = true
 show-fixes = true
 

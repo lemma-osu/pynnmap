@@ -115,4 +115,4 @@ class DependentOutput(PredictionOutput):
 
                 # Get the average index position across pixels
                 average_position = float(np.mean(self_assign_indexes))
-                nn_index_fh.write("%d,%.4f\n" % (id_val, average_position))
+                nn_index_fh.write(f"{id_val},{average_position:.4f}\n")

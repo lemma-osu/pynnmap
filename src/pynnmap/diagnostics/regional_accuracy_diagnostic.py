@@ -190,7 +190,7 @@ class RegionalAccuracyDiagnostic(diagnostic.Diagnostic):
             bin_data.append((attr.field_name, obs_bins.bin_endpoints))
 
             # If bins need to be converted to hectares, do that here
-            for d, convert_flag in zip(bins, needs_conversion):
+            for d, convert_flag in zip(bins, needs_conversion, strict=True):
                 if convert_flag:
                     d.bin_counts = np.multiply(d.bin_counts, ha_per_px)
 

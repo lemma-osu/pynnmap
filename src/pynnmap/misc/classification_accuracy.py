@@ -6,6 +6,7 @@ import numpy as np
 import numpy.ma as ma
 import pandas as pd
 from lxml import objectify
+from numpy.typing import NDArray
 
 
 def natural_sort(lst):
@@ -66,13 +67,13 @@ def create_error_matrix(obs_data, prd_data, compact=True, classes=None):
     # One liner for calculating error matrix
     # http://stackoverflow.com/questions/10958702/
     # python-one-liner-for-a-confusion-contingency-matrix-needed
-    paired = list(zip(obs_data, prd_data))
+    paired = list(zip(obs_data, prd_data, strict=True))
     err_mat = np.array(
-        [paired.count(x) for x in itertools.product(classes, repeat=2)]
+        [paired.count(x) for x in itertools.product(classes, repeat=2)], dtype=np.int64
     ).reshape(n, n)
 
     # Create the dictionary of class value to row/column number
-    class_xwalk = dict(zip(classes.tolist(), range(n)))
+    class_xwalk = dict(zip(classes.tolist(), range(n), strict=True))
 
     return err_mat, class_xwalk
 
@@ -442,34 +443,34 @@ class ErrorMatrix:
         for i in range(num_classes):
             out_list = [
                 class_labels[i],
-                *["%d" % x for x in self.err_mat[i, :]],
-                "%d" % self.r_totals[i],
-                "%.3f" % self.r_percent_correct[i],
-                "%.3f" % self.r_percent_f_correct[i],
+                *[f"{x:d}" for x in self.err_mat[i, :]],
+                f"{self.r_totals[i]:d}",
+                f"{self.r_percent_correct[i]:.3f}",
+                f"{self.r_percent_f_correct[i]:.3f}",
             ]
             out_str += ",".join(out_list) + "\n"
 
         # Column totals
         out_list = [
             class_labels[num_classes],
-            *["%d" % x for x in self.c_totals],
-            *["%d" % self.m_total, "", ""],
+            *[f"{x:d}" for x in self.c_totals],
+            *[f"{self.m_total:d}", "", ""],
         ]
         out_str += ",".join(out_list) + "\n"
 
         # Column correct
         out_list = [
             class_labels[num_classes + 1],
-            *["%.3f" % x for x in self.c_percent_correct],
-            *["", "%.3f" % self.m_percent_correct, ""],
+            *[f"{x:.3f}" for x in self.c_percent_correct],
+            *["", f"{self.m_percent_correct:.3f}", ""],
         ]
         out_str += ",".join(out_list) + "\n"
 
         # Column fuzzy correct
         out_list = [
             class_labels[num_classes + 2],
-            *["%.3f" % x for x in self.c_percent_f_correct],
-            *["", "", "%.3f" % self.m_percent_f_correct],
+            *[f"{x:.3f}" for x in self.c_percent_f_correct],
+            *["", "", f"{self.m_percent_f_correct:.3f}"],
         ]
         out_str += ",".join(out_list) + "\n"
 
@@ -504,17 +505,17 @@ class ErrorMatrix:
         num_classes = len(self.class_xwalk)
 
         # Get the total row, column and matrix counts
-        self.r_totals = self.err_mat.sum(axis=1).astype(np.float64)
-        self.c_totals = self.err_mat.sum(axis=0).astype(np.float64)
-        self.m_total = self.err_mat.sum().astype(np.float64)
+        self.r_totals = self.err_mat.sum(axis=1)
+        self.c_totals = self.err_mat.sum(axis=0)
+        self.m_total = self.err_mat.sum()
 
         # Get the diagonal elements - this represents the plots classified
         # correctly
-        self.correct = np.diag(self.err_mat).astype(np.float64)
+        self.correct = np.diag(self.err_mat)
 
         # Calculate the fuzzy correct for each class
-        self.r_f_correct = np.zeros(num_classes)
-        self.c_f_correct = np.zeros(num_classes)
+        self.r_f_correct = np.zeros(num_classes, dtype=np.int64)
+        self.c_f_correct = np.zeros(num_classes, dtype=np.int64)
         self.m_f_incorrect = 0
 
         for c, i in sorted(self.class_xwalk.items()):
@@ -532,11 +533,11 @@ class ErrorMatrix:
             self.m_f_incorrect += self.r_totals[i] - self.r_f_correct[i]
 
         # Calculate the percentages used in the printed error matrix
-        # Temporarily suspend warnings
-        old_settings = np.seterr(all="ignore")
-
-        def calc_percent(n, d):
-            return np.where(d, n / d * 100.0, 0.0)
+        def calc_percent(
+            n: NDArray[np.int64], d: NDArray[np.int64]
+        ) -> NDArray[np.float64]:
+            result = np.zeros_like(n, dtype=np.float64)
+            return np.divide(100.0 * n, d, out=result, where=d != 0)
 
         self.r_percent_correct = calc_percent(self.correct, self.r_totals)
         self.c_percent_correct = calc_percent(self.correct, self.c_totals)
@@ -546,7 +547,6 @@ class ErrorMatrix:
         self.c_percent_f_correct = calc_percent(self.c_f_correct, self.c_totals)
         m_f_correct = self.m_total - self.m_f_incorrect
         self.m_percent_f_correct = calc_percent(m_f_correct, self.m_total)
-        np.seterr(**old_settings)
 
     def to_csv(self, err_matrix_fn):
         """
