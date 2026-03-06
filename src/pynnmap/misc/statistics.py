@@ -102,7 +102,7 @@ class BinaryErrorMatrix:
         """
 
         # Create the main 2x2 matrix to hold the information
-        self._counts = np.zeros((2, 2))
+        self._counts = np.zeros((2, 2), dtype=np.int64)
 
         x_float = _convert_to_float_array(x)
         y_float = _convert_to_float_array(y)
